@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -18,7 +19,8 @@ namespace Boxify
         public MainPage()
         {
             this.InitializeComponent();
-            this.userProfile.updateUI();
+            userName.Text = UserProfile.displalyName;
+            userPic.ImageSource = UserProfile.userPic;
         }
 
         /// <summary>
@@ -48,14 +50,38 @@ namespace Boxify
             }
         }
 
-        /// <summary>
-        /// User clicks to log in
-        /// </summary>
-        /// <param name="sender">The Log In button</param>
-        /// <param name="e">The routed evnet arguments</param>
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void hamburgerButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(LoginPage), null);
+            MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
+        }
+
+        private void backButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MyFrame.CanGoBack)
+            {
+                MyFrame.GoBack();
+            }
+        }
+
+        public void setUserName(string userName)
+        {
+            this.userName.Text = userName;;
+        }
+
+        public void setUserPicture(BitmapImage image)
+        {
+            userPic.ImageSource = image;
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MySplitView.IsPaneOpen = false;
+            if (User.IsSelected)
+            {
+                MyFrame.Navigate(typeof(User), this);
+                back.Visibility = Visibility.Collapsed;
+                title.Text = "User";
+            }
         }
     }
 }

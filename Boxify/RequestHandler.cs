@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 
@@ -195,7 +196,7 @@ namespace Boxify
             }
 
             string userJson = await sendRequest("https://api.spotify.com/v1/me");
-            await ProfileData.updateInfo(userJson);
+            await UserProfile.updateInfo(userJson);
         }
 
         /// <summary>
@@ -296,6 +297,27 @@ namespace Boxify
 
             await setTokens(httpResponseBody);
             saveTokens();
+        }
+
+        public async static Task clearTokens()
+        {
+            authorizationCode = "";
+            accessToken = "";
+            tokenType = "";
+            scope = "";
+            expireTime = new DateTime(DateTime.MinValue.Ticks);
+            refreshToken = "";
+
+            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+            StorageFile dataFile = await roamingFolder.CreateFileAsync("BoxifyTokens.json", CreationCollisionOption.ReplaceExisting);
+            try
+            {
+                await dataFile.DeleteAsync();
+            }
+            catch (Exception) { }
+
+            UserProfile.displalyName = "";
+            UserProfile.userPic = new BitmapImage();
         }
     }
 }

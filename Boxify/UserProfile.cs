@@ -5,38 +5,12 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Boxify
 {
-    public sealed partial class UserProfile : UserControl
-    {
-        /// <summary>
-        /// The Users information
-        /// </summary>
-        public UserProfile()
-        {
-            this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// Updates the controls with the users information
-        /// </summary>
-        public void updateUI()
-        {
-            userName.Text = ProfileData.displalyName;
-            userImage.ImageSource = ProfileData.userPic;
-        }
-    }
-
-    /// <summary>
-    /// A class to store the users information
-    /// </summary>
-    public static class ProfileData
+    public static class UserProfile
     {
         public static string displalyName { get; set; } = "";
         public static string userId = "";
@@ -72,7 +46,8 @@ namespace Boxify
 
             // picture
             IJsonValue imagesJson;
-            if (userJson.TryGetValue("images", out imagesJson)) {
+            if (userJson.TryGetValue("images", out imagesJson))
+            {
                 JsonArray imageArray = imagesJson.GetArray();
                 JsonObject imageObject = imageArray.ElementAt(0).GetObject();
                 JsonValue urlJson = imageObject.GetNamedValue("url");

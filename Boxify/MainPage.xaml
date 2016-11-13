@@ -8,18 +8,90 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="50"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button x:Name="button" Grid.Row="1" Grid.Column="1" Content="Login" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="button_Click"/>
-        <local:UserProfile x:Name="userProfile" Grid.Row="0" Grid.Column="1"/>
+
+
+        <RelativePanel>
+            <Button Name="hamburger" 
+                    RelativePanel.AlignLeftWithPanel="True"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="36" 
+                    Content="&#xE700;" 
+                    Click="hamburgerButton_Click" />
+
+            <Button Name="back"
+                    RelativePanel.RightOf="hamburger"
+                    FontFamily="Segoe MDl2 Assets" 
+                    FontSize="36"
+                    Content="&#xE0C4;" 
+                    Click="backButton_Click" Background="{x:Null}" />
+
+            <TextBlock Name="title"
+                       RelativePanel.RightOf="back"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Margin="20,5,0,0" />
+
+            <TextBox Name="userName"
+                     RelativePanel.LeftOf="userPicContainer" 
+                     Height="48"
+                     Width="Auto"
+                     FontSize="24"
+                     Background="{x:Null}"
+                     BorderBrush="{x:Null}"
+                     BorderThickness="0"
+                     IsReadOnly="True"/>
+
+            <Ellipse
+                Name="userPicContainer"
+                Height="50"
+                Width="50"
+                Margin="0,0,20,0"
+                RelativePanel.AlignRightWithPanel="True">
+                
+                <Ellipse.Fill>
+                    <ImageBrush
+                        x:Name="userPic"
+                        Stretch="Uniform"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+        </RelativePanel>
+
+        <SplitView Grid.Row="1" 
+                   Name="MySplitView"
+                   DisplayMode="CompactOverlay" 
+                   OpenPaneLength="200" 
+                   CompactPaneLength="56">
+            <SplitView.Pane>
+                <ListBox SelectionMode="Single" 
+                         SelectionChanged="ListBox_SelectionChanged">
+                    <ListBoxItem Name="User">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE748;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">User</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Name="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE713;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">Settings</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Frame Name="MyFrame"></Frame>
+            </SplitView.Content>
+
+        </SplitView>
+
+        <!--<local:HamburgerMenu x:Name="hamburger" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2"/>-->
+        <!--<Button x:Name="button" Grid.Row="1" Grid.Column="1" Content="Login" HorizontalAlignment="Left" Margin="200,0,0,0" VerticalAlignment="Top" Click="button_Click"/>
+        <local:UserProfile x:Name="userProfile" Grid.Row="0" Grid.Column="1"/>-->
 
     </Grid>
 </Page>
