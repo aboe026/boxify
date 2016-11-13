@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 
@@ -21,13 +23,16 @@ namespace Boxify
         private static string accessToken = "";
         private static string tokenType = "";
         private static string scope = "";
-        private static int expiresIn = int.MaxValue;
+        private static DateTime expireTime = new DateTime(DateTime.MinValue.Ticks);
         private static string refreshToken = "";
 
+        /// <summary>
+        /// Builds the authorization uri with required query parameters
+        /// </summary>
+        /// <returns>The URI to access the authorization tokens</returns>
         public static Uri getAuthorizationUri()
         {
             UriBuilder authorizationBuilder = new UriBuilder(authorizationBase);
-            refreshClientCredentials();
 
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("client_id", clientId));
@@ -38,6 +43,11 @@ namespace Boxify
             return authorizationBuilder.Uri;
         }
 
+        /// <summary>
+        /// Converts a list of string key-value pairs into a valid URL query parameter delimited by ampersands
+        /// </summary>
+        /// <param name="queryParams">A list of key-value pairs</param>
+        /// <returns>A valid URL query parameter ("vame=value&name2=value2")</returns>
         private static string convertToQueryString(List<KeyValuePair<string, string>> queryParams)
         {
             string queryString = "";
@@ -52,14 +62,17 @@ namespace Boxify
             return queryString;
         }
 
-        public async static void refreshClientCredentials()
+        /// <summary>
+        /// Updates client credentials from file
+        /// </summary>
+        public async static Task refreshClientCredentials()
         {
             StorageFile clientCredentialsFile;
             try
             {
-                clientCredentialsFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(clientCredentailsFilePath));
+                clientCredentialsFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(clientCredentailsFilePath)).AsTask().ConfigureAwait(false);
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
                 return;
             }
@@ -69,7 +82,7 @@ namespace Boxify
             {
                 clientCredentialsJson = JsonObject.Parse(clientCredentailsText);
             }
-            catch (COMException ex)
+            catch (COMException)
             {
 
             }
@@ -85,7 +98,12 @@ namespace Boxify
             }
         }
 
-        public async static void setTokens(string code)
+        /// <summary>
+        /// Retrieves the tokens used for subsequent rest authentication
+        /// </summary>
+        /// <param name="code">The authorization code required to retrieve the tokens</param>
+        /// <returns></returns>
+        public async static Task getTokens(string code)
         {
             authorizationCode = code;
 
@@ -93,7 +111,7 @@ namespace Boxify
             HttpClient client = new HttpClient();
 
             //Add authorization header to the GET request.
-            var buffer = Windows.Security.Cryptography.CryptographicBuffer.ConvertStringToBinary(clientId + ":" + clientSecret, Windows.Security.Cryptography.BinaryStringEncoding.Utf8);
+            IBuffer buffer = Windows.Security.Cryptography.CryptographicBuffer.ConvertStringToBinary(clientId + ":" + clientSecret, Windows.Security.Cryptography.BinaryStringEncoding.Utf8);
             string base64token = Windows.Security.Cryptography.CryptographicBuffer.EncodeToBase64String(buffer);
             client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Basic", base64token);
             client.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
@@ -118,47 +136,166 @@ namespace Boxify
                 httpResponse = await client.PostAsync(authRequestUri.Uri, body);
                 httpResponse.EnsureSuccessStatusCode();
                 httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+                return;
+            }
 
-                // Parse out data
-                JsonObject tokensJson = new JsonObject();
-                try
-                {
-                    tokensJson = JsonObject.Parse(httpResponseBody);
-                }
-                catch (COMException ex)
-                {
+            await setTokens(httpResponseBody);
+            saveTokens();
+        }
 
-                }
-                IJsonValue accessTokenJson;
-                IJsonValue tokenTypeJson;
-                IJsonValue scopeJson;
-                IJsonValue expiresInJson;
-                IJsonValue refreshTokenJson;
-                if (tokensJson.TryGetValue("access_token", out accessTokenJson))
-                {
-                    accessToken = accessTokenJson.GetString();
-                }
-                if (tokensJson.TryGetValue("token_type", out tokenTypeJson))
-                {
-                    tokenType = tokenTypeJson.GetString();
-                }
-                if (tokensJson.TryGetValue("scope", out scopeJson))
-                {
-                    scope = scopeJson.GetString();
-                }
-                if (tokensJson.TryGetValue("expires_in", out expiresInJson))
-                {
-                    expiresIn = (int)expiresInJson.GetNumber();
-                }
-                if (tokensJson.TryGetValue("refresh_token", out refreshTokenJson))
-                {
-                    refreshToken = refreshTokenJson.GetString();
-                }
+        /// <summary>
+        /// Sets the access tokens
+        /// </summary>
+        /// <param name="tokensString">A JSON string with token data</param>
+        /// <returns></returns>
+        public async static Task setTokens(string tokensString)
+        {
+            JsonObject tokensJson = new JsonObject();
+            try
+            {
+                tokensJson = JsonObject.Parse(tokensString);
+            }
+            catch (COMException) { }
+
+            IJsonValue accessTokenJson;
+            IJsonValue tokenTypeJson;
+            IJsonValue scopeJson;
+            IJsonValue expiresInJson;
+            IJsonValue refreshTokenJson;
+            IJsonValue expireTimeJson;
+            if (tokensJson.TryGetValue("access_token", out accessTokenJson))
+            {
+                accessToken = accessTokenJson.GetString();
+            }
+            if (tokensJson.TryGetValue("token_type", out tokenTypeJson))
+            {
+                tokenType = tokenTypeJson.GetString();
+            }
+            if (tokensJson.TryGetValue("scope", out scopeJson))
+            {
+                scope = scopeJson.GetString();
+            }
+            if (tokensJson.TryGetValue("expires_in", out expiresInJson))
+            {
+                double expiresIn = expiresInJson.GetNumber();
+                DateTime currentTime = DateTime.Now;
+                expireTime = currentTime.AddSeconds(expiresIn);
+            }
+            if (tokensJson.TryGetValue("refresh_token", out refreshTokenJson))
+            {
+                refreshToken = refreshTokenJson.GetString();
+            }
+            if (tokensJson.TryGetValue("expire_time", out expireTimeJson))
+            {
+                expireTime = new DateTime(Convert.ToInt64(expireTimeJson.GetString()));
+            }
+
+            string userJson = await sendRequest("https://api.spotify.com/v1/me");
+            await ProfileData.updateInfo(userJson);
+        }
+
+        /// <summary>
+        /// Writes the tokens to file as JSON
+        /// </summary>
+        private async static void saveTokens()
+        {
+            JsonObject tokensJson = new JsonObject();
+            tokensJson.Add("refresh_token", JsonValue.CreateStringValue(refreshToken));
+            tokensJson.Add("access_token", JsonValue.CreateStringValue(accessToken));
+            tokensJson.Add("expire_time", JsonValue.CreateStringValue(expireTime.Ticks.ToString()));
+
+            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+            StorageFile dataFile = await roamingFolder.CreateFileAsync("BoxifyTokens.json", CreationCollisionOption.ReplaceExisting);
+            try
+            {
+                await FileIO.WriteTextAsync(dataFile, tokensJson.Stringify());
+            }
+            catch (Exception) { }
+        }
+
+        /// <summary>
+        /// Sends a request to the Spotify API with required authorization tokens
+        /// </summary>
+        /// <param name="uriString">The Spotify REST endpoint to hit</param>
+        /// <returns>The response body</returns>
+        public async static Task<string> sendRequest(string uriString)
+        {
+            if (DateTime.Now.Ticks > expireTime.Ticks || accessToken == "")
+            {
+                await refreshTokens();
+            }
+
+            // Create an HTTP client object
+            HttpClient client = new HttpClient();
+
+            //Add authorization header to the GET request.
+            client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
+
+            UriBuilder uri = new UriBuilder(uriString);
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
+            string httpResponseBody = "";
+
+            try
+            {
+                httpResponse = await client.GetAsync(uri.Uri);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
+
+            return httpResponseBody;
+        }
+
+        /// <summary>
+        /// Requests new access token with refresh token
+        /// </summary>
+        /// <returns></returns>
+        private async static Task refreshTokens()
+        {
+            // Create an HTTP client object
+            HttpClient client = new HttpClient();
+
+            //Add authorization header to the GET request.
+            IBuffer buffer = Windows.Security.Cryptography.CryptographicBuffer.ConvertStringToBinary(clientId + ":" + clientSecret, Windows.Security.Cryptography.BinaryStringEncoding.Utf8);
+            string base64token = Windows.Security.Cryptography.CryptographicBuffer.EncodeToBase64String(buffer);
+            client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Basic", base64token);
+            client.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
+
+
+            UriBuilder authRequestUri = new UriBuilder(tokenBase);
+
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
+            string httpResponseBody = "";
+
+            // body
+            string requestContent = string.Format("grant_type={0}&refresh_token={1}",
+                Uri.EscapeDataString("refresh_token"),
+                Uri.EscapeDataString(refreshToken));
+
+            HttpStringContent body = new HttpStringContent(requestContent, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
+
+            try
+            {
+                httpResponse = await client.PostAsync(authRequestUri.Uri, body);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+                return;
+            }
+
+            await setTokens(httpResponseBody);
+            saveTokens();
         }
     }
 }

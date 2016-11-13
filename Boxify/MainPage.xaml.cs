@@ -1,5 +1,4 @@
-﻿using System;
-using Windows.UI.Core;
+﻿using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -13,11 +12,19 @@ namespace Boxify
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        /// <summary>
+        /// The main page for the Boxify application
+        /// </summary>
         public MainPage()
         {
             this.InitializeComponent();
+            this.userProfile.updateUI();
         }
 
+        /// <summary>
+        /// When the user navigates to the page
+        /// </summary>
+        /// <param name="e">The navigation event arguments</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
            // Back button in title bar
@@ -41,7 +48,12 @@ namespace Boxify
             }
         }
 
-        private async void button_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// User clicks to log in
+        /// </summary>
+        /// <param name="sender">The Log In button</param>
+        /// <param name="e">The routed evnet arguments</param>
+        private void button_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(LoginPage), null);
         }

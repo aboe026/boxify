@@ -1,0 +1,23 @@
+﻿<UserControl
+    x:Class="Boxify.UserProfile"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="50"
+    d:DesignWidth="1080">
+
+    <Grid>
+        <TextBox x:Name="userName" HorizontalAlignment="Right" Margin="0,0,100,0" Text="" VerticalAlignment="Center" FontSize="16" IsReadOnly="True" Background="{x:Null}" BorderBrush="{x:Null}" TextAlignment="Right" BorderThickness="0"/>
+        <Ellipse Height="50" Width="50" HorizontalAlignment="Right" Margin="0,0,25,0">
+            <Ellipse.Fill>
+                <ImageBrush x:Name="userImage" Stretch="Uniform"/>
+            </Ellipse.Fill>
+        </Ellipse>
+        <!--<Border Height="50" Width="50" HorizontalAlignment="Right" Margin="0,0,25,0" CornerRadius="150">
+            <Image x:Name="userImage" HorizontalAlignment="Right" Height="50" Margin="0,0,0,0" VerticalAlignment="Top" Width="50"/>
+        </Border>-->
+    </Grid>
+</UserControl>

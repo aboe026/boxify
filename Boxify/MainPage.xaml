@@ -8,7 +8,18 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button x:Name="button" Content="Login" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="button_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="button" Grid.Row="1" Grid.Column="1" Content="Login" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="button_Click"/>
+        <local:UserProfile x:Name="userProfile" Grid.Row="0" Grid.Column="1"/>
 
     </Grid>
 </Page>

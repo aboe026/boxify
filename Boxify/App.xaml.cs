@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -27,7 +30,7 @@ namespace Boxify
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -50,6 +53,8 @@ namespace Boxify
                 {
                     //TODO: Load state from previously suspended application
                 }
+
+                await loadTokenData();
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
@@ -91,6 +96,26 @@ namespace Boxify
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        /// <summary>
+        /// Loads token information from file
+        /// </summary>
+        /// <returns></returns>
+        private async Task loadTokenData()
+        {
+            string tokensString = "";
+            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+            try
+            {
+                StorageFile dataFile = await roamingFolder.GetFileAsync("BoxifyTokens.json");
+                tokensString = await FileIO.ReadTextAsync(dataFile);
+                
+            }
+            catch (FileNotFoundException) { }
+
+            await RequestHandler.refreshClientCredentials();
+            await RequestHandler.setTokens(tokensString);
         }
     }
 }
