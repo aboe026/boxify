@@ -54,6 +54,10 @@ namespace Boxify
                 this.webView.Visibility = Visibility.Collapsed;
 
                 WwwFormUrlDecoder queryParams = new WwwFormUrlDecoder(args.Uri.Query);
+                if (queryParams.GetFirstValueByName("state") != RequestHandler.state)
+                {
+                    return;
+                }
                 try
                 {
                     await RequestHandler.getTokens(queryParams.GetFirstValueByName("code"));

@@ -15,6 +15,8 @@ namespace Boxify
     static class RequestHandler
     {
         public static string callbackUrl = "https://example.com/callback/";
+        public static string state = "";
+        private static string scopes = "playlist-read-private";
         private static string clientCredentailsFilePath = "ms-appx:///Assets/ClientCredentials.json";
         private static string clientId = "";
         private static string clientSecret = "";
@@ -35,10 +37,14 @@ namespace Boxify
         {
             UriBuilder authorizationBuilder = new UriBuilder(authorizationBase);
 
+            state = generateRandomString(new Random().Next(7, 23));
+
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("client_id", clientId));
             queryParams.Add(new KeyValuePair<string, string>("response_type", "code"));
             queryParams.Add(new KeyValuePair<string, string>("redirect_uri", callbackUrl));
+            queryParams.Add(new KeyValuePair<string, string>("scope", scopes));
+            queryParams.Add(new KeyValuePair<string, string>("state", state));
             authorizationBuilder.Query = convertToQueryString(queryParams);
 
             return authorizationBuilder.Uri;
@@ -61,6 +67,16 @@ namespace Boxify
                 queryString = queryString.Substring(0, queryString.Length - 1);
             }
             return queryString;
+        }
+
+        private static string generateRandomString(int length)
+        {
+            string random = "";
+            while (random.Length < length)
+            {
+                random += Path.GetRandomFileName().Replace(".", "");
+            }
+            return random.Substring(0, length);
         }
 
         /// <summary>

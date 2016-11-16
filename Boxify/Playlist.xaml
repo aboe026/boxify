@@ -1,0 +1,43 @@
+﻿<UserControl
+    x:Class="Boxify.Playlist"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="50"
+    d:DesignWidth="1920">
+
+    <Grid>
+
+        <RelativePanel>
+            <TextBlock
+                Name="displayName"
+                Text="Playlist Name"
+                RelativePanel.AlignLeftWithPanel="True"
+                RelativePanel.AlignVerticalCenterWithPanel="True"
+                Width="Auto"
+                FontSize="36"
+                />
+            <TextBlock
+                Name="displayTracksNumber"
+                Text="Tracks: 0"
+                RelativePanel.LeftOf="action"
+                RelativePanel.AlignVerticalCenterWithPanel="True"
+                Margin="0,0,20,0"
+                Width="Auto"
+                FontSize="36"
+                />
+            <Button Name="action" 
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignVerticalCenterWithPanel="True"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="40" 
+                    Content="&#xE768;"
+                    Background="{x:Null}"
+                    Foreground="#FF409E09" />
+        </RelativePanel>
+
+    </Grid>
+</UserControl>

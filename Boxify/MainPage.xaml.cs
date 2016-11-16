@@ -82,6 +82,11 @@ namespace Boxify
                 back.Visibility = Visibility.Collapsed;
                 title.Text = "User";
             }
+            if (YourMusic.IsSelected)
+            {
+                MyFrame.Navigate(typeof(YourMusic), this);
+                title.Text = "Your Music";
+            }
         }
     }
 }

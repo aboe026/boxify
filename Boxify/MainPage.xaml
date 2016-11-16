@@ -18,7 +18,7 @@
             <Button Name="hamburger" 
                     RelativePanel.AlignLeftWithPanel="True"
                     FontFamily="Segoe MDL2 Assets"
-                    FontSize="36" 
+                    FontSize="38" 
                     Content="&#xE700;" 
                     Click="hamburgerButton_Click" />
 
@@ -35,27 +35,22 @@
                        FontWeight="Bold"
                        Margin="20,5,0,0" />
 
-            <TextBox Name="userName"
-                     RelativePanel.LeftOf="userPicContainer" 
-                     Height="48"
-                     Width="Auto"
-                     FontSize="24"
-                     Background="{x:Null}"
-                     BorderBrush="{x:Null}"
-                     BorderThickness="0"
-                     IsReadOnly="True"/>
+            <TextBlock Name="userName"
+                       RelativePanel.LeftOf="userPicContainer" 
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Margin="0,0,10,0"
+                       Width="Auto"
+                       FontSize="24"/>
 
-            <Ellipse
-                Name="userPicContainer"
-                Height="50"
-                Width="50"
-                Margin="0,0,20,0"
-                RelativePanel.AlignRightWithPanel="True">
+            <Ellipse Name="userPicContainer"
+                     Height="50"
+                     Width="50"
+                     Margin="0,0,20,0"
+                     RelativePanel.AlignRightWithPanel="True">
                 
                 <Ellipse.Fill>
-                    <ImageBrush
-                        x:Name="userPic"
-                        Stretch="Uniform"/>
+                    <ImageBrush x:Name="userPic"
+                                Stretch="Uniform"/>
                 </Ellipse.Fill>
             </Ellipse>
 
@@ -65,7 +60,7 @@
                    Name="MySplitView"
                    DisplayMode="CompactOverlay" 
                    OpenPaneLength="200" 
-                   CompactPaneLength="56">
+                   CompactPaneLength="58">
             <SplitView.Pane>
                 <ListBox SelectionMode="Single" 
                          SelectionChanged="ListBox_SelectionChanged">
@@ -73,6 +68,18 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE748;" />
                             <TextBlock FontSize="24" Margin="20,0,0,0">User</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Name="Browse">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE93C;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">Browse</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Name="YourMusic">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE8F1;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">Your Music</TextBlock>
                         </StackPanel>
                     </ListBoxItem>
                     <ListBoxItem Name="Settings">
