@@ -26,8 +26,9 @@
                     RelativePanel.RightOf="hamburger"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="36"
-                    Content="&#xE0C4;" 
-                    Click="backButton_Click" Background="{x:Null}" />
+                    Content="&#xE0C4;"
+                    Background="{x:Null}"
+                    Click="backButton_Click" />
 
             <TextBlock Name="title"
                        RelativePanel.RightOf="back"
@@ -40,19 +41,32 @@
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,10,0"
                        Width="Auto"
-                       FontSize="24"/>
+                       FontSize="24"
+                       PointerReleased="userElement_PointerReleased"/>
 
             <Ellipse Name="userPicContainer"
+                     RelativePanel.AlignRightWithPanel="True"
                      Height="50"
                      Width="50"
                      Margin="0,0,20,0"
-                     RelativePanel.AlignRightWithPanel="True">
+                     Stroke="Black"
+                     StrokeThickness="0.5"
+                     PointerReleased="userElement_PointerReleased">
                 
                 <Ellipse.Fill>
                     <ImageBrush x:Name="userPic"
                                 Stretch="Uniform"/>
                 </Ellipse.Fill>
             </Ellipse>
+
+            <TextBlock Name="blankUser"
+                       RelativePanel.AlignHorizontalCenterWith="userPicContainer"
+                       RelativePanel.AlignVerticalCenterWith="userPicContainer"
+                       Margin="0,0,20,0"
+                       FontFamily="Segoe MDl2 Assets" 
+                       FontSize="24"
+                       Text="&#xE77B;"
+                       PointerReleased="userElement_PointerReleased" />
 
         </RelativePanel>
 

@@ -1,6 +1,7 @@
 ﻿using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -19,8 +20,8 @@ namespace Boxify
         public MainPage()
         {
             this.InitializeComponent();
-            userName.Text = UserProfile.displalyName;
-            userPic.ImageSource = UserProfile.userPic;
+            updateUserUI();
+            
         }
 
         /// <summary>
@@ -63,16 +64,6 @@ namespace Boxify
             }
         }
 
-        public void setUserName(string userName)
-        {
-            this.userName.Text = userName;;
-        }
-
-        public void setUserPicture(BitmapImage image)
-        {
-            userPic.ImageSource = image;
-        }
-
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MySplitView.IsPaneOpen = false;
@@ -87,6 +78,39 @@ namespace Boxify
                 MyFrame.Navigate(typeof(YourMusic), this);
                 title.Text = "Your Music";
             }
+        }
+
+        /// <summary>
+        /// Updates the UI of the user information
+        /// </summary>
+        public void updateUserUI()
+        {
+            userName.Text = UserProfile.displalyName;
+            userPic.ImageSource = UserProfile.userPic;
+            if (UserProfile.displalyName == "")
+            {
+                blankUser.Text = "\uE77B";
+                userPicContainer.StrokeThickness = 2;
+            }
+            else
+            {
+                userPicContainer.StrokeThickness = 0.5;
+                userPic.ImageSource = UserProfile.userPic;
+                blankUser.Text = "";
+            }
+        }
+
+        /// <summary>
+        /// When a user select any of the user information elements
+        /// </summary>
+        /// <param name="sender">The user element that was pressed</param>
+        /// <param name="e">The pointer routed event arguments</param>
+        private void userElement_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            MyFrame.Navigate(typeof(User), this);
+            back.Visibility = Visibility.Collapsed;
+            title.Text = "User";
+            User.IsSelected = true;
         }
     }
 }

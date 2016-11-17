@@ -2,6 +2,7 @@
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -20,14 +21,7 @@ namespace Boxify
         public User()
         {
             this.InitializeComponent();
-            if (UserProfile.displalyName != "")
-            {
-                this.webView.Visibility = Visibility.Collapsed;
-                this.status.Text = loggedInText + UserProfile.displalyName;
-                this.status.Visibility = Visibility.Visible;
-                this.login.Content = "Log Out";
-                this.login.Visibility = Visibility.Visible;
-            }
+            updateUI();
         }
 
         /// <summary>
@@ -51,52 +45,88 @@ namespace Boxify
         {
             if (args.Uri.AbsoluteUri.StartsWith(RequestHandler.callbackUrl))
             {
-                this.webView.Visibility = Visibility.Collapsed;
+                webView.Visibility = Visibility.Collapsed;
 
                 WwwFormUrlDecoder queryParams = new WwwFormUrlDecoder(args.Uri.Query);
-                if (queryParams.GetFirstValueByName("state") != RequestHandler.state)
-                {
-                    return;
-                }
                 try
                 {
+                    if (queryParams.GetFirstValueByName("state") != RequestHandler.state)
+                    {
+                        return;
+                    }
                     await RequestHandler.getTokens(queryParams.GetFirstValueByName("code"));
                 }
                 catch (ArgumentException) { return; }
 
-                this.webView.Visibility = Visibility.Collapsed;
-                this.status.Text = loggedInText + UserProfile.displalyName;
-                this.status.Visibility = Visibility.Visible;
-                this.login.Content = "Log Out";
-                this.login.Visibility = Visibility.Visible;
-
+                webView.Visibility = Visibility.Collapsed;
+                status.Text = loggedInText + UserProfile.displalyName;
+                status.Visibility = Visibility.Visible;
+                userPic.ImageSource = UserProfile.userPic;
+                login.Content = "Log Out";
+                login.Visibility = Visibility.Visible;
                 if (mainPage != null)
                 {
-                    mainPage.setUserName(UserProfile.displalyName);
-                    mainPage.setUserPicture(UserProfile.userPic);
+                    mainPage.updateUserUI();
                 }
             }
         }
 
+        /// <summary>
+        /// Logs the user in or out
+        /// </summary>
+        /// <param name="sender">The actionButton that was clicked</param>
+        /// <param name="e">The routed event arguments</param>
         private async void login_Click(object sender, RoutedEventArgs e)
         {
             if (login.Content.ToString() == "Log In")
             {
-                this.status.Visibility = Visibility.Collapsed;
-                this.login.Visibility = Visibility.Collapsed;
-                this.webView.Visibility = Visibility.Visible;
-                this.webView.Navigate(RequestHandler.getAuthorizationUri());
+                status.Visibility = Visibility.Collapsed;
+                login.Visibility = Visibility.Collapsed;
+                blankUser.Text = "";
+                userPicContainer.StrokeThickness = 0;
+                webView.Visibility = Visibility.Visible;
+                webView.Navigate(RequestHandler.getAuthorizationUri());
             }
             else if (login.Content.ToString() == "Log Out")
             {
-                this.status.Text = loggedOutText;
-                this.login.Content = "Log In";
+                userPic.ImageSource = new BitmapImage();
+                blankUser.Text = "\uE77B";
+                userPicContainer.StrokeThickness = 2;
+                status.Text = loggedOutText;
+                login.Content = "Log In";
                 await RequestHandler.clearTokens();
-                if (mainPage != null)
-                {
-                    mainPage.setUserName(UserProfile.displalyName);
-                    mainPage.setUserPicture(UserProfile.userPic);
-                }
+            }
+            if (mainPage != null)
+            {
+                mainPage.updateUserUI();
+            }
+        }
+
+        /// <summary>
+        /// Updates the UI of the frame
+        /// </summary>
+        private void updateUI()
+        {
+            if (UserProfile.displalyName == "")
+            {
+                webView.Visibility = Visibility.Collapsed;
+                blankUser.Text = "\uE77B";
+                userPicContainer.StrokeThickness = 2;
+                status.Text = loggedOutText;
+                status.Visibility = Visibility.Visible;
+                login.Content = "Log In";
+                login.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                webView.Visibility = Visibility.Collapsed;
+                status.Text = loggedInText + UserProfile.displalyName;
+                userPicContainer.StrokeThickness = 0;
+                userPic.ImageSource = UserProfile.userPic;
+                blankUser.Text = "";
+                status.Visibility = Visibility.Visible;
+                login.Content = "Log Out";
+                login.Visibility = Visibility.Visible;
             }
         }
     }

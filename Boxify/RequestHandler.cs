@@ -69,6 +69,12 @@ namespace Boxify
             return queryString;
         }
 
+        /// <summary>
+        /// Generates a random string of cryptographic strength by utilizing
+        /// the RNGCryptoServiceProvider behind Path.GetRandomFileName
+        /// </summary>
+        /// <param name="length">The number of random characters to generate</param>
+        /// <returns>A string containing the randomly generated characters.</returns>
         private static string generateRandomString(int length)
         {
             string random = "";
@@ -315,6 +321,10 @@ namespace Boxify
             saveTokens();
         }
 
+        /// <summary>
+        /// Clears the tokens (unauthorizes the user)
+        /// </summary>
+        /// <returns></returns>
         public async static Task clearTokens()
         {
             authorizationCode = "";
