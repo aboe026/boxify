@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="Boxify.YourMusic"
+    x:Class="Boxify.Browse"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Boxify"
@@ -8,27 +8,22 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          Margin="50">
+          Margin="50" >
 
         <RelativePanel>
 
-            <TextBlock Name="warning"
-                       Text="You must be logged in to view Your Music"
+            <TextBlock Name="featuredPlaylistLabel"
+                       Text="Featured Playlists"
                        FontSize="24"
-                       RelativePanel.AlignHorizontalCenterWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                       FontWeight="Bold"/>
 
-            <Button Name="logIn"
-                    Content="Manage Proflie"
-                    RelativePanel.Below="warning"
-                    RelativePanel.AlignHorizontalCenterWithPanel="True"
-                    Margin="0,10,0,0"
-                    FontSize="20"
-                    Background="{x:Null}"
-                    BorderBrush="Black"
-                    Click="logIn_Click" />
+            <TextBlock Name="featuredPlaylistMessage"
+                       Text="What others are listending to now..."
+                       FontSize="20"
+                       RelativePanel.Below="featuredPlaylistLabel"/>
 
-            <ListView Name="playlists"
+            <ListView Name="featuredPlaylists"
+                      RelativePanel.Below="featuredPlaylistMessage" 
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True">
 

@@ -14,6 +14,8 @@ namespace Boxify
 {
     static class RequestHandler
     {
+        public enum SecurityFlow { AuthorizationCode, ClientCredentials };
+
         public static string callbackUrl = "https://example.com/callback/";
         public static string state = "";
         private static string scopes = "playlist-read-private";
@@ -23,11 +25,13 @@ namespace Boxify
         private static string authorizationBase = "https://accounts.spotify.com/authorize";
         private static string authorizationCode = "";
         private static string tokenBase = "https://accounts.spotify.com/api/token";
+        private static string authorizationGrantType = "authorization_code";
         private static string accessToken = "";
-        private static string tokenType = "";
-        private static string scope = "";
         private static DateTime expireTime = new DateTime(DateTime.MinValue.Ticks);
         private static string refreshToken = "";
+        private static string clientCredentialsGrantType = "client_credentials";
+        private static string ccAccessToken = "";
+        private static DateTime ccExpireTime = new DateTime(DateTime.MinValue.Ticks);
 
         /// <summary>
         /// Builds the authorization uri with required query parameters
@@ -55,7 +59,7 @@ namespace Boxify
         /// </summary>
         /// <param name="queryParams">A list of key-value pairs</param>
         /// <returns>A valid URL query parameter ("vame=value&name2=value2")</returns>
-        private static string convertToQueryString(List<KeyValuePair<string, string>> queryParams)
+        public static string convertToQueryString(List<KeyValuePair<string, string>> queryParams)
         {
             string queryString = "";
             foreach (KeyValuePair<string, string> param in queryParams)
@@ -122,11 +126,55 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Retrieves the tokens used for subsequent rest authentication
+        /// Retrieves the tokens used for subsequent rest authentication based on the Client Credentials security model
+        /// </summary>
+        /// <returns></returns>
+        public async static Task getClientCredentialsTokens()
+        {
+            // Create an HTTP client object
+            HttpClient client = new HttpClient();
+
+            //Add authorization header to the GET request.
+            IBuffer buffer = Windows.Security.Cryptography.CryptographicBuffer.ConvertStringToBinary(clientId + ":" + clientSecret, Windows.Security.Cryptography.BinaryStringEncoding.Utf8);
+            string base64token = Windows.Security.Cryptography.CryptographicBuffer.EncodeToBase64String(buffer);
+            client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Basic", base64token);
+            client.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
+
+
+            UriBuilder authRequestUri = new UriBuilder(tokenBase);
+
+            // Send the GET request asynchronously and retrieve the response as a string.
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
+            string httpResponseBody = "";
+
+            // body
+            string requestContent = string.Format("grant_type={0}",
+            Uri.EscapeDataString(clientCredentialsGrantType));
+
+            HttpStringContent body = new HttpStringContent(requestContent, UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
+
+            try
+            {
+                httpResponse = await client.PostAsync(authRequestUri.Uri, body);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+                return;
+            }
+
+            await setTokens(httpResponseBody, SecurityFlow.ClientCredentials);
+            saveTokens();
+        }
+
+        /// <summary>
+        /// Retrieves the tokens used for subsequent rest authentication based on the Authorization Code Flow security model
         /// </summary>
         /// <param name="code">The authorization code required to retrieve the tokens</param>
         /// <returns></returns>
-        public async static Task getTokens(string code)
+        public async static Task getAuthorizationCodeTokens(string code)
         {
             authorizationCode = code;
 
@@ -148,11 +196,11 @@ namespace Boxify
 
             // body
             string requestContent = string.Format("grant_type={0}&code={1}&redirect_uri={2}",
-                Uri.EscapeDataString("authorization_code"),
+                Uri.EscapeDataString(authorizationGrantType),
                 Uri.EscapeDataString(authorizationCode),
                 Uri.EscapeDataString(callbackUrl));
 
-            HttpStringContent body = new HttpStringContent(requestContent, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
+            HttpStringContent body = new HttpStringContent(requestContent, UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
 
             try
             {
@@ -166,7 +214,7 @@ namespace Boxify
                 return;
             }
 
-            await setTokens(httpResponseBody);
+            await setTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
         }
 
@@ -175,7 +223,7 @@ namespace Boxify
         /// </summary>
         /// <param name="tokensString">A JSON string with token data</param>
         /// <returns></returns>
-        public async static Task setTokens(string tokensString)
+        public async static Task setTokens(string tokensString, SecurityFlow securityFlow)
         {
             JsonObject tokensJson = new JsonObject();
             try
@@ -185,28 +233,34 @@ namespace Boxify
             catch (COMException) { }
 
             IJsonValue accessTokenJson;
-            IJsonValue tokenTypeJson;
-            IJsonValue scopeJson;
             IJsonValue expiresInJson;
             IJsonValue refreshTokenJson;
             IJsonValue expireTimeJson;
+            IJsonValue ccAccessTokenJson;
+            IJsonValue ccExpireTimeJson;
             if (tokensJson.TryGetValue("access_token", out accessTokenJson))
             {
-                accessToken = accessTokenJson.GetString();
-            }
-            if (tokensJson.TryGetValue("token_type", out tokenTypeJson))
-            {
-                tokenType = tokenTypeJson.GetString();
-            }
-            if (tokensJson.TryGetValue("scope", out scopeJson))
-            {
-                scope = scopeJson.GetString();
+                if (securityFlow == SecurityFlow.AuthorizationCode)
+                {
+                    accessToken = accessTokenJson.GetString();
+                }
+                else if (securityFlow == SecurityFlow.ClientCredentials)
+                {
+                    ccAccessToken = accessTokenJson.GetString();
+                }
             }
             if (tokensJson.TryGetValue("expires_in", out expiresInJson))
             {
                 double expiresIn = expiresInJson.GetNumber();
                 DateTime currentTime = DateTime.Now;
-                expireTime = currentTime.AddSeconds(expiresIn);
+                if (securityFlow == SecurityFlow.AuthorizationCode)
+                {
+                    expireTime = currentTime.AddSeconds(expiresIn);
+                }
+                else if (securityFlow == SecurityFlow.ClientCredentials)
+                {
+                    ccExpireTime = currentTime.AddSeconds(expiresIn);
+                }
             }
             if (tokensJson.TryGetValue("refresh_token", out refreshTokenJson))
             {
@@ -216,9 +270,20 @@ namespace Boxify
             {
                 expireTime = new DateTime(Convert.ToInt64(expireTimeJson.GetString()));
             }
+            if (tokensJson.TryGetValue("ccAccess_token", out ccAccessTokenJson))
+            {
+                ccAccessToken = ccAccessTokenJson.GetString();
+            }
+            if (tokensJson.TryGetValue("ccExpire_time", out ccExpireTimeJson))
+            {
+                ccExpireTime = new DateTime(Convert.ToInt64(ccExpireTimeJson.GetString()));
+            }
 
-            string userJson = await sendRequest("https://api.spotify.com/v1/me");
-            await UserProfile.updateInfo(userJson);
+            if (securityFlow == SecurityFlow.AuthorizationCode)
+            {
+                string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
+                await UserProfile.updateInfo(userJson);
+            }
         }
 
         /// <summary>
@@ -230,6 +295,8 @@ namespace Boxify
             tokensJson.Add("refresh_token", JsonValue.CreateStringValue(refreshToken));
             tokensJson.Add("access_token", JsonValue.CreateStringValue(accessToken));
             tokensJson.Add("expire_time", JsonValue.CreateStringValue(expireTime.Ticks.ToString()));
+            tokensJson.Add("ccAccess_token", JsonValue.CreateStringValue(ccAccessToken));
+            tokensJson.Add("ccExpire_time", JsonValue.CreateStringValue(ccExpireTime.Ticks.ToString()));
 
             StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
             StorageFile dataFile = await roamingFolder.CreateFileAsync("BoxifyTokens.json", CreationCollisionOption.ReplaceExisting);
@@ -241,22 +308,53 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Sends a request to the Spotify API with required authorization tokens
+        /// Sends a GET request to the Spotify API with the token aquired from the Authorization Code Flow security model
+        /// </summary>
+        /// <param name="uriString">The Spotify REST endpoint to hit</param>
+        /// <returns>The body of the response</returns>
+        public async static Task<string> sendAuthGetRequest(string uriString)
+        {
+            return await sendGetRequest(uriString, accessToken, SecurityFlow.AuthorizationCode);
+        }
+
+        /// <summary>
+        /// Sends a GET request to the Spotify API with the token aquired from the Client Credentials Flow security model
+        /// </summary>
+        /// <param name="uriString">The Spotify REST endpoint to hit</param>
+        /// <returns>The body of the response</returns>
+        public async static Task<string> sendCliGetRequest(string uriString)
+        {
+            return await sendGetRequest(uriString, ccAccessToken, SecurityFlow.ClientCredentials);
+        }
+
+
+        /// <summary>
+        /// Sends a GET request to the Spotify API with required authorization tokens
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The response body</returns>
-        public async static Task<string> sendRequest(string uriString)
+        public async static Task<string> sendGetRequest(string uriString, string token, SecurityFlow securityFlow)
         {
-            if (DateTime.Now.Ticks > expireTime.Ticks || accessToken == "")
+            if (securityFlow == SecurityFlow.AuthorizationCode)
             {
-                await refreshTokens();
+                if (DateTime.Now.Ticks > expireTime.Ticks || accessToken == "")
+                {
+                    await refreshTokens();
+                }
+            }
+            else if (securityFlow == SecurityFlow.ClientCredentials)
+            {
+                if (DateTime.Now.Ticks > ccExpireTime.Ticks || ccAccessToken == "")
+                {
+                    await getClientCredentialsTokens();
+                }
             }
 
             // Create an HTTP client object
             HttpClient client = new HttpClient();
 
             //Add authorization header to the GET request.
-            client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
 
             UriBuilder uri = new UriBuilder(uriString);
@@ -317,7 +415,7 @@ namespace Boxify
                 return;
             }
 
-            await setTokens(httpResponseBody);
+            await setTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
         }
 
@@ -329,8 +427,6 @@ namespace Boxify
         {
             authorizationCode = "";
             accessToken = "";
-            tokenType = "";
-            scope = "";
             expireTime = new DateTime(DateTime.MinValue.Ticks);
             refreshToken = "";
 
@@ -342,6 +438,7 @@ namespace Boxify
             }
             catch (Exception) { }
 
+            UserProfile.userId = "";
             UserProfile.displalyName = "";
             UserProfile.userPic = new BitmapImage();
         }

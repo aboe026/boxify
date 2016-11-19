@@ -54,7 +54,7 @@ namespace Boxify
                     {
                         return;
                     }
-                    await RequestHandler.getTokens(queryParams.GetFirstValueByName("code"));
+                    await RequestHandler.getAuthorizationCodeTokens(queryParams.GetFirstValueByName("code"));
                 }
                 catch (ArgumentException) { return; }
 

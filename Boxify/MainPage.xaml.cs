@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -20,6 +19,7 @@ namespace Boxify
         public MainPage()
         {
             this.InitializeComponent();
+            selectHamburgerOption("Browse");
             updateUserUI();
             
         }
@@ -64,19 +64,47 @@ namespace Boxify
             }
         }
 
+        /// <summary>
+        /// Set the selected option of the hamburger navigation menu
+        /// </summary>
+        /// <param name="option"></param>
+        public void selectHamburgerOption(string option)
+        {
+            hamburgerOptions.SelectedIndex = -1;
+            for (int i = 0; i < hamburgerOptions.Items.Count; i++)
+            {
+                ListBoxItem item = (ListBoxItem)hamburgerOptions.Items[i];
+                if (option == item.Name)
+                {
+                    item.IsSelected = true;
+                    hamburgerOptions.SelectedItem = item;
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// User changes the page via the hamburger menu
+        /// </summary>
+        /// <param name="sender">The hamburger menu which was clicked</param>
+        /// <param name="e">The selection changed event arguments</param>
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MySplitView.IsPaneOpen = false;
-            if (User.IsSelected)
-            {
-                MyFrame.Navigate(typeof(User), this);
-                back.Visibility = Visibility.Collapsed;
-                title.Text = "User";
-            }
             if (YourMusic.IsSelected)
             {
                 MyFrame.Navigate(typeof(YourMusic), this);
                 title.Text = "Your Music";
+            }
+            else if (Browse.IsSelected)
+            {
+                MyFrame.Navigate(typeof(Browse), this);
+                title.Text = "Browse";
+            }
+            else if (Profile.IsSelected)
+            {
+                MyFrame.Navigate(typeof(User), this);
+                title.Text = "User";
             }
         }
 
@@ -110,7 +138,7 @@ namespace Boxify
             MyFrame.Navigate(typeof(User), this);
             back.Visibility = Visibility.Collapsed;
             title.Text = "User";
-            User.IsSelected = true;
+            Profile.IsSelected = true;
         }
     }
 }

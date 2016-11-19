@@ -76,14 +76,9 @@
                    OpenPaneLength="200" 
                    CompactPaneLength="58">
             <SplitView.Pane>
-                <ListBox SelectionMode="Single" 
+                <ListBox Name="hamburgerOptions"
+                         SelectionMode="Single" 
                          SelectionChanged="ListBox_SelectionChanged">
-                    <ListBoxItem Name="User">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE748;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">User</TextBlock>
-                        </StackPanel>
-                    </ListBoxItem>
                     <ListBoxItem Name="Browse">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE93C;" />
@@ -94,6 +89,12 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE8F1;" />
                             <TextBlock FontSize="24" Margin="20,0,0,0">Your Music</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Name="Profile">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE748;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">Profile</TextBlock>
                         </StackPanel>
                     </ListBoxItem>
                     <ListBoxItem Name="Settings">

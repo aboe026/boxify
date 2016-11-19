@@ -82,5 +82,21 @@ namespace Boxify
         {
             //TODO: save user information (name, picture) to disk to limit REST calls
         }
+
+        /// <summary>
+        /// Checks whether the user has logged into a Spotify account
+        /// </summary>
+        /// <returns>True if the user has logged into Spotify, false otherwise</returns>
+        public static bool isLoggedIn()
+        {
+            if (userId == "")
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }

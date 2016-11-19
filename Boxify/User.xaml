@@ -41,6 +41,8 @@
             <TextBox x:Name="status"
                      RelativePanel.AlignHorizontalCenterWithPanel="True"
                      RelativePanel.AlignVerticalCenterWithPanel="True"
+                     RelativePanel.AlignLeftWithPanel="True"
+                     RelativePanel.AlignRightWithPanel="True"
                      TextAlignment="Center"
                      TextWrapping="Wrap"
                      Width="Auto"

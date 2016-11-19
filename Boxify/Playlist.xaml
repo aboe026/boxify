@@ -7,28 +7,26 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="50"
-    d:DesignWidth="1920">
+    d:DesignWidth="500">
 
     <Grid>
 
         <RelativePanel>
-            <TextBlock
-                Name="displayName"
-                Text="Playlist Name"
-                RelativePanel.AlignLeftWithPanel="True"
-                RelativePanel.AlignVerticalCenterWithPanel="True"
-                Width="Auto"
-                FontSize="36"
-                />
-            <TextBlock
-                Name="displayTracksNumber"
-                Text="Tracks: 0"
-                RelativePanel.LeftOf="action"
-                RelativePanel.AlignVerticalCenterWithPanel="True"
-                Margin="0,0,20,0"
-                Width="Auto"
-                FontSize="36"
-                />
+            <TextBlock Name="displayName"
+                       Text="Playlist Name"
+                       RelativePanel.AlignLeftWithPanel="True"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Width="Auto"
+                       FontSize="36" />
+            
+            <TextBlock Name="displayTracksNumber"
+                       Text="Tracks: 0"
+                       RelativePanel.LeftOf="action"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Margin="0,0,20,0"
+                       Width="Auto"
+                       FontSize="36" />
+            
             <Button Name="action" 
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
@@ -36,7 +34,8 @@
                     FontSize="40" 
                     Content="&#xE768;"
                     Background="{x:Null}"
-                    Foreground="#FF409E09" />
+                    Foreground="Green"
+                    Click="action_Click" />
         </RelativePanel>
 
     </Grid>

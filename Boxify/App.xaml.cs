@@ -109,7 +109,8 @@ namespace Boxify
             catch (FileNotFoundException) { }
 
             await RequestHandler.refreshClientCredentials();
-            await RequestHandler.setTokens(tokensString);
+            await RequestHandler.setTokens(tokensString, RequestHandler.SecurityFlow.AuthorizationCode);
+            await RequestHandler.getClientCredentialsTokens();
         }
     }
 }
