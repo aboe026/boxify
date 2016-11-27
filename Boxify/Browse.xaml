@@ -14,13 +14,32 @@
 
             <TextBlock Name="featuredPlaylistLabel"
                        Text="Featured Playlists"
-                       FontSize="24"
+                       Margin="0,0,0,0"
+                       FontSize="28"
                        FontWeight="Bold"/>
+
+            <ProgressRing Name="loading"
+                          IsActive="False"
+                          RelativePanel.RightOf="featuredPlaylistLabel"
+                          RelativePanel.AlignVerticalCenterWith="featuredPlaylistLabel"
+                          Margin="20,7,0,0"
+                          Width="30"
+                          Height="30" />
+
+            <Button Name="refresh" 
+                    RelativePanel.RightOf="featuredPlaylistLabel"
+                    RelativePanel.AlignHorizontalCenterWith="loading"
+                    Margin="20,5,0,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="24" 
+                    Content="&#xE72C;"
+                    Background="{x:Null}" Click="refresh_Click" />
 
             <TextBlock Name="featuredPlaylistMessage"
                        Text="What others are listending to now..."
-                       FontSize="20"
-                       RelativePanel.Below="featuredPlaylistLabel"/>
+                       RelativePanel.Below="featuredPlaylistLabel"
+                       Margin="0,0,0,20"
+                       FontSize="20"/>
 
             <ListView Name="featuredPlaylists"
                       RelativePanel.Below="featuredPlaylistMessage" 

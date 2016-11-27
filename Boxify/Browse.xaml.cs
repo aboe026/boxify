@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -11,7 +12,7 @@ using Windows.UI.Xaml.Navigation;
 namespace Boxify
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// A page displaying the public Spotify activity
     /// </summary>
     public sealed partial class Browse : Page
     {
@@ -19,8 +20,11 @@ namespace Boxify
         private static string featuredPlaylistsHref = "https://api.spotify.com/v1/browse/featured-playlists";
         private static int featuredPlaylistLimit = 5;
         private static string featuredPlaylistsMessageSave = "";
-        private static List<Playlist> featuredPlaylistsSave;
+        private static List<PlaylistList> featuredPlaylistsSave;
 
+        /// <summary>
+        /// The main constructor
+        /// </summary>
         public Browse()
         {
             this.InitializeComponent();
@@ -43,7 +47,7 @@ namespace Boxify
             else
             {
                 featuredPlaylistMessage.Text = featuredPlaylistsMessageSave;
-                foreach (Playlist playlist in featuredPlaylistsSave)
+                foreach (PlaylistList playlist in featuredPlaylistsSave)
                 {
                     featuredPlaylists.Items.Add(playlist);
                 }
@@ -76,6 +80,8 @@ namespace Boxify
         /// <returns></returns>
         private async Task setFeaturedPlaylists()
         {
+            refresh.Visibility = Visibility.Collapsed;
+            loading.IsActive = true;
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
@@ -105,16 +111,30 @@ namespace Boxify
                 if (playlists.TryGetValue("items", out itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
-                    featuredPlaylistsSave = new List<Playlist>();
+                    featuredPlaylistsSave = new List<PlaylistList>();
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
                         Playlist playlist = new Playlist();
-                        playlist.setInfo(playlistJson.Stringify());
-                        featuredPlaylists.Items.Add(playlist);
-                        featuredPlaylistsSave.Add(playlist);
+                        await playlist.setInfo(playlistJson.Stringify());
+                        PlaylistList playlistList = new PlaylistList(playlist, mainPage);
+                        featuredPlaylists.Items.Add(playlistList);
+                        featuredPlaylistsSave.Add(playlistList);
                     }
                 }
             }
+            loading.IsActive = false;
+            refresh.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Refreshes the list of featured playlists
+        /// </summary>
+        /// <param name="sender">The refresh button</param>
+        /// <param name="e">The routed event arguments</param>
+        private async void refresh_Click(object sender, RoutedEventArgs e)
+        {
+            featuredPlaylists.Items.Clear();
+            await setFeaturedPlaylists();
         }
     }
 }

@@ -95,20 +95,25 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Album.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Artist.cs" />
+    <Compile Include="BindableBase.cs" />
     <Compile Include="Browse.xaml.cs">
       <DependentUpon>Browse.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Playlist.xaml.cs">
-      <DependentUpon>Playlist.xaml</DependentUpon>
+    <Compile Include="Playlist.cs" />
+    <Compile Include="PlaylistList.xaml.cs">
+      <DependentUpon>PlaylistList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandler.cs" />
+    <Compile Include="Track.cs" />
     <Compile Include="User.xaml.cs">
       <DependentUpon>User.xaml</DependentUpon>
     </Compile>
@@ -146,7 +151,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Playlist.xaml">
+    <Page Include="PlaylistList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

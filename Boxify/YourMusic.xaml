@@ -27,10 +27,38 @@
                     Background="{x:Null}"
                     BorderBrush="Black"
                     Click="logIn_Click" />
+            
+            <TextBlock Name="playlistsLabel"
+                       Text="Your Playlists"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       RelativePanel.AlignLeftWithPanel="True"
+                       RelativePanel.AlignTopWithPanel="True"
+                       Margin="0,0,0,20"/>
+
+            <ProgressRing Name="loading"
+                          IsActive="False"
+                          RelativePanel.RightOf="playlistsLabel"
+                          RelativePanel.AlignVerticalCenterWith="playlistsLabel"
+                          Margin="20,-15,0,0"
+                          Width="30"
+                          Height="30" />
+
+            <Button Name="refresh" 
+                    RelativePanel.RightOf="playlistsLabel"
+                    RelativePanel.AlignVerticalCenterWith="playlistsLabel"
+                    RelativePanel.AlignHorizontalCenterWith="loading"
+                    Margin="20,-15,0,0"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="24" 
+                    Content="&#xE72C;"
+                    Background="{x:Null}"
+                    Click="refresh_Click" />
 
             <ListView Name="playlists"
                       RelativePanel.AlignLeftWithPanel="True"
-                      RelativePanel.AlignRightWithPanel="True">
+                      RelativePanel.AlignRightWithPanel="True"
+                      RelativePanel.Below="playlistsLabel">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">

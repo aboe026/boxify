@@ -1,4 +1,5 @@
-﻿using Windows.UI.Core;
+﻿using System.Collections.Generic;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -13,6 +14,7 @@ namespace Boxify
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static List<Track> queue = new List<Track>();
         /// <summary>
         /// The main page for the Boxify application
         /// </summary>
@@ -139,6 +141,12 @@ namespace Boxify
             back.Visibility = Visibility.Collapsed;
             title.Text = "User";
             Profile.IsSelected = true;
+        }
+
+        public void setQueue(List<Track> tracks)
+        {
+            queue.Clear();
+            queue.AddRange(tracks);
         }
     }
 }

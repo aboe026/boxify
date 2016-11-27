@@ -11,14 +11,17 @@ using Windows.UI.Xaml.Navigation;
 namespace Boxify
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// The page displaying the users custom music selections
     /// </summary>
     public sealed partial class YourMusic : Page
     {
         private static MainPage mainPage;
         private static string playlistsHref = "https://api.spotify.com/v1/me/playlists";
-        private static List<Playlist> playlistsSave;
+        private static List<PlaylistList> playlistsSave;
 
+        /// <summary>
+        /// The main constructor
+        /// </summary>
         public YourMusic()
         {
             this.InitializeComponent();
@@ -44,7 +47,7 @@ namespace Boxify
                 }
                 else
                 {
-                    foreach (Playlist playlist in playlistsSave)
+                    foreach (PlaylistList playlist in playlistsSave)
                     {
                         playlists.Items.Add(playlist);
                     }
@@ -85,6 +88,8 @@ namespace Boxify
         /// <returns></returns>
         private async Task setPlaylists()
         {
+            refresh.Visibility = Visibility.Collapsed;
+            loading.IsActive = true;
             string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
             JsonObject playlistsJson = new JsonObject();
             try
@@ -99,15 +104,18 @@ namespace Boxify
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                playlistsSave = new List<Playlist>();
+                playlistsSave = new List<PlaylistList>();
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
-                    playlist.setInfo(playlistJson.Stringify());
-                    playlists.Items.Add(playlist);
-                    playlistsSave.Add(playlist);
+                    await playlist.setInfo(playlistJson.Stringify());
+                    PlaylistList playlistList = new PlaylistList(playlist, mainPage);
+                    playlists.Items.Add(playlistList);
+                    playlistsSave.Add(playlistList);
                 }
             }
+            loading.IsActive = false;
+            refresh.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -118,6 +126,17 @@ namespace Boxify
         private void logIn_Click(object sender, RoutedEventArgs e)
         {
             mainPage.selectHamburgerOption("Profile");
+        }
+
+        /// <summary>
+        /// Refresh users playlists
+        /// </summary>
+        /// <param name="sender">The refresh button</param>
+        /// <param name="e">The routed event arguments</param>
+        private async void refresh_Click(object sender, RoutedEventArgs e)
+        {
+            playlists.Items.Clear();
+            await setPlaylists();
         }
     }
 }

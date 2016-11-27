@@ -12,6 +12,9 @@ using Windows.Web.Http.Headers;
 
 namespace Boxify
 {
+    /// <summary>
+    /// A class to assist in making REST calls
+    /// </summary>
     static class RequestHandler
     {
         public enum SecurityFlow { AuthorizationCode, ClientCredentials };
@@ -373,6 +376,33 @@ namespace Boxify
             }
 
             return httpResponseBody;
+        }
+
+        /// <summary>
+        /// Download an image
+        /// </summary>
+        /// <param name="url">The URL of the image to download</param>
+        /// <returns>The downloaded image</returns>
+        public static async Task<BitmapImage> downloadImage(string url)
+        {
+            UriBuilder uri = new UriBuilder(url);
+
+            BitmapImage bitmapImage = new BitmapImage();
+            HttpClient client = new HttpClient();
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
+
+            try
+            {
+                httpResponse = await client.GetAsync(uri.Uri);
+                httpResponse.EnsureSuccessStatusCode();
+                IInputStream st = await client.GetInputStreamAsync(uri.Uri);
+                var memoryStream = new MemoryStream();
+                await st.AsStreamForRead().CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
+            }
+            catch (Exception) { }
+            return bitmapImage;
         }
 
         /// <summary>
