@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,7 +15,6 @@ namespace Boxify
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static List<Track> queue = new List<Track>();
         /// <summary>
         /// The main page for the Boxify application
         /// </summary>
@@ -23,7 +23,41 @@ namespace Boxify
             this.InitializeComponent();
             selectHamburgerOption("Browse");
             updateUserUI();
-            
+            if (PlaybackService.mainPage == null)
+            {
+                PlaybackService.mainPage = this;
+            }
+            if (PlaybackService.showing)
+            {
+                MyFrame.Margin = new Thickness(0, 0, 0, 100);
+                PlaybackMenu.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MyFrame.Margin = new Thickness(0, 0, 0, 0);
+                PlaybackMenu.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Make the playback controls visible
+        /// </summary>
+        public async void showPlaybackMenu()
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                MyFrame.Margin = new Thickness(0, 0, 0, 100);
+                PlaybackMenu.Visibility = Visibility.Visible;
+            });
+        }
+
+        /// <summary>
+        /// Return the PlaybackMenu control. Needed for static PlaybackService class.
+        /// </summary>
+        /// <returns>The PlaybackMenu control</returns>
+        public Playback getPlaybackMenu()
+        {
+            return PlaybackMenu;
         }
 
         /// <summary>
@@ -53,11 +87,21 @@ namespace Boxify
             }
         }
 
+        /// <summary>
+        /// Toggle the hamburger menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hamburgerButton_Click(object sender, RoutedEventArgs e)
         {
             MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
         }
 
+        /// <summary>
+        /// Return to the previous frame
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backButton_Click(object sender, RoutedEventArgs e)
         {
             if (MyFrame.CanGoBack)
@@ -141,12 +185,6 @@ namespace Boxify
             back.Visibility = Visibility.Collapsed;
             title.Text = "User";
             Profile.IsSelected = true;
-        }
-
-        public void setQueue(List<Track> tracks)
-        {
-            queue.Clear();
-            queue.AddRange(tracks);
         }
     }
 }

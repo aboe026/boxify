@@ -11,6 +11,7 @@ namespace Boxify
     /// </summary>
     public class Track
     {
+        public string id { get; set; }
         public string name { get; set; }
         public string albumString { get; set; }
         public Album album { get; set; }
@@ -51,11 +52,16 @@ namespace Boxify
             if (trackJson.TryGetValue("track", out trackObject))
             {
                 JsonObject trackObjectJson = trackObject.GetObject();
+                IJsonValue trackId;
                 IJsonValue trackName;
                 IJsonValue trackPreview;
                 IJsonValue trackDuration;
                 IJsonValue trackAlbum;
                 IJsonValue trackArtists;
+                if (trackObjectJson.TryGetValue("id", out trackId))
+                {
+                    id = trackId.GetString();
+                }
                 if (trackObjectJson.TryGetValue("name", out trackName))
                 {
                     name = trackName.GetString();

@@ -14,6 +14,7 @@ namespace Boxify
         public string name { get; set; }
         public List<Artist> artists { get; set; }
         public List<BitmapImage> images { get; set; }
+        public string imageUrl { get; set; }
 
         /// <summary>
         /// The main constructor to create an empty instance
@@ -63,6 +64,10 @@ namespace Boxify
                 {
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
+                    if (imageUrl == null)
+                    {
+                        imageUrl = url;
+                    }
                     BitmapImage image = await RequestHandler.downloadImage(url);
                     images.Add(image);
                 }

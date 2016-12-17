@@ -15,6 +15,8 @@ namespace Boxify
     /// </summary>
     sealed partial class App : Application
     {
+        bool inBackgroundMode = false;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -23,6 +25,34 @@ namespace Boxify
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            this.EnteredBackground += App_EnteredBackground;
+            this.LeavingBackground += App_LeavingBackground;
+
+            // Playback Service "Initialization" of static class
+            PlaybackService.Player.Source = PlaybackService.queue;
+            PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
+            PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
+        }
+
+        /// <summary>
+        /// Returning from the background
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void App_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
+        {
+            inBackgroundMode = true;
+        }
+
+        /// <summary>
+        /// Going to the background
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void App_LeavingBackground(object sender, LeavingBackgroundEventArgs e)
+        {
+            inBackgroundMode = false;
         }
 
         /// <summary>

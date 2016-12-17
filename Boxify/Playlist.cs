@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
+using static Boxify.PlaybackService;
 
 namespace Boxify
 {
@@ -13,8 +14,6 @@ namespace Boxify
     /// </summary>
     public class Playlist : BindableBase
     {
-        public enum State { Paused, Playing };
-
         public string id { get; set; }
         public string href { get; set; }
         public string name;
@@ -22,7 +21,6 @@ namespace Boxify
         public int tracksCount;
         public List<BitmapImage> images { get; set; }
         public BitmapImage image;
-        public State state { get; set; }
 
         /// <summary>
         /// The main constructor to create an empty instance
@@ -36,7 +34,6 @@ namespace Boxify
             tracksCount = 0;
             images = new List<BitmapImage>();
             image = new BitmapImage();
-            state = State.Paused;
         }
 
         /// <summary>
@@ -128,12 +125,11 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Get the list of the playlists tracks
+        /// Play the tracks in the playlist
         /// </summary>
-        /// <returns>A list of the playlists tracks</returns>
-        public async Task<List<Track>> getTracks()
+        /// <returns></returns>
+        public async Task playTracks()
         {
-            List<Track> tracks = new List<Track>();
             string tracksString = await RequestHandler.sendCliGetRequest(tracksHref);
             JsonObject tracksJson = new JsonObject();
             try
@@ -142,19 +138,31 @@ namespace Boxify
             }
             catch (COMException)
             {
-                return tracks;
+                
             }
             IJsonValue itemsJson;
-            if (tracksJson.TryGetValue("items", out itemsJson)){
+            if (tracksJson.TryGetValue("items", out itemsJson))
+            {
                 JsonArray tracksArray = itemsJson.GetArray();
-                foreach (JsonValue trackJson in tracksArray)
+                for (int i=0; i < tracksArray.Count; i++)
                 {
                     Track track = new Track();
-                    tracks.Add(track);
+                    JsonObject trackJson = tracksArray.ElementAt(i).GetObject();
                     await track.setInfo(trackJson.Stringify());
+                    if (i == 0)
+                    {
+                        List<Track> tracks = new List<Track>();
+                        tracks.Add(track);
+                        PlaybackService.playQueue(tracks);
+                    }
+                    else
+                    {
+                        List<Track> tracks = new List<Track>();
+                        tracks.Add(track);
+                        PlaybackService.addToQueue(tracks);
+                    }
                 }
             }
-            return tracks;
         }
     }
 }

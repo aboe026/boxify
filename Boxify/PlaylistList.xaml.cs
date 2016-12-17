@@ -1,24 +1,32 @@
-﻿using System.Collections.Generic;
-using Windows.UI;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using static Boxify.Playlist;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Boxify
 {
+    /// <summary>
+    /// A class for listing the details of a playlist in a row
+    /// </summary>
     public sealed partial class PlaylistList : UserControl
     {
         public MainPage mainPage;
         public Playlist playlist { get; set; }
 
+        /// <summary>
+        /// The main constructor
+        /// </summary>
         public PlaylistList()
         {
             this.InitializeComponent();
         }
         
+        /// <summary>
+        /// Constructor including references to the playlist whose information
+        /// will be displayed as well as the MainPage from where it was created
+        /// </summary>
+        /// <param name="playlist">The Playlist whose information will be displayed</param>
+        /// <param name="mainPage">The MainPage containing the Playlist</param>
         public PlaylistList(Playlist playlist, MainPage mainPage) : this()
         {
             this.playlist = playlist;
@@ -27,27 +35,13 @@ namespace Boxify
         }
 
         /// <summary>
-        /// The Play/Pause button is clicked
+        /// The Play button is clicked
         /// </summary>
         /// <param name="sender">The actionButton that was clicked</param>
         /// <param name="e">The routed event arguments</param>
         private async void action_Click(object sender, RoutedEventArgs e)
         {
-            Button actionButton = (Button)sender;
-            if (playlist.state == State.Paused)    // play button
-            {
-                actionButton.Content = "\uE769";
-                actionButton.Foreground = new SolidColorBrush(Colors.Black);
-                playlist.state = State.Playing;
-                List<Track> tracks = await playlist.getTracks();
-                mainPage.setQueue(tracks);
-            }
-            else if (playlist.state == State.Playing)
-            {
-                actionButton.Content = "\uE768";
-                actionButton.Foreground = new SolidColorBrush(Colors.Green);
-                playlist.state = State.Paused;
-            }
+            await playlist.playTracks();
         }
     }
 }

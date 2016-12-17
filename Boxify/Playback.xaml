@@ -1,0 +1,125 @@
+﻿<UserControl
+    x:Class="Boxify.Playback"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="100"
+    d:DesignWidth="500">
+
+    <Grid Background="WhiteSmoke"
+          Width="Auto"
+          Height="100">
+
+        <RelativePanel>
+
+            <Image Name="AlbumArt"
+                   RelativePanel.AlignLeftWithPanel="True"
+                   Height="100"
+                   Width="100"
+                   Margin="0,0,10,0"/>
+
+            <TextBlock Name="TrackName"
+                       RelativePanel.RightOf="AlbumArt"
+                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.AlignTopWithPanel="True"
+                       HorizontalAlignment="Stretch"
+                       FontSize="36"
+                       TextAlignment="Center" />
+
+            <TextBlock Name="TrackAlbum"
+                       RelativePanel.AlignLeftWith="TrackName"
+                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.Below="TrackName"
+                       FontSize="24"
+                       TextAlignment="Center"/>
+
+            <TextBlock Name="CurrentTime"
+                       RelativePanel.RightOf="AlbumArt"
+                       RelativePanel.AlignBottomWithPanel="True"
+                       Text="00:00"/>
+
+            <ProgressBar Name="Progress"
+                         RelativePanel.RightOf="CurrentTime"
+                         RelativePanel.LeftOf="Duration"
+                         RelativePanel.AlignBottomWithPanel="True"
+                         HorizontalAlignment="Stretch"
+                         Height="18"
+                         Margin="10,0,10,0" />
+
+            <TextBlock Name="Duration"
+                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.AlignBottomWithPanel="True"
+                       Text="00:00"/>
+
+            <Button Name="Shuffle"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    Margin="0,0,0,0"
+                    Height="40"
+                    Width="45"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="25" 
+                    Content="&#xE8B1;"
+                    Foreground="Black"
+                    Background="{x:Null}"
+                    Click="Shuffle_Click" />
+
+            <Button Name="Repeat"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.Above="Shuffle"
+                    Margin="0,0,0,0"
+                    Height="40"
+                    Width="45"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="25" 
+                    Content="&#xE8EE;"
+                    Foreground="Black"
+                    Background="{x:Null}"
+                    Click="Repeat_Click" />
+
+            <Button Name="PlayPause"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignTopWithPanel="True"
+                    Margin="20,0,14,0"
+                    Height="60"
+                    Width="65"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="50" 
+                    Content="&#xE768;"
+                    Foreground="Green"
+                    Background="{x:Null}"
+                    Click="PlayPause_Click" />
+
+            <Button Name="Previous"
+                    RelativePanel.LeftOf="Next"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    Margin="5,5,2,0"
+                    Height="40"
+                    Width="45"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="25" 
+                    Content="&#xE892;"
+                    Foreground="Black"
+                    Background="{x:Null}"
+                    Click="Previous_Click" />
+
+            <Button Name="Next"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    Margin="2,5,0,0"
+                    Height="40"
+                    Width="45"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="25" 
+                    Content="&#xE893;"
+                    Foreground="Black"
+                    Background="{x:Null}"
+                    Click="Next_Click" />
+
+        </RelativePanel>
+
+    </Grid>
+</UserControl>

@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          Margin="50">
+          Margin="50,50,50,0">
 
         <RelativePanel>
 

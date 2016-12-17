@@ -11,10 +11,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
-        <RelativePanel>
+        <RelativePanel Grid.Row="0">
             <Button Name="hamburger" 
                     RelativePanel.AlignLeftWithPanel="True"
                     FontFamily="Segoe MDL2 Assets"
@@ -70,7 +71,8 @@
 
         </RelativePanel>
 
-        <SplitView Grid.Row="1" 
+        <SplitView Grid.Row="1"
+                   Grid.RowSpan="2"
                    Name="MySplitView"
                    DisplayMode="CompactOverlay" 
                    OpenPaneLength="200" 
@@ -106,14 +108,23 @@
                 </ListBox>
             </SplitView.Pane>
             <SplitView.Content>
-                <Frame Name="MyFrame"></Frame>
+                <Frame Name="MyFrame"
+                       Margin="0,0,0,100"/>
             </SplitView.Content>
 
         </SplitView>
 
-        <!--<local:HamburgerMenu x:Name="hamburger" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="2"/>-->
-        <!--<Button x:Name="button" Grid.Row="1" Grid.Column="1" Content="Login" HorizontalAlignment="Left" Margin="200,0,0,0" VerticalAlignment="Top" Click="button_Click"/>
-        <local:UserProfile x:Name="userProfile" Grid.Row="0" Grid.Column="1"/>-->
+        <RelativePanel Grid.Row="2">
+
+            <local:Playback x:Name="PlaybackMenu"
+                            RelativePanel.AlignBottomWithPanel="True"
+                            RelativePanel.AlignHorizontalCenterWithPanel="True"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True"
+                            HorizontalAlignment="Stretch"
+                            Margin="100,0,100,0"/>
+
+        </RelativePanel>
 
     </Grid>
 </Page>

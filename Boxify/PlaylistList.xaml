@@ -45,6 +45,7 @@
             <Button Name="action" 
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
+                    Margin="0,0,10,0"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="40" 
                     Content="&#xE768;"
