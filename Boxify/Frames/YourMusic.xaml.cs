@@ -73,6 +73,9 @@ namespace Boxify
             else
             {
                 playlistsSave = null;
+                playlistsLabel.Visibility = Visibility.Collapsed;
+                refresh.Visibility = Visibility.Collapsed;
+                LoadingProgress.Visibility = Visibility.Collapsed;
                 warning.Visibility = Visibility.Visible;
                 logIn.Visibility = Visibility.Visible;
             }
@@ -179,7 +182,7 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private void logIn_Click(object sender, RoutedEventArgs e)
         {
-            mainPage.selectHamburgerOption("Profile");
+            mainPage.selectHamburgerOption("ProfileItem");
         }
 
         /// <summary>

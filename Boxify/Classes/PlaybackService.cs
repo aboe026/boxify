@@ -34,20 +34,23 @@ namespace Boxify
             Player.Play();
             foreach (Track track in tracks)
             {
-                MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
-                MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
-                MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
-                displayProperties.Type = MediaPlaybackType.Music;
-                displayProperties.MusicProperties.Title = track.name;
-                displayProperties.MusicProperties.AlbumTitle = track.album.name;
-                if (track.album.images.ElementAt(0) != null)
+                if (track.previewUrl != "")
                 {
-                    displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
-                }
-                playbackItem.ApplyDisplayProperties(displayProperties);
-                source.CustomProperties["mediaItemId"] = track.id;
+                    MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
+                    MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
+                    MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                    displayProperties.Type = MediaPlaybackType.Music;
+                    displayProperties.MusicProperties.Title = track.name;
+                    displayProperties.MusicProperties.AlbumTitle = track.album.name;
+                    if (track.album.images.ElementAt(0) != null)
+                    {
+                        displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
+                    }
+                    playbackItem.ApplyDisplayProperties(displayProperties);
+                    source.CustomProperties["mediaItemId"] = track.id;
 
-                queue.Items.Add(playbackItem);
+                    queue.Items.Add(playbackItem);
+                }
             }
         }
 
@@ -59,20 +62,23 @@ namespace Boxify
         {
             foreach (Track track in tracks)
             {
-                MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
-                MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
-                MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
-                displayProperties.Type = MediaPlaybackType.Music;
-                displayProperties.MusicProperties.Title = track.name;
-                displayProperties.MusicProperties.AlbumTitle = track.album.name;
-                if (track.album.images.ElementAt(0) != null)
+                if (track.previewUrl != "")
                 {
-                    displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
-                }
-                playbackItem.ApplyDisplayProperties(displayProperties);
-                source.CustomProperties["mediaItemId"] = track.id;
+                    MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
+                    MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
+                    MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                    displayProperties.Type = MediaPlaybackType.Music;
+                    displayProperties.MusicProperties.Title = track.name;
+                    displayProperties.MusicProperties.AlbumTitle = track.album.name;
+                    if (track.album.images.ElementAt(0) != null)
+                    {
+                        displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
+                    }
+                    playbackItem.ApplyDisplayProperties(displayProperties);
+                    source.CustomProperties["mediaItemId"] = track.id;
 
-                queue.Items.Add(playbackItem);
+                    queue.Items.Add(playbackItem);
+                }
             }
         }
 

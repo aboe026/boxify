@@ -96,34 +96,34 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Album.cs" />
+    <Compile Include="Classes\Album.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Artist.cs" />
-    <Compile Include="BindableBase.cs" />
-    <Compile Include="Browse.xaml.cs">
+    <Compile Include="Classes\Artist.cs" />
+    <Compile Include="Classes\BindableBase.cs" />
+    <Compile Include="Frames\Browse.xaml.cs">
       <DependentUpon>Browse.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Frames\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Playback.xaml.cs">
+    <Compile Include="Controls\Playback.xaml.cs">
       <DependentUpon>Playback.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlaybackService.cs" />
-    <Compile Include="Playlist.cs" />
-    <Compile Include="PlaylistList.xaml.cs">
+    <Compile Include="Classes\PlaybackService.cs" />
+    <Compile Include="Classes\Playlist.cs" />
+    <Compile Include="Controls\PlaylistList.xaml.cs">
       <DependentUpon>PlaylistList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestHandler.cs" />
-    <Compile Include="Track.cs" />
-    <Compile Include="User.xaml.cs">
+    <Compile Include="Classes\RequestHandler.cs" />
+    <Compile Include="Classes\Track.cs" />
+    <Compile Include="Frames\User.xaml.cs">
       <DependentUpon>User.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserProfile.cs" />
-    <Compile Include="YourMusic.xaml.cs">
+    <Compile Include="Classes\UserProfile.cs" />
+    <Compile Include="Frames\YourMusic.xaml.cs">
       <DependentUpon>YourMusic.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -148,31 +148,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Browse.xaml">
+    <Page Include="Frames\Browse.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Frames\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Playback.xaml">
+    <Page Include="Controls\Playback.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlaylistList.xaml">
+    <Page Include="Controls\PlaylistList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="User.xaml">
+    <Page Include="Frames\User.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="YourMusic.xaml">
+    <Page Include="Frames\YourMusic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

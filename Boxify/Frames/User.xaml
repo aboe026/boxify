@@ -17,8 +17,8 @@
             <Ellipse Name="userPicContainer"
                      RelativePanel.Above="status"
                      RelativePanel.AlignHorizontalCenterWithPanel="True"
-                     Height="200"
-                     Width="200"
+                     Height="150"
+                     Width="150"
                      Margin="0,0,0,10"
                      Stroke="Black"
                      StrokeThickness="2">
@@ -35,7 +35,7 @@
                        RelativePanel.AlignVerticalCenterWith="userPicContainer"
                        Margin="0,0,0,20"
                        FontFamily="Segoe MDl2 Assets" 
-                       FontSize="100"
+                       FontSize="80"
                        Text="&#xE77B;" />
 
             <TextBox x:Name="status"

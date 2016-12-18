@@ -68,7 +68,10 @@ namespace Boxify
                 }
                 if (trackObjectJson.TryGetValue("preview_url", out trackPreview))
                 {
-                    previewUrl = trackPreview.GetString();
+                    if (trackPreview.ToString() != "null")
+                    {
+                        previewUrl = trackPreview.GetString();
+                    }
                 }
                 if (trackObjectJson.TryGetValue("duration_ms", out trackDuration))
                 {
