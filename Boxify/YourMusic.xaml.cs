@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -17,7 +18,9 @@ namespace Boxify
     {
         private static MainPage mainPage;
         private static string playlistsHref = "https://api.spotify.com/v1/me/playlists";
-        private static List<PlaylistList> playlistsSave;
+        public static List<PlaylistList> playlistsSave;
+        public static bool refreshing = false;
+        private static int playlistsCount = 0;
 
         /// <summary>
         /// The main constructor
@@ -43,14 +46,28 @@ namespace Boxify
                 logIn.Visibility = Visibility.Collapsed;
                 if (playlistsSave == null)
                 {
-                    await setPlaylists();
+                    await refreshPlaylists();
                 }
                 else
                 {
+                    refresh.Visibility = Visibility.Collapsed;
+                    loading.IsActive = true;
+                    LoadingProgress.Maximum = playlistsCount;
+                    LoadingProgress.Value = 0;
+                    LoadingProgress.Visibility = Visibility.Visible;
+                    while (refreshing)
+                    {
+                        LoadingProgress.Maximum = playlistsCount;
+                        LoadingProgress.Value = playlistsSave.Count;
+                        await Task.Delay(TimeSpan.FromMilliseconds(100));
+                    }
                     foreach (PlaylistList playlist in playlistsSave)
                     {
                         playlists.Items.Add(playlist);
                     }
+                    loading.IsActive = false;
+                    refresh.Visibility = Visibility.Visible;
+                    LoadingProgress.Visibility = Visibility.Collapsed;
                 }
             }
             else
@@ -83,13 +100,15 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Updates the users playlists
+        /// Refreshes the users playlists
         /// </summary>
         /// <returns></returns>
-        private async Task setPlaylists()
+        private async Task refreshPlaylists()
         {
             refresh.Visibility = Visibility.Collapsed;
             loading.IsActive = true;
+            LoadingProgress.Value = 0;
+            LoadingProgress.Visibility = Visibility.Visible;
             string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
             JsonObject playlistsJson = new JsonObject();
             try
@@ -104,18 +123,53 @@ namespace Boxify
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
+                LoadingProgress.Maximum = playlistsArray.Count;
                 playlistsSave = new List<PlaylistList>();
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
                     await playlist.setInfo(playlistJson.Stringify());
                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                    playlists.Items.Add(playlistList);
                     playlistsSave.Add(playlistList);
+                    playlists.Items.Add(playlistList);
+                    LoadingProgress.Value = playlistsSave.Count;
                 }
             }
             loading.IsActive = false;
             refresh.Visibility = Visibility.Visible;
+            LoadingProgress.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Sets the playlists without updating the UI
+        /// </summary>
+        /// <returns></returns>
+        public static async Task setPlaylists()
+        {
+            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
+            JsonObject playlistsJson = new JsonObject();
+            try
+            {
+                playlistsJson = JsonObject.Parse(playlistsString);
+            }
+            catch (COMException)
+            {
+                return;
+            }
+            IJsonValue itemsJson;
+            if (playlistsJson.TryGetValue("items", out itemsJson))
+            {
+                JsonArray playlistsArray = itemsJson.GetArray();
+                playlistsCount = playlistsArray.Count;
+                playlistsSave = new List<PlaylistList>();
+                foreach (JsonValue playlistJson in playlistsArray)
+                {
+                    Playlist playlist = new Playlist();
+                    await playlist.setInfo(playlistJson.Stringify());
+                    PlaylistList playlistList = new PlaylistList(playlist, mainPage);
+                    playlistsSave.Add(playlistList);
+                }
+            }
         }
 
         /// <summary>
@@ -136,7 +190,7 @@ namespace Boxify
         private async void refresh_Click(object sender, RoutedEventArgs e)
         {
             playlists.Items.Clear();
-            await setPlaylists();
+            await refreshPlaylists();
         }
     }
 }

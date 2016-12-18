@@ -82,6 +82,8 @@ namespace Boxify
         {
             refresh.Visibility = Visibility.Collapsed;
             loading.IsActive = true;
+            LoadingProgress.Value = 0;
+            LoadingProgress.Visibility = Visibility.Visible;
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
@@ -111,6 +113,7 @@ namespace Boxify
                 if (playlists.TryGetValue("items", out itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
+                    LoadingProgress.Maximum = playlistsArray.Count;
                     featuredPlaylistsSave = new List<PlaylistList>();
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
@@ -119,11 +122,13 @@ namespace Boxify
                         PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                         featuredPlaylists.Items.Add(playlistList);
                         featuredPlaylistsSave.Add(playlistList);
+                        LoadingProgress.Value = featuredPlaylistsSave.Count;
                     }
                 }
             }
             loading.IsActive = false;
             refresh.Visibility = Visibility.Visible;
+            LoadingProgress.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>

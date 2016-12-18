@@ -21,7 +21,7 @@ namespace Boxify
         public MainPage()
         {
             this.InitializeComponent();
-            selectHamburgerOption("Browse");
+            selectHamburgerOption("BrowseItem");
             updateUserUI();
             if (PlaybackService.mainPage == null)
             {
@@ -64,9 +64,16 @@ namespace Boxify
         /// When the user navigates to the page
         /// </summary>
         /// <param name="e">The navigation event arguments</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-           // Back button in title bar
+            if (UserProfile.isLoggedIn() && YourMusic.playlistsSave == null)
+            {
+                YourMusic.refreshing = true;
+                await YourMusic.setPlaylists();
+                YourMusic.refreshing = false;
+            }
+
+            // Back button in title bar
             Frame rootFrame = Window.Current.Content as Frame;
 
             string myPages = "";
@@ -137,17 +144,17 @@ namespace Boxify
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MySplitView.IsPaneOpen = false;
-            if (YourMusic.IsSelected)
+            if (YourMusicItem.IsSelected)
             {
                 MyFrame.Navigate(typeof(YourMusic), this);
                 title.Text = "Your Music";
             }
-            else if (Browse.IsSelected)
+            else if (BrowseItem.IsSelected)
             {
                 MyFrame.Navigate(typeof(Browse), this);
                 title.Text = "Browse";
             }
-            else if (Profile.IsSelected)
+            else if (ProfileItem.IsSelected)
             {
                 MyFrame.Navigate(typeof(User), this);
                 title.Text = "User";
@@ -184,7 +191,7 @@ namespace Boxify
             MyFrame.Navigate(typeof(User), this);
             back.Visibility = Visibility.Collapsed;
             title.Text = "User";
-            Profile.IsSelected = true;
+            ProfileItem.IsSelected = true;
         }
     }
 }
