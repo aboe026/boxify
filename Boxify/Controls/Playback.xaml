@@ -6,14 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="100"
+    d:DesignHeight="148"
     d:DesignWidth="500">
 
     <Grid Background="WhiteSmoke"
           Width="Auto"
-          Height="100">
+          Height="148">
 
-        <RelativePanel>
+        <RelativePanel Margin="0,0,0,48">
 
             <Image Name="AlbumArt"
                    RelativePanel.AlignLeftWithPanel="True"
