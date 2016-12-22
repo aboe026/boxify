@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -24,6 +14,9 @@ namespace Boxify
     {
         private static MainPage mainPage;
 
+        /// <summary>
+        /// Main constructor
+        /// </summary>
         public Settings()
         {
             this.InitializeComponent();
@@ -39,14 +32,39 @@ namespace Boxify
             {
                 mainPage = (MainPage)e.Parameter;
             }
+
+            // tv safe area
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
+            if (composite != null)
+            {
+                object val = composite["TvSafeAreaOff"];
+                if ((bool)composite["TvSafeAreaOff"])
+                {
+                    tvSafe.IsOn = false;
+                }
+                else
+                {
+                    tvSafe.IsOn = true;
+                }
+            }
+            else
+            {
+                tvSafe.IsOn = true;
+            }
         }
 
+        /// <summary>
+        /// User wishes to toggle the tv safe area margins
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tvSafe_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
-                if (toggleSwitch.IsOn == true)
+                if (toggleSwitch.IsOn)
                 {
                     mainPage.safeAreaOn();   
                 }
@@ -54,7 +72,22 @@ namespace Boxify
                 {
                     mainPage.safeAreaOff();
                 }
+                setTvSafeSetting(toggleSwitch.IsOn);
             }
+        }
+
+        /// <summary>
+        /// Set the roaming settings for the tv safe area
+        /// </summary>
+        /// <param name="enabled"></param>
+        private static void setTvSafeSetting(bool enabled)
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+
+            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
+            composite["TvSafeAreaOff"] = !enabled;
+
+            roamingSettings.Values["UserSettings"] = composite;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -66,6 +67,27 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            // tv safe area
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
+            if (composite != null)
+            {
+                object val = composite["TvSafeAreaOff"];
+                if ((bool)composite["TvSafeAreaOff"])
+                {
+                    safeAreaOff();
+                }
+                else
+                {
+                    safeAreaOn();
+                }
+            }
+            else
+            {
+                safeAreaOn();
+            }
+
+            // load users playlists
             if (UserProfile.isLoggedIn() && YourMusic.playlistsSave == null)
             {
                 YourMusic.refreshing = true;
