@@ -9,11 +9,13 @@
     d:DesignHeight="148"
     d:DesignWidth="500">
 
-    <Grid Background="WhiteSmoke"
+    <Grid Name="MainGrid"
+          Background="WhiteSmoke"
           Width="Auto"
           Height="148">
 
-        <RelativePanel Margin="0,0,0,48">
+        <RelativePanel Name="MainPanel"
+                       Margin="0,0,0,48">
 
             <Image Name="AlbumArt"
                    RelativePanel.AlignLeftWithPanel="True"

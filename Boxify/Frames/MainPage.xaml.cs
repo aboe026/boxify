@@ -159,6 +159,11 @@ namespace Boxify
                 MyFrame.Navigate(typeof(User), this);
                 title.Text = "User";
             }
+            else if (SettingsItem.IsSelected)
+            {
+                MyFrame.Navigate(typeof(Settings), this);
+                title.Text = "Settings";
+            }
         }
 
         /// <summary>
@@ -179,6 +184,28 @@ namespace Boxify
                 userPic.ImageSource = UserProfile.userPic;
                 blankUser.Text = "";
             }
+        }
+
+        /// <summary>
+        /// Remove the extra margin so content touches display edge
+        /// </summary>
+        public void safeAreaOff()
+        {
+            NavLeftBorder.Visibility = Visibility.Collapsed;
+            Header.Margin = new Thickness(0, 0, 0, 0);
+            MySplitView.Margin = new Thickness(0, 0, 0, 0);
+            PlaybackMenu.safeAreaOff();
+        }
+
+        /// <summary>
+        /// Add extra margin to ensure content inside of TV safe area
+        /// </summary>
+        public void safeAreaOn()
+        {
+            NavLeftBorder.Visibility = Visibility.Visible;
+            Header.Margin = new Thickness(48, 27, 48, 0);
+            MySplitView.Margin = new Thickness(48, 0, 48, 0);
+            PlaybackMenu.safeAreaOn();
         }
 
         /// <summary>

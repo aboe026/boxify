@@ -84,6 +84,24 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Remove the extra margin so content touches display edge
+        /// </summary>
+        public void safeAreaOff()
+        {
+            MainPanel.Margin = new Thickness(0, 0, 0, 0);
+            MainGrid.Height = 100;
+        }
+
+        /// <summary>
+        /// Add extra margin to ensure content inside of TV safe area
+        /// </summary>
+        public void safeAreaOn()
+        {
+            MainPanel.Margin = new Thickness(0, 0, 0, 48);
+            MainGrid.Height = 148;
+        }
+
+        /// <summary>
         /// Update the UI with playback progress
         /// </summary>
         /// <param name="sender"></param>

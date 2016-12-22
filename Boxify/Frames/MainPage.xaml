@@ -17,12 +17,13 @@
         </Grid.RowDefinitions>
 
 
-        <RelativePanel Grid.Row="0"
+        <RelativePanel Name="Header"
+                       Grid.Row="0"
+                       Margin="48,27,48,0"
                        Canvas.ZIndex="1">
             
             <Button Name="hamburger" 
                     RelativePanel.AlignLeftWithPanel="True"
-                    Margin="48,27,0,0"
                     Background="#FFF2F2F2"
                     BorderBrush="Black"
                     FontFamily="Segoe MDL2 Assets"
@@ -32,7 +33,6 @@
 
             <Button Name="back"
                     RelativePanel.RightOf="hamburger"
-                    Margin="0,27,0,0"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="36"
                     Content="&#xE0C4;"
@@ -43,12 +43,12 @@
                        RelativePanel.RightOf="back"
                        FontSize="28"
                        FontWeight="Bold"
-                       Margin="20,32,0,0" />
+                       Margin="20,5,0,0" />
 
             <TextBlock Name="userName"
                        RelativePanel.LeftOf="userPicContainer" 
                        RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Margin="0,27,10,0"
+                       Margin="0,0,10,0"
                        Width="Auto"
                        FontSize="24"
                        PointerReleased="userElement_PointerReleased"/>
@@ -57,7 +57,7 @@
                      RelativePanel.AlignRightWithPanel="True"
                      Height="50"
                      Width="50"
-                     Margin="0,27,48,0"
+                     Margin="0,0,20,0"
                      Stroke="Black"
                      StrokeThickness="0.5"
                      PointerReleased="userElement_PointerReleased">
@@ -71,7 +71,7 @@
             <TextBlock Name="blankUser"
                        RelativePanel.AlignHorizontalCenterWith="userPicContainer"
                        RelativePanel.AlignVerticalCenterWith="userPicContainer"
-                       Margin="0,27,48,0"
+                       Margin="0,0,20,0"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="24"
                        Text="&#xE77B;"
@@ -116,7 +116,7 @@
                             <TextBlock FontSize="24" Margin="20,0,0,0">Profile</TextBlock>
                         </StackPanel>
                     </ListBoxItem>
-                    <ListBoxItem Name="Settings">
+                    <ListBoxItem Name="SettingsItem">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE713;" />
                             <TextBlock FontSize="24" Margin="20,0,0,0">Settings</TextBlock>
