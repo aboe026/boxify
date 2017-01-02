@@ -102,6 +102,9 @@
     </Compile>
     <Compile Include="Classes\Artist.cs" />
     <Compile Include="Classes\BindableBase.cs" />
+    <Compile Include="Controls\AlbumList.xaml.cs">
+      <DependentUpon>AlbumList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Frames\Browse.xaml.cs">
       <DependentUpon>Browse.xaml</DependentUpon>
     </Compile>
@@ -115,6 +118,12 @@
     <Compile Include="Classes\Playlist.cs" />
     <Compile Include="Controls\PlaylistList.xaml.cs">
       <DependentUpon>PlaylistList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Frames\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackList.xaml.cs">
+      <DependentUpon>TrackList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\RequestHandler.cs" />
@@ -151,6 +160,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\AlbumList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Frames\Browse.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -164,6 +177,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PlaylistList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Frames\Search.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TrackList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

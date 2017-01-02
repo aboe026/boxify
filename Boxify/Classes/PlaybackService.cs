@@ -17,8 +17,6 @@ namespace Boxify
     /// </summary>
     public static class PlaybackService
     {
-        public enum State { Paused, Playing };
-
         public static MediaPlayer Player = new MediaPlayer();
         public static MediaPlaybackList queue = new MediaPlaybackList();
         public static MainPage mainPage;
@@ -42,7 +40,7 @@ namespace Boxify
                     displayProperties.Type = MediaPlaybackType.Music;
                     displayProperties.MusicProperties.Title = track.name;
                     displayProperties.MusicProperties.AlbumTitle = track.album.name;
-                    if (track.album.images.ElementAt(0) != null)
+                    if (track.album.images.Count > 0 && track.album.images.ElementAt(0) != null)
                     {
                         displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
                     }
@@ -127,10 +125,13 @@ namespace Boxify
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                IRandomAccessStreamWithContentType thumbnail = await Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail.OpenReadAsync();
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.SetSource(thumbnail);
-                mainPage.getPlaybackMenu().setTrackImage(bitmapImage);
+                if (Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail != null)
+                {
+                    IRandomAccessStreamWithContentType thumbnail = await Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail.OpenReadAsync();
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.SetSource(thumbnail);
+                    mainPage.getPlaybackMenu().setTrackImage(bitmapImage);
+                }
                 mainPage.getPlaybackMenu().setTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
                 mainPage.getPlaybackMenu().setAlbumName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.AlbumTitle);
             });

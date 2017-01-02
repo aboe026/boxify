@@ -116,6 +116,12 @@
                             <TextBlock FontSize="24" Margin="20,0,0,0">Profile</TextBlock>
                         </StackPanel>
                     </ListBoxItem>
+                    <ListBoxItem Name="SearchItem">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE721;" />
+                            <TextBlock FontSize="24" Margin="20,0,0,0">Search</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
                     <ListBoxItem Name="SettingsItem">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE713;" />

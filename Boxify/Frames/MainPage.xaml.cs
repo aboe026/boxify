@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Boxify.Frames;
+using System;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI.Core;
@@ -175,6 +176,11 @@ namespace Boxify
             {
                 MyFrame.Navigate(typeof(Browse), this);
                 title.Text = "Browse";
+            }
+            else if (SearchItem.IsSelected)
+            {
+                MyFrame.Navigate(typeof(Search), this);
+                title.Text = "Search";
             }
             else if (ProfileItem.IsSelected)
             {

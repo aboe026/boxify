@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
-using static Boxify.PlaybackService;
 
 namespace Boxify
 {

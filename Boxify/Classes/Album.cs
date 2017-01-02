@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
@@ -9,12 +10,14 @@ namespace Boxify
     /// <summary>
     /// An Album object
     /// </summary>
-    public class Album
+    public class Album : BindableBase
     {
-        public string name { get; set; }
+        private string id;
+        public string name;
         public List<Artist> artists { get; set; }
         public List<BitmapImage> images { get; set; }
         public string imageUrl { get; set; }
+        private static string tracksHref = "https://api.spotify.com/v1/albums/{id}/tracks";
 
         /// <summary>
         /// The main constructor to create an empty instance
@@ -24,6 +27,31 @@ namespace Boxify
             name = "";
             artists = new List<Artist>();
             images = new List<BitmapImage>();
+        }
+
+        /// <summary>
+        /// The name of the album
+        /// </summary>
+        public string Name
+        {
+            get { return this.name; }
+            set { this.SetProperty(ref this.name, value); }
+        }
+
+        /// <summary>
+        /// The main image for the album
+        /// </summary>
+        public BitmapImage Image
+        {
+            get { return this.images.ElementAt(0); }
+        }
+
+        /// <summary>
+        /// The main artist for the album
+        /// </summary>
+        public string Artist
+        {
+            get { return this.artists.ElementAt(0).name; }
         }
 
         /// <summary>
@@ -42,9 +70,14 @@ namespace Boxify
             {
                 return;
             }
+            IJsonValue idJson;
             IJsonValue nameJson;
             IJsonValue artistsJson;
             IJsonValue imagesJson;
+            if (albumJson.TryGetValue("id", out idJson))
+            {
+                id = idJson.GetString();
+            }
             if (albumJson.TryGetValue("name", out nameJson))
             {
                 name = nameJson.GetString();
@@ -72,6 +105,38 @@ namespace Boxify
                     images.Add(image);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get all the tracks in the album
+        /// </summary>
+        /// <returns>A list of tracks in the album</returns>
+        public async Task<List<Track>> getTracks()
+        {
+            List<Track> tracks = new List<Track>();
+            string tracksString = await RequestHandler.sendCliGetRequest(tracksHref.Replace("{id}", id));
+            JsonObject tracksJson = new JsonObject();
+            try
+            {
+                tracksJson = JsonObject.Parse(tracksString);
+            }
+            catch (COMException)
+            {
+                return tracks;
+            }
+            IJsonValue itemsJson;
+            if (tracksJson.TryGetValue("items", out itemsJson))
+            {
+                JsonArray itemsArray = itemsJson.GetArray();
+                foreach (JsonValue trackJson in itemsArray)
+                {
+                    Track track = new Track();
+                    await track.setInfoDirect(trackJson.Stringify());
+                    track.album = this;
+                    tracks.Add(track);
+                }
+            }
+            return tracks;
         }
     }
 }
