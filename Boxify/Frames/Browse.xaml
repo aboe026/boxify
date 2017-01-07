@@ -1,0 +1,78 @@
+﻿<Page
+    x:Class="Boxify.Browse"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          Margin="50,50,50,0" >
+
+        <RelativePanel>
+
+            <TextBlock Name="featuredPlaylistLabel"
+                       Text="Featured Playlists"
+                       Margin="0,0,0,0"
+                       FontSize="28"
+                       FontWeight="Bold"/>
+
+            <Button Name="refresh" 
+                    RelativePanel.RightOf="featuredPlaylistLabel"
+                    RelativePanel.AlignVerticalCenterWith="featuredPlaylistLabel"
+                    Margin="20,5,0,-6"
+                    Height="40"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="24" 
+                    Content="&#xE72C;"
+                    Background="{x:Null}"
+                    Click="refresh_Click" />
+
+            <ProgressBar Name="LoadingProgress"
+                         RelativePanel.RightOf="refresh"
+                         RelativePanel.AlignRightWithPanel="True"
+                         RelativePanel.AlignVerticalCenterWith="featuredPlaylistLabel"
+                         HorizontalAlignment="Stretch"
+                         Height="15"
+                         Margin="20,0,20,-6"/>
+
+            <TextBlock Name="featuredPlaylistMessage"
+                       Text="What others are listending to now..."
+                       RelativePanel.Below="featuredPlaylistLabel"
+                       Margin="0,0,0,20"
+                       FontSize="20"/>
+
+            <ProgressRing Name="loading"
+                          IsActive="False"
+                          RelativePanel.AlignHorizontalCenterWith="featuredPlaylists"
+                          RelativePanel.AlignVerticalCenterWith="featuredPlaylists"
+                          Margin="20,7,0,0"
+                          Width="100"
+                          Height="100" />
+
+            <ListView Name="featuredPlaylists"
+                      RelativePanel.Below="featuredPlaylistMessage" 
+                      RelativePanel.AlignLeftWithPanel="True"
+                      RelativePanel.AlignRightWithPanel="True">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+            </ListView>
+
+        </RelativePanel>
+
+    </Grid>
+</Page>

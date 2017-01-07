@@ -1,0 +1,63 @@
+﻿<Page
+    x:Class="Boxify.User"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <WebView x:Name="webView"
+                 Margin="50,50,50,50"
+                 NavigationStarting="WebView_NavigationStarting"/>
+
+        <RelativePanel>
+            <Ellipse Name="userPicContainer"
+                     RelativePanel.Above="status"
+                     RelativePanel.AlignHorizontalCenterWithPanel="True"
+                     Height="150"
+                     Width="150"
+                     Margin="0,0,0,10"
+                     Stroke="Black"
+                     StrokeThickness="2">
+
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="userPic"
+                                Stretch="Uniform"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <TextBlock Name="blankUser"
+                       RelativePanel.Above="status"
+                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       RelativePanel.AlignVerticalCenterWith="userPicContainer"
+                       Margin="0,0,0,20"
+                       FontFamily="Segoe MDl2 Assets" 
+                       FontSize="80"
+                       Text="&#xE77B;" />
+
+            <TextBox x:Name="status"
+                     RelativePanel.AlignHorizontalCenterWithPanel="True"
+                     RelativePanel.AlignVerticalCenterWithPanel="True"
+                     RelativePanel.AlignLeftWithPanel="True"
+                     RelativePanel.AlignRightWithPanel="True"
+                     TextAlignment="Center"
+                     TextWrapping="Wrap"
+                     Width="Auto"
+                     Text="You are currently not logged in. Select the button to fix that."
+                     BorderBrush="{x:Null}"
+                     IsReadOnly="True"
+                     BorderThickness="0" />
+
+            <Button x:Name="login"
+                    RelativePanel.AlignHorizontalCenterWithPanel="True"
+                    RelativePanel.AlignVerticalCenterWithPanel="True"
+                    RelativePanel.Below="status"
+                    Margin="0,10,0,0"
+                    Content="Log In" Click="login_Click" Background="{x:Null}" BorderBrush="Black" />
+        </RelativePanel>
+
+    </Grid>
+</Page>
