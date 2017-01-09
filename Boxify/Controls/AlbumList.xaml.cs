@@ -45,16 +45,5 @@ namespace Boxify.Frames
             this.mainPage = mainPage;
             DataContext = this.album;
         }
-
-        /// <summary>
-        /// The Play button is clicked
-        /// </summary>
-        /// <param name="sender">The actionButton that was clicked</param>
-        /// <param name="e">The routed event arguments</param>
-        private async void action_Click(object sender, RoutedEventArgs e)
-        {
-            List<Track> tracks = await album.getTracks();
-            PlaybackService.playQueue(tracks);
-        }
     }
 }

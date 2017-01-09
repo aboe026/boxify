@@ -42,16 +42,14 @@
                        Width="Auto"
                        FontSize="36" />
 
-            <Button Name="action" 
+            <TextBlock Name="action" 
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
                     Margin="0,0,10,0"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="40" 
-                    Content="&#xE768;"
-                    Background="{x:Null}"
-                    Foreground="Green"
-                    Click="action_Click" />
+                    Text="&#xE768;"
+                    Foreground="Green"/>
         </RelativePanel>
 
     </Grid>

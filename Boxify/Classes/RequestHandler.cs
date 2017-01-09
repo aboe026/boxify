@@ -52,6 +52,7 @@ namespace Boxify
             queryParams.Add(new KeyValuePair<string, string>("redirect_uri", callbackUrl));
             queryParams.Add(new KeyValuePair<string, string>("scope", scopes));
             queryParams.Add(new KeyValuePair<string, string>("state", state));
+            queryParams.Add(new KeyValuePair<string, string>("show_dialog", "true"));
             authorizationBuilder.Query = convertToQueryString(queryParams);
 
             return authorizationBuilder.Uri;

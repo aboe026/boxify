@@ -36,6 +36,7 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            LoadingProgress.Visibility = Visibility.Collapsed;
             if (e.Parameter != null)
             {
                 mainPage = (MainPage)e.Parameter;
@@ -51,7 +52,6 @@ namespace Boxify
                 else
                 {
                     refresh.Visibility = Visibility.Collapsed;
-                    loading.IsActive = true;
                     LoadingProgress.Maximum = playlistsCount;
                     LoadingProgress.Value = 0;
                     LoadingProgress.Visibility = Visibility.Visible;
@@ -65,7 +65,6 @@ namespace Boxify
                     {
                         playlists.Items.Add(playlist);
                     }
-                    loading.IsActive = false;
                     refresh.Visibility = Visibility.Visible;
                     LoadingProgress.Visibility = Visibility.Collapsed;
                 }
@@ -109,7 +108,6 @@ namespace Boxify
         private async Task refreshPlaylists()
         {
             refresh.Visibility = Visibility.Collapsed;
-            loading.IsActive = true;
             LoadingProgress.Value = 0;
             LoadingProgress.Visibility = Visibility.Visible;
             string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
@@ -138,7 +136,6 @@ namespace Boxify
                     LoadingProgress.Value = playlistsSave.Count;
                 }
             }
-            loading.IsActive = false;
             refresh.Visibility = Visibility.Visible;
             LoadingProgress.Visibility = Visibility.Collapsed;
         }
@@ -194,6 +191,55 @@ namespace Boxify
         {
             playlists.Items.Clear();
             await refreshPlaylists();
+        }
+
+        /// <summary>
+        /// When user hovers onto PlaylistList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void playlists_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ListViewItem item = e.OriginalSource as ListViewItem;
+            playlists.SelectedIndex = getListIndex(item);
+            (item.Content as PlaylistList).showPlay();
+        }
+
+        /// <summary>
+        /// When user hovers away from PlaylistList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void playlists_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
+        }
+
+        /// <summary>
+        /// Gets the index of the currently hovered PlaylistList
+        /// </summary>
+        /// <param name="item">The item currently hovered</param>
+        /// <returns>The index of the currently hovered item in the ListView</returns>
+        private int getListIndex(ListViewItem item)
+        {
+            for (int i = 0; i < playlists.Items.Count; i++)
+            {
+                if ((playlists.Items[i] as PlaylistList).playlist.id == (item.Content as PlaylistList).playlist.id)
+                {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// When user clicks a PlaylistList for playing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void playlists_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            await (e.ClickedItem as PlaylistList).playlist.playTracks();
         }
     }
 }

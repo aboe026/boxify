@@ -68,6 +68,8 @@ namespace Boxify
                 {
                     mainPage.updateUserUI();
                 }
+                mainPage.selectHamburgerOption("ProfileItem");
+                mainPage.loadUserPlaylists();
             }
         }
 
@@ -85,6 +87,7 @@ namespace Boxify
                 blankUser.Text = "";
                 userPicContainer.StrokeThickness = 0;
                 webView.Visibility = Visibility.Visible;
+                webView.Focus(FocusState.Programmatic);
                 webView.Navigate(RequestHandler.getAuthorizationUri());
             }
             else if (login.Content.ToString() == "Log Out")

@@ -30,6 +30,9 @@ namespace Boxify
             this.EnteredBackground += App_EnteredBackground;
             this.LeavingBackground += App_LeavingBackground;
 
+            // disable pointer
+            this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
+
             // Playback Service "Initialization" of static class
             PlaybackService.Player.Source = PlaybackService.queue;
             PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;

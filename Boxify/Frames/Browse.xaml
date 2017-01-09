@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          Margin="50,50,50,0" >
+          Margin="50,0,50,0" >
 
         <RelativePanel>
 
@@ -43,30 +43,20 @@
                        Margin="0,0,0,20"
                        FontSize="20"/>
 
-            <ProgressRing Name="loading"
-                          IsActive="False"
-                          RelativePanel.AlignHorizontalCenterWith="featuredPlaylists"
-                          RelativePanel.AlignVerticalCenterWith="featuredPlaylists"
-                          Margin="20,7,0,0"
-                          Width="100"
-                          Height="100" />
-
             <ListView Name="featuredPlaylists"
                       RelativePanel.Below="featuredPlaylistMessage" 
                       RelativePanel.AlignLeftWithPanel="True"
-                      RelativePanel.AlignRightWithPanel="True">
+                      RelativePanel.AlignRightWithPanel="True"
+                      IsItemClickEnabled="True"
+                      GotFocus="featuredPlaylists_GotFocus"
+                      LostFocus="featuredPlaylists_LostFocus"
+                      ItemClick="featuredPlaylists_ItemClick"
+                      XYFocusUp="{x:Bind refresh}">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
                     </Style>
                 </ListView.ItemContainerStyle>
 

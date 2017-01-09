@@ -34,17 +34,5 @@ namespace Boxify.Frames
             this.mainPage = mainPage;
             DataContext = this.track;
         }
-
-        /// <summary>
-        /// The Play button is clicked
-        /// </summary>
-        /// <param name="sender">The actionButton that was clicked</param>
-        /// <param name="e">The routed event arguments</param>
-        private void action_Click(object sender, RoutedEventArgs e)
-        {
-            List<Track> tracks = new List<Track>();
-            tracks.Add(track);
-            PlaybackService.playQueue(tracks);
-        }
     }
 }

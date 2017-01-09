@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="960"
-    d:DesignHeight="540">
+    d:DesignHeight="540"
+    KeyDown="Page_KeyDown">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -29,18 +30,20 @@
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="38" 
                     Content="&#xE700;" 
-                    Click="hamburgerButton_Click"/>
+                    Click="hamburgerButton_Click"
+                    XYFocusDown="{x:Bind BrowseItem}"/>
 
-            <Button Name="back"
+            <Button Name="Back"
                     RelativePanel.RightOf="hamburger"
+                    Margin="10,0,0,0"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="36"
                     Content="&#xE0C4;"
                     Background="{x:Null}"
-                    Click="backButton_Click" />
+                    Click="backButton_Click"/>
 
             <TextBlock Name="title"
-                       RelativePanel.RightOf="back"
+                       RelativePanel.RightOf="Back"
                        FontSize="28"
                        FontWeight="Bold"
                        Margin="20,5,0,0" />
@@ -57,7 +60,6 @@
                      RelativePanel.AlignRightWithPanel="True"
                      Height="50"
                      Width="50"
-                     Margin="0,0,20,0"
                      Stroke="Black"
                      StrokeThickness="0.5"
                      PointerReleased="userElement_PointerReleased">
@@ -71,7 +73,6 @@
             <TextBlock Name="blankUser"
                        RelativePanel.AlignHorizontalCenterWith="userPicContainer"
                        RelativePanel.AlignVerticalCenterWith="userPicContainer"
-                       Margin="0,0,20,0"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="24"
                        Text="&#xE77B;"
@@ -96,8 +97,8 @@
                    CompactPaneLength="58">
             <SplitView.Pane>
                 <ListBox Name="hamburgerOptions"
-                         SelectionMode="Single" 
-                         SelectionChanged="ListBox_SelectionChanged">
+                         SelectionMode="Multiple"
+                         SelectionChanged="hamburgerOptions_SelectionChanged">
                     <ListBoxItem Name="BrowseItem">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE93C;" />
@@ -131,7 +132,7 @@
                 </ListBox>
             </SplitView.Pane>
             <SplitView.Content>
-                <Frame Name="MyFrame"
+                <Frame Name="MainContentFrame"
                        Margin="0,0,0,148"/>
             </SplitView.Content>
 

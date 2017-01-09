@@ -138,5 +138,14 @@ namespace Boxify
             }
             return tracks;
         }
+        
+        /// <summary>
+        /// Play all tracks in Album
+        /// </summary>
+        /// <returns></returns>
+        public async Task playTracks()
+        {
+            PlaybackService.playQueue(await getTracks());
+        }
     }
 }

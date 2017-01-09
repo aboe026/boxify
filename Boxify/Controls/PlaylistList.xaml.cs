@@ -1,5 +1,7 @@
-﻿using Windows.UI.Xaml;
+﻿using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,6 +21,7 @@ namespace Boxify
         public PlaylistList()
         {
             this.InitializeComponent();
+            action.Foreground = new SolidColorBrush(Colors.Transparent);
         }
         
         /// <summary>
@@ -42,6 +45,16 @@ namespace Boxify
         private async void action_Click(object sender, RoutedEventArgs e)
         {
             await playlist.playTracks();
+        }
+
+        public void showPlay()
+        {
+            action.Foreground = new SolidColorBrush(Colors.Green);
+        }
+
+        public void hidePlay()
+        {
+            action.Foreground = new SolidColorBrush(Colors.Transparent);
         }
     }
 }

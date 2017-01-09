@@ -139,24 +139,31 @@ namespace Boxify.Frames
                         if (playlists.TryGetValue("items", out itemsJson))
                         {
                             JsonArray playlistsArray = itemsJson.GetArray();
-                            playlistResultsSave = new List<PlaylistList>();
-                            ResultsLoading.Maximum = playlistsArray.Count;
-                            ResultsLoading.Value = 0;
-                            ResultsLoading.Visibility = Visibility.Visible;
-                            foreach (JsonValue playlistJson in playlistsArray)
+                            if (playlistsArray.Count == 0)
                             {
-                                
+                                feedbackMessage = "No playlists found.";
+                            }
+                            else
+                            {
+                                playlistResultsSave = new List<PlaylistList>();
+                                ResultsLoading.Maximum = playlistsArray.Count;
+                                ResultsLoading.Value = 0;
+                                ResultsLoading.Visibility = Visibility.Visible;
+                                foreach (JsonValue playlistJson in playlistsArray)
+                                {
+
                                     Playlist playlist = new Playlist();
                                     await playlist.setInfo(playlistJson.Stringify());
                                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                                if (playlistResultsSave != null)
-                                {
-                                    Results.Items.Add(playlistList);
-                                    playlistResultsSave.Add(playlistList);
-                                }
+                                    if (playlistResultsSave != null)
+                                    {
+                                        Results.Items.Add(playlistList);
+                                        playlistResultsSave.Add(playlistList);
+                                    }
                                     ResultsLoading.Value = Results.Items.Count;
+                                }
+                                ResultsLoading.Visibility = Visibility.Collapsed;
                             }
-                            ResultsLoading.Visibility = Visibility.Collapsed;
                         }
                     }
                 }
@@ -172,20 +179,27 @@ namespace Boxify.Frames
                         if (tracks.TryGetValue("items", out itemsJson))
                         {
                             JsonArray tracksArray = itemsJson.GetArray();
-                            trackResultsSave = new List<TrackList>();
-                            ResultsLoading.Maximum = tracksArray.Count;
-                            ResultsLoading.Value = 0;
-                            ResultsLoading.Visibility = Visibility.Visible;
-                            foreach (JsonValue trackJson in tracksArray)
+                            if (tracksArray.Count == 0)
                             {
-                                Track track = new Track();
-                                await track.setInfoDirect(trackJson.Stringify());
-                                TrackList trackList = new TrackList(track, mainPage);
-                                Results.Items.Add(trackList);
-                                trackResultsSave.Add(trackList);
-                                ResultsLoading.Value = Results.Items.Count;
+                                feedbackMessage = "No tracks found.";
                             }
-                            ResultsLoading.Visibility = Visibility.Collapsed;
+                            else
+                            {
+                                trackResultsSave = new List<TrackList>();
+                                ResultsLoading.Maximum = tracksArray.Count;
+                                ResultsLoading.Value = 0;
+                                ResultsLoading.Visibility = Visibility.Visible;
+                                foreach (JsonValue trackJson in tracksArray)
+                                {
+                                    Track track = new Track();
+                                    await track.setInfoDirect(trackJson.Stringify());
+                                    TrackList trackList = new TrackList(track, mainPage);
+                                    Results.Items.Add(trackList);
+                                    trackResultsSave.Add(trackList);
+                                    ResultsLoading.Value = Results.Items.Count;
+                                }
+                                ResultsLoading.Visibility = Visibility.Collapsed;
+                            }
                         }
                     }
                 }
@@ -201,25 +215,60 @@ namespace Boxify.Frames
                         if (albums.TryGetValue("items", out itemsJson))
                         {
                             JsonArray albumsArray = itemsJson.GetArray();
-                            albumResultsSave = new List<AlbumList>();
-                            ResultsLoading.Maximum = albumsArray.Count;
-                            ResultsLoading.Value = 0;
-                            ResultsLoading.Visibility = Visibility.Visible;
-                            foreach (JsonValue albumJson in albumsArray)
+                            if (albumsArray.Count == 0)
                             {
-                                Album album = new Album();
-                                await album.setInfo(albumJson.Stringify());
-                                AlbumList trackList = new AlbumList(album, mainPage);
-                                Results.Items.Add(trackList);
-                                albumResultsSave.Add(trackList);
-                                ResultsLoading.Value = Results.Items.Count;
+                                feedbackMessage = "No albums found.";
                             }
-                            ResultsLoading.Visibility = Visibility.Collapsed;
+                            else
+                            {
+                                albumResultsSave = new List<AlbumList>();
+                                ResultsLoading.Maximum = albumsArray.Count;
+                                ResultsLoading.Value = 0;
+                                ResultsLoading.Visibility = Visibility.Visible;
+                                foreach (JsonValue albumJson in albumsArray)
+                                {
+                                    Album album = new Album();
+                                    await album.setInfo(albumJson.Stringify());
+                                    AlbumList trackList = new AlbumList(album, mainPage);
+                                    Results.Items.Add(trackList);
+                                    albumResultsSave.Add(trackList);
+                                    ResultsLoading.Value = Results.Items.Count;
+                                }
+                                ResultsLoading.Visibility = Visibility.Collapsed;
+                            }
                         }
                     }
                 }
             }
             Feedback.Text = feedbackMessage;
+            if (feedbackMessage == "")
+            {
+                Feedback.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Feedback.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// User clicks result item to be played
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Results_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is TrackList)
+            {
+                (e.ClickedItem as TrackList).track.playTrack();
+            }
+            else if (e.ClickedItem is PlaylistList)
+            {
+                await (e.ClickedItem as PlaylistList).playlist.playTracks();
+            }
+            else if (e.ClickedItem is AlbumList) {
+                await (e.ClickedItem as AlbumList).album.playTracks();
+            }
         }
     }
 }

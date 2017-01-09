@@ -36,6 +36,7 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            LoadingProgress.Visibility = Visibility.Collapsed;
             if (e.Parameter != null)
             {
                 mainPage = (MainPage)e.Parameter;
@@ -81,7 +82,6 @@ namespace Boxify
         private async Task setFeaturedPlaylists()
         {
             refresh.Visibility = Visibility.Collapsed;
-            loading.IsActive = true;
             LoadingProgress.Value = 0;
             LoadingProgress.Visibility = Visibility.Visible;
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
@@ -126,7 +126,6 @@ namespace Boxify
                     }
                 }
             }
-            loading.IsActive = false;
             refresh.Visibility = Visibility.Visible;
             LoadingProgress.Visibility = Visibility.Collapsed;
         }
@@ -140,6 +139,55 @@ namespace Boxify
         {
             featuredPlaylists.Items.Clear();
             await setFeaturedPlaylists();
+        }
+
+        /// <summary>
+        /// When user hovers onto PlaylistList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void featuredPlaylists_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ListViewItem item = e.OriginalSource as ListViewItem;
+            featuredPlaylists.SelectedIndex = getListIndex(item);
+            (item.Content as PlaylistList).showPlay();
+        }
+
+        /// <summary>
+        /// When User hovers away from PlaylistList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void featuredPlaylists_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
+        }
+
+        /// <summary>
+        /// Gets the index of the currently hovered PlaylistList
+        /// </summary>
+        /// <param name="item">The item currently hovered</param>
+        /// <returns>The index of the currently hovered item in the ListView</returns>
+        private int getListIndex(ListViewItem item)
+        {
+            for (int i=0; i < featuredPlaylists.Items.Count; i++)
+            {
+                if ((featuredPlaylists.Items[i] as PlaylistList).playlist.id == (item.Content as PlaylistList).playlist.id)
+                {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// PlaylistList is clicked for playing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void featuredPlaylists_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            await (e.ClickedItem as PlaylistList).playlist.playTracks();
         }
     }
 }

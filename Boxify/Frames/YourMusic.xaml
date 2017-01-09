@@ -13,16 +13,17 @@
         <RelativePanel>
 
             <TextBlock Name="warning"
-                       Text="You must be logged in to view Your Music"
-                       FontSize="24"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Margin="0,-100,0,0"
+                       Text="You must be logged in to view Your Music"
+                       FontSize="24"/>
 
             <Button Name="logIn"
                     Content="Manage Proflie"
                     RelativePanel.Below="warning"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
-                    Margin="0,10,0,0"
+                    Margin="0,-90,0,0"
                     FontSize="20"
                     Background="{x:Null}"
                     BorderBrush="Black"
@@ -54,30 +55,20 @@
                          Height="15"
                          Margin="20,0,20,15"/>
 
-            <ProgressRing Name="loading"
-                          IsActive="False"
-                          RelativePanel.AlignHorizontalCenterWithPanel="True"
-                          RelativePanel.AlignVerticalCenterWithPanel="True"
-                          Margin="20,-15,0,0"
-                          Width="100"
-                          Height="100" />
-
             <ListView Name="playlists"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
-                      RelativePanel.Below="playlistsLabel">
+                      RelativePanel.Below="playlistsLabel"
+                      IsItemClickEnabled="True"
+                      GotFocus="playlists_GotFocus"
+                      LostFocus="playlists_LostFocus"
+                      ItemClick="playlists_ItemClick"
+                      XYFocusUp="{x:Bind refresh}">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
                     </Style>
                 </ListView.ItemContainerStyle>
 

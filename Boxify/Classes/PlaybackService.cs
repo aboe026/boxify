@@ -146,6 +146,7 @@ namespace Boxify
         {
             if (!showing)
             {
+                showing = true;
                 mainPage.showPlaybackMenu();
             }
             mainPage.getPlaybackMenu().setActionState(Player.PlaybackSession.PlaybackState);

@@ -41,6 +41,7 @@
             <TextBlock Name="CurrentTime"
                        RelativePanel.RightOf="AlbumArt"
                        RelativePanel.AlignBottomWithPanel="True"
+                       Margin="10,0,0,0"
                        Text="00:00"/>
 
             <ProgressBar Name="Progress"
@@ -54,6 +55,7 @@
             <TextBlock Name="Duration"
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.AlignBottomWithPanel="True"
+                       Margin="0,0,10,0"
                        Text="00:00"/>
 
             <Button Name="Shuffle"

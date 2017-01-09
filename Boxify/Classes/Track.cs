@@ -139,5 +139,15 @@ namespace Boxify
                 }
             }
         }
+
+        /// <summary>
+        /// Play the track
+        /// </summary>
+        public void playTrack()
+        {
+            List<Track> tracks = new List<Track>();
+            tracks.Add(this);
+            PlaybackService.playQueue(tracks);
+        }
     }
 }
