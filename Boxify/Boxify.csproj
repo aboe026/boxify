@@ -128,8 +128,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\RequestHandler.cs" />
     <Compile Include="Classes\Track.cs" />
-    <Compile Include="Frames\User.xaml.cs">
-      <DependentUpon>User.xaml</DependentUpon>
+    <Compile Include="Frames\Profile.xaml.cs">
+      <DependentUpon>Profile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\UserProfile.cs" />
     <Compile Include="Frames\YourMusic.xaml.cs">
@@ -188,7 +188,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Frames\User.xaml">
+    <Page Include="Frames\Profile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -199,6 +199,11 @@
     <Page Include="Frames\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Frames\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
   <ItemGroup />

@@ -4,10 +4,12 @@ using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -19,7 +21,7 @@ namespace Boxify
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        ListBoxItem currentNavSelection = new ListBoxItem();
+        ListViewItem currentNavSelection = new ListViewItem();
         private bool tvSafeOn;
 
         /// <summary>
@@ -169,16 +171,31 @@ namespace Boxify
         /// <param name="option"></param>
         public void selectHamburgerOption(string option)
         {
-            hamburgerOptions.SelectedIndex = -1;
-            for (int i = 0; i < hamburgerOptions.Items.Count; i++)
+            HamburgerOptions.SelectedIndex = -1;
+            if (option == "SettingsItem")
             {
-                ListBoxItem item = (ListBoxItem)hamburgerOptions.Items[i];
+                SettingsButton.Background = new SolidColorBrush(Colors.LightBlue);
+                SettingsButton.Focus(FocusState.Programmatic);
+                HamburgerOptions.SelectedItem = null;
+                currentNavSelection = null;
+            }
+            else
+            {
+                SettingsButton.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            for (int i = 0; i < HamburgerOptions.Items.Count; i++)
+            {
+                ListViewItem item = (ListViewItem)HamburgerOptions.Items[i];
                 if (option == item.Name)
                 {
                     item.IsSelected = true;
-                    hamburgerOptions.SelectedItem = item;
+                    HamburgerOptions.SelectedItem = item;
                     item.Focus(FocusState.Programmatic);
                     break;
+                }
+                else
+                {
+                    item.IsSelected = false;
                 }
             }
         }
@@ -188,18 +205,20 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The hamburger menu which was clicked</param>
         /// <param name="e">The selection changed event arguments</param>
-        private void hamburgerOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void HamburgerOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MySplitView.IsPaneOpen = false;
             if (e.AddedItems.Count > 0)
             {
-                ListBoxItem selectedItem = (ListBoxItem)e.AddedItems[e.AddedItems.Count - 1];
-                if (currentNavSelection.Name == selectedItem.Name)
+                ListViewItem selectedItem = (ListViewItem)e.AddedItems[e.AddedItems.Count - 1];
+                if (currentNavSelection != null && currentNavSelection.Name == selectedItem.Name)
                 {
                     return;
                 }
+                SettingsButton.Background = new SolidColorBrush(Colors.Transparent);
                 currentNavSelection = selectedItem;
-                foreach (ListBoxItem item in hamburgerOptions.Items)
+                currentNavSelection.Focus(FocusState.Programmatic);
+                foreach (ListViewItem item in HamburgerOptions.Items)
                 {
                     if (item.Name != selectedItem.Name)
                     {
@@ -209,33 +228,28 @@ namespace Boxify
                 if (BrowseItem.IsSelected)
                 {
                     MainContentFrame.Navigate(typeof(Browse), this);
-                    title.Text = "Browse";
+                    Title.Text = "Browse";
                 }
                 else if (YourMusicItem.IsSelected)
                 {
                     MainContentFrame.Navigate(typeof(YourMusic), this);
-                    title.Text = "Your Music";
+                    Title.Text = "Your Music";
                 }
                 else if (SearchItem.IsSelected)
                 {
                     MainContentFrame.Navigate(typeof(Search), this);
-                    title.Text = "Search";
+                    Title.Text = "Search";
                 }
                 else if (ProfileItem.IsSelected)
                 {
-                    MainContentFrame.Navigate(typeof(User), this);
-                    title.Text = "User";
-                }
-                else if (SettingsItem.IsSelected)
-                {
-                    MainContentFrame.Navigate(typeof(Settings), this);
-                    title.Text = "Settings";
+                    MainContentFrame.Navigate(typeof(Profile), this);
+                    Title.Text = "Profile";
                 }
             }
             else if (e.RemovedItems.Count > 0)
             {
-                ListBoxItem selectedItem = (ListBoxItem)e.RemovedItems[e.RemovedItems.Count - 1];
-                if (selectedItem.Name == currentNavSelection.Name)
+                ListViewItem selectedItem = (ListViewItem)e.RemovedItems[e.RemovedItems.Count - 1];
+                if (currentNavSelection != null && currentNavSelection.Name == selectedItem.Name)
                 {
                     selectedItem.IsSelected = true;
                 }
@@ -247,18 +261,18 @@ namespace Boxify
         /// </summary>
         public void updateUserUI()
         {
-            userName.Text = UserProfile.displalyName;
-            userPic.ImageSource = UserProfile.userPic;
+            UserName.Text = UserProfile.displalyName;
+            UserPic.ImageSource = UserProfile.userPic;
             if (UserProfile.displalyName == "")
             {
-                blankUser.Text = "\uE77B";
-                userPicContainer.StrokeThickness = 2;
+                BlankUser.Text = "\uE77B";
+                UserPicContainer.StrokeThickness = 2;
             }
             else
             {
-                userPicContainer.StrokeThickness = 0.5;
-                userPic.ImageSource = UserProfile.userPic;
-                blankUser.Text = "";
+                UserPicContainer.StrokeThickness = 0.5;
+                UserPic.ImageSource = UserProfile.userPic;
+                BlankUser.Text = "";
             }
         }
 
@@ -271,6 +285,8 @@ namespace Boxify
             NavLeftBorder.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
             MySplitView.Margin = new Thickness(0, 0, 0, 0);
+            HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
+            PlaybackMenu.Margin = new Thickness(82, 0, 82, 0);
             if (PlaybackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
@@ -291,6 +307,8 @@ namespace Boxify
             NavLeftBorder.Visibility = Visibility.Visible;
             Header.Margin = new Thickness(48, 27, 48, 0);
             MySplitView.Margin = new Thickness(48, 0, 48, 0);
+            HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
+            PlaybackMenu.Margin = new Thickness(130, 0, 130, 0);
             if (PlaybackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
@@ -303,15 +321,13 @@ namespace Boxify
         }
 
         /// <summary>
-        /// When a user select any of the user information elements
+        /// When a user selects any of the user information elements
         /// </summary>
         /// <param name="sender">The user element that was pressed</param>
         /// <param name="e">The pointer routed event arguments</param>
         private void userElement_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            MainContentFrame.Navigate(typeof(User), this);
-            title.Text = "User";
-            ProfileItem.IsSelected = true;
+            selectHamburgerOption("ProfileItem");
         }
 
         /// <summary>
@@ -361,6 +377,23 @@ namespace Boxify
             {
                 MainContentFrame.Focus(FocusState.Programmatic);
             }
+        }
+
+        /// <summary>
+        /// User selects the Settings option
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MySplitView.IsPaneOpen)
+            {
+                MySplitView.IsPaneOpen = false;
+            }
+            selectHamburgerOption("SettingsItem");
+
+            MainContentFrame.Navigate(typeof(Settings), this);
+            Title.Text = "Settings";
         }
     }
 }

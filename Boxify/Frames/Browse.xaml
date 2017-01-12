@@ -7,6 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           Margin="50,0,50,0" >
 
@@ -15,8 +23,7 @@
             <TextBlock Name="featuredPlaylistLabel"
                        Text="Featured Playlists"
                        Margin="0,0,0,0"
-                       FontSize="28"
-                       FontWeight="Bold"/>
+                       Style="{StaticResource SubheaderTextBlockStyle}"/>
 
             <Button Name="refresh" 
                     RelativePanel.RightOf="featuredPlaylistLabel"
@@ -41,7 +48,7 @@
                        Text="What others are listending to now..."
                        RelativePanel.Below="featuredPlaylistLabel"
                        Margin="0,0,0,20"
-                       FontSize="20"/>
+                       Style="{StaticResource TitleTextBlockStyle}"/>
 
             <ListView Name="featuredPlaylists"
                       RelativePanel.Below="featuredPlaylistMessage" 

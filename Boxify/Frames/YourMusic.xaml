@@ -7,35 +7,40 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          Margin="50,50,50,0">
+          Margin="50,0,50,0">
 
         <RelativePanel>
 
             <TextBlock Name="warning"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Margin="0,-100,0,0"
+                       Margin="0,-110,0,0"
                        Text="You must be logged in to view Your Music"
-                       FontSize="24"/>
+                       Style="{StaticResource TitleTextBlockStyle}"/>
 
             <Button Name="logIn"
                     Content="Manage Proflie"
                     RelativePanel.Below="warning"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     Margin="0,-90,0,0"
-                    FontSize="20"
-                    Background="{x:Null}"
-                    BorderBrush="Black"
+                    Style="{StaticResource ButtonStyle}"
                     Click="logIn_Click" />
             
             <TextBlock Name="playlistsLabel"
                        Text="Your Playlists"
-                       FontSize="28"
-                       FontWeight="Bold"
                        RelativePanel.AlignLeftWithPanel="True"
                        RelativePanel.AlignTopWithPanel="True"
-                       Margin="0,0,0,20"/>
+                       Margin="0,0,0,20"
+                       Style="{StaticResource SubheaderTextBlockStyle}"/>
 
             <Button Name="refresh" 
                     RelativePanel.RightOf="playlistsLabel"

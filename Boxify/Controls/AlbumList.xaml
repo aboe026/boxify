@@ -6,8 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="50"
+    d:DesignHeight="30"
     d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Frames/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
     <Grid>
 
@@ -16,8 +24,8 @@
                    Source="{x:Bind album.Image, Mode=OneWay}"
                    RelativePanel.AlignLeftWithPanel="True"
                    RelativePanel.AlignVerticalCenterWithPanel="True"
-                   Width="50"
-                   Height="50" />
+                   Width="30"
+                   Height="30" />
 
             <TextBlock Name="displayName"
                        Text="{x:Bind album.Name, Mode=OneWay}"
@@ -25,14 +33,14 @@
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="20,0,0,0"
                        Width="Auto"
-                       FontSize="36" />
+                       Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <TextBlock Name="displayArtistLabel"
                        Text="Artist: "
                        RelativePanel.LeftOf="displayArtist"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,10,0"
-                       FontSize="36" />
+                       Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <TextBlock Name="displayArtist"
                        Text="{x:Bind album.Artist, Mode=OneWay}"
@@ -40,14 +48,13 @@
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,20,0"
                        Width="Auto"
-                       FontSize="36" />
+                       Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <TextBlock Name="action" 
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
-                    Margin="0,0,10,0"
                     FontFamily="Segoe MDL2 Assets"
-                    FontSize="40" 
+                    FontSize="30" 
                     Text="&#xE768;"
                     Foreground="Green"/>
         </RelativePanel>

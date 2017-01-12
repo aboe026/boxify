@@ -9,12 +9,20 @@
     d:DesignWidth="806"
     d:DesignHeight="315">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid Margin="20"
           Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -28,13 +36,14 @@
                    Grid.Column="0"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Center"
-                   Text="TV Safe Area"/>
+                   Text="TV Safe Area"
+                   Style="{StaticResource TitleTextBlockStyle}"/>
 
         <ToggleSwitch Name="tvSafe"
                       Grid.Row="1"
                       Grid.Column="2"
                       VerticalAlignment="Center"
-                      FontSize="12"
+                      Style="{StaticResource ToggleButtonStyle}"
                       Toggled="tvSafe_Toggled"/>
 
         <TextBlock Name="tvSafeDesc"
@@ -42,8 +51,8 @@
                    Grid.Column="2"
                    VerticalAlignment="Center"
                    Margin="100,0,10,0"
-                   Text="Turn on to include margins which ensure UI elemens are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
-                   FontSize="14"
+                   Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
+                   Style="{StaticResource SubtitleTextBlockStyle}"
                    TextWrapping="Wrap"/>
 
     </Grid>
