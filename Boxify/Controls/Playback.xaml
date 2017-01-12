@@ -28,20 +28,23 @@
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.AlignTopWithPanel="True"
                        HorizontalAlignment="Stretch"
-                       FontSize="36"
+                       Text="Track Name"
+                       Style="{StaticResource SubheaderTextBlockStyle}"
                        TextAlignment="Center" />
 
             <TextBlock Name="TrackAlbum"
                        RelativePanel.AlignLeftWith="TrackName"
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.Below="TrackName"
-                       FontSize="24"
+                       Text="Album Name"
+                       Style="{StaticResource TitleTextBlockStyle}"
                        TextAlignment="Center"/>
 
             <TextBlock Name="CurrentTime"
                        RelativePanel.RightOf="AlbumArt"
                        RelativePanel.AlignBottomWithPanel="True"
                        Margin="10,0,0,0"
+                       Style="{StaticResource BodyTextBlockStyle}"
                        Text="00:00"/>
 
             <ProgressBar Name="Progress"
@@ -56,6 +59,7 @@
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.AlignBottomWithPanel="True"
                        Margin="0,0,10,0"
+                       Style="{StaticResource BodyTextBlockStyle}"
                        Text="00:00"/>
 
             <Button Name="Shuffle"

@@ -12,13 +12,13 @@ namespace Boxify
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class User : Page
+    public sealed partial class Profile : Page
     {
         private static MainPage mainPage;
         private static string loggedInText = "You are currently logged in as ";
         private static string loggedOutText = "You are currently not logged in. Select the button to fix that.";
 
-        public User()
+        public Profile()
         {
             this.InitializeComponent();
             updateUI();

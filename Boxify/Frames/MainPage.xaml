@@ -10,6 +10,14 @@
     d:DesignHeight="540"
     KeyDown="Page_KeyDown">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -22,19 +30,21 @@
                        Grid.Row="0"
                        Margin="48,27,48,0"
                        Canvas.ZIndex="1">
-            
-            <Button Name="hamburger" 
+
+            <Button Name="Hamburger" 
                     RelativePanel.AlignLeftWithPanel="True"
+                    Height="67"
+                    Content="&#xE700;"
+                    FontFamily="Segoe MDL2 Assets"
+                    FontSize="46"
                     Background="#FFF2F2F2"
                     BorderBrush="Black"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="38" 
-                    Content="&#xE700;" 
                     Click="hamburgerButton_Click"
                     XYFocusDown="{x:Bind BrowseItem}"/>
 
             <Button Name="Back"
-                    RelativePanel.RightOf="hamburger"
+                    RelativePanel.RightOf="Hamburger"
+                    RelativePanel.AlignVerticalCenterWith="Hamburger"
                     Margin="10,0,0,0"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="36"
@@ -42,37 +52,39 @@
                     Background="{x:Null}"
                     Click="backButton_Click"/>
 
-            <TextBlock Name="title"
+            <TextBlock Name="Title"
                        RelativePanel.RightOf="Back"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Margin="20,5,0,0" />
+                       Margin="20,0,0,0"
+                       Text="Title"
+                       Style="{StaticResource HeaderTextBlockStyle}"/>
 
-            <TextBlock Name="userName"
-                       RelativePanel.LeftOf="userPicContainer" 
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Margin="0,0,10,0"
+            <TextBlock Name="UserName"
+                       RelativePanel.LeftOf="UserPicContainer" 
+                       Margin="0,25,10,0"
                        Width="Auto"
-                       FontSize="24"
+                       Text="User Name"
+                       Style="{StaticResource TitleTextBlockStyle}"
                        PointerReleased="userElement_PointerReleased"/>
 
-            <Ellipse Name="userPicContainer"
+            <Ellipse Name="UserPicContainer"
                      RelativePanel.AlignRightWithPanel="True"
+                     Margin="0,17,17,0"
                      Height="50"
                      Width="50"
                      Stroke="Black"
                      StrokeThickness="0.5"
                      PointerReleased="userElement_PointerReleased">
-                
+
                 <Ellipse.Fill>
-                    <ImageBrush x:Name="userPic"
+                    <ImageBrush x:Name="UserPic"
                                 Stretch="Uniform"/>
                 </Ellipse.Fill>
             </Ellipse>
 
-            <TextBlock Name="blankUser"
-                       RelativePanel.AlignHorizontalCenterWith="userPicContainer"
-                       RelativePanel.AlignVerticalCenterWith="userPicContainer"
+            <TextBlock Name="BlankUser"
+                       RelativePanel.AlignHorizontalCenterWith="UserPicContainer"
+                       RelativePanel.AlignVerticalCenterWith="UserPicContainer"
+                       Margin="0,17,17,0"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="24"
                        Text="&#xE77B;"
@@ -85,70 +97,73 @@
                 Grid.RowSpan="3"
                 Grid.Column="0"
                 Width="106"
-                HorizontalAlignment="Left" Background="#FFF2F2F2"
-                />
+                HorizontalAlignment="Left"
+                Background="#FFF2F2F2"/>
 
         <SplitView Name="MySplitView"
                    Grid.Row="1"
                    Grid.RowSpan="2"
                    Margin="48,0,48,0"
                    DisplayMode="CompactOverlay" 
-                   OpenPaneLength="200" 
-                   CompactPaneLength="58">
+                   OpenPaneLength="250" Canvas.ZIndex="2"
+                   CompactPaneLength="66">
             <SplitView.Pane>
-                <ListBox Name="hamburgerOptions"
-                         SelectionMode="Multiple"
-                         SelectionChanged="hamburgerOptions_SelectionChanged">
-                    <ListBoxItem Name="BrowseItem">
+                <ListView Name="HamburgerOptions"
+                          Margin="0,0,0,48"
+                          SelectionMode="Multiple"
+                          IsMultiSelectCheckBoxEnabled="False"
+                          SelectionChanged="HamburgerOptions_SelectionChanged">
+
+                    <ListViewItem Name="BrowseItem" Style="{StaticResource NavOptionListViewItemStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE93C;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">Browse</TextBlock>
+                            <TextBlock Text="&#xE93C;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Browse</TextBlock>
                         </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Name="YourMusicItem">
+                    </ListViewItem>
+                    <ListViewItem Name="YourMusicItem" Style="{StaticResource NavOptionListViewItemStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE8F1;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">Your Music</TextBlock>
+                            <TextBlock Text="&#xE8F1;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Your Music</TextBlock>
                         </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Name="ProfileItem">
+                    </ListViewItem>
+                    <ListViewItem Name="ProfileItem" Style="{StaticResource NavOptionListViewItemStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE748;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">Profile</TextBlock>
+                            <TextBlock Text="&#xE748;" Margin="5,0,0,0" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Profile</TextBlock>
                         </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Name="SearchItem">
+                    </ListViewItem>
+                    <ListViewItem Name="SearchItem" Style="{StaticResource NavOptionListViewItemStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE721;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">Search</TextBlock>
+                            <TextBlock Text="&#xE721;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Search</TextBlock>
                         </StackPanel>
-                    </ListBoxItem>
-                    <ListBoxItem Name="SettingsItem">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="36" Text="&#xE713;" />
-                            <TextBlock FontSize="24" Margin="20,0,0,0">Settings</TextBlock>
-                        </StackPanel>
-                    </ListBoxItem>
-                </ListBox>
+                    </ListViewItem>
+                    <ListView.Footer>
+                        <Button Name="SettingsButton" Width="250" Background="Transparent" Click="SettingsButton_Click">
+                            <StackPanel Orientation="Horizontal" Width="250">
+                                <TextBlock Text="&#xE713;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                                <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Settings</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </ListView.Footer>
+
+                </ListView>
+                
             </SplitView.Pane>
             <SplitView.Content>
+                
                 <Frame Name="MainContentFrame"
                        Margin="0,0,0,148"/>
+                
             </SplitView.Content>
 
         </SplitView>
 
-        <RelativePanel Grid.Row="2">
-
-            <local:Playback x:Name="PlaybackMenu"
-                            RelativePanel.AlignBottomWithPanel="True"
-                            RelativePanel.AlignHorizontalCenterWithPanel="True"
-                            RelativePanel.AlignLeftWithPanel="True"
-                            RelativePanel.AlignRightWithPanel="True"
-                            HorizontalAlignment="Stretch"
-                            Margin="100,0,100,0"/>
-
-        </RelativePanel>
+        <local:Playback x:Name="PlaybackMenu"
+                        Canvas.ZIndex="1"
+                        Grid.Row="3"
+                        HorizontalAlignment="Stretch"
+                        Margin="130,0,130,0"/>
 
     </Grid>
 </Page>
