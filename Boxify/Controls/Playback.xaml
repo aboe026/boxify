@@ -9,8 +9,16 @@
     d:DesignHeight="148"
     d:DesignWidth="500">
 
+    <Control.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Frames/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Control.Resources>
+
     <Grid Name="MainGrid"
-          Background="WhiteSmoke"
+          Background="{ThemeResource PlaybackBackground}"
           Width="Auto"
           Height="148">
 
@@ -53,7 +61,9 @@
                          RelativePanel.AlignBottomWithPanel="True"
                          HorizontalAlignment="Stretch"
                          Height="18"
-                         Margin="10,0,10,0" />
+                         Margin="10,0,10,0"
+                         Foreground="{ThemeResource SystemAccentColor}"
+                         Background="{ThemeResource PlaybackProgressBackground}"/>
 
             <TextBlock Name="Duration"
                        RelativePanel.LeftOf="Shuffle"
@@ -66,65 +76,48 @@
                     RelativePanel.LeftOf="Previous"
                     RelativePanel.AlignBottomWithPanel="True"
                     Margin="0,0,0,0"
-                    Height="40"
-                    Width="45"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="25" 
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
                     Content="&#xE8B1;"
-                    Foreground="Black"
-                    Background="{x:Null}"
                     Click="Shuffle_Click" />
 
             <Button Name="Repeat"
                     RelativePanel.LeftOf="Previous"
                     RelativePanel.Above="Shuffle"
                     Margin="0,0,0,0"
-                    Height="40"
-                    Width="45"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="25" 
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
                     Content="&#xE8EE;"
-                    Foreground="Black"
-                    Background="{x:Null}"
                     Click="Repeat_Click" />
 
-            <Button Name="PlayPause"
+            <Button Name="Play"
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignTopWithPanel="True"
-                    Margin="20,0,14,0"
-                    Height="60"
-                    Width="65"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="50" 
+                    Style="{StaticResource PlaybackLargeButtonStyle}"
                     Content="&#xE768;"
                     Foreground="Green"
-                    Background="{x:Null}"
+                    Click="PlayPause_Click"/>
+
+            <Button Name="Pause"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignTopWithPanel="True"
+                    Style="{StaticResource PlaybackLargeButtonStyle}"
+                    Content="&#xE769;"
+                    Foreground="{ThemeResource PlaybackButtonForeground}"
                     Click="PlayPause_Click" />
 
             <Button Name="Previous"
                     RelativePanel.LeftOf="Next"
                     RelativePanel.AlignBottomWithPanel="True"
                     Margin="5,5,2,0"
-                    Height="40"
-                    Width="45"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="25" 
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
                     Content="&#xE892;"
-                    Foreground="Black"
-                    Background="{x:Null}"
                     Click="Previous_Click" />
 
             <Button Name="Next"
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignBottomWithPanel="True"
                     Margin="2,5,0,0"
-                    Height="40"
-                    Width="45"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="25" 
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
                     Content="&#xE893;"
-                    Foreground="Black"
-                    Background="{x:Null}"
                     Click="Next_Click" />
 
         </RelativePanel>

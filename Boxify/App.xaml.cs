@@ -3,10 +3,12 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Boxify
@@ -71,6 +73,20 @@ namespace Boxify
              */
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
+            // Set the color of the Title Bar content PC
+            if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
+            {
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                titleBar.BackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
+                titleBar.InactiveBackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
+                titleBar.ButtonBackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
+                titleBar.ButtonInactiveBackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
+                titleBar.ForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
+                titleBar.InactiveForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
+                titleBar.ButtonForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
+                titleBar.ButtonInactiveForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
+            }
+            
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,

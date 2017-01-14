@@ -17,21 +17,24 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Margin="20"
-          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <ScrollViewer>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
+        <Grid Margin="20">
 
-        <TextBlock Name="tvSaveLabel"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Name="tvSaveLabel"
                    Grid.Row="1"
                    Grid.Column="0"
                    HorizontalAlignment="Right"
@@ -39,14 +42,14 @@
                    Text="TV Safe Area"
                    Style="{StaticResource TitleTextBlockStyle}"/>
 
-        <ToggleSwitch Name="tvSafe"
+            <ToggleSwitch Name="tvSafe"
                       Grid.Row="1"
                       Grid.Column="2"
                       VerticalAlignment="Center"
                       Style="{StaticResource ToggleButtonStyle}"
                       Toggled="tvSafe_Toggled"/>
 
-        <TextBlock Name="tvSafeDesc"
+            <TextBlock Name="tvSafeDesc"
                    Grid.Row="1"
                    Grid.Column="2"
                    VerticalAlignment="Center"
@@ -55,5 +58,44 @@
                    Style="{StaticResource SubtitleTextBlockStyle}"
                    TextWrapping="Wrap"/>
 
-    </Grid>
+            <TextBlock Name="themeLabel"
+                   Grid.Row="3"
+                   Grid.Column="0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="Theme Color"
+                   Style="{StaticResource TitleTextBlockStyle}"/>
+
+            <RelativePanel Grid.Row="3"
+                       Grid.Column="2">
+
+                <RadioButton Name="System"
+                         RelativePanel.AlignLeftWithPanel="True"
+                         Content="System"
+                         Template="{StaticResource RadioButtonControlTemplate}"
+                         Style="{StaticResource RadioButtonStyle}"
+                         GroupName="ThemeColor"
+                         Click="ThemeColor_Click"/>
+
+                <RadioButton Name="Light"
+                         RelativePanel.RightOf="System"
+                         Content="Light"
+                         Template="{StaticResource RadioButtonControlTemplate}"
+                         Style="{StaticResource RadioButtonStyle}"
+                         GroupName="ThemeColor"
+                         Click="ThemeColor_Click"/>
+
+                <RadioButton Name="Dark"
+                         RelativePanel.RightOf="Light"
+                         Content="Dark"
+                         Template="{StaticResource RadioButtonControlTemplate}"
+                         Style="{StaticResource RadioButtonStyle}"
+                         GroupName="ThemeColor"
+                         Click="ThemeColor_Click"/>
+
+            </RelativePanel>
+
+        </Grid>
+
+    </ScrollViewer>
 </Page>
