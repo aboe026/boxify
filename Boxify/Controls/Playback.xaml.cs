@@ -68,8 +68,13 @@ namespace Boxify
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     uiUpdateTimer.Start();
-                    PlayPause.Content = "\uE769";
-                    PlayPause.Foreground = new SolidColorBrush(Colors.Black);
+                    bool manualClick = Play.FocusState == FocusState.Keyboard;
+                    Play.Visibility = Visibility.Collapsed;
+                    Pause.Visibility = Visibility.Visible;
+                    if (manualClick)
+                    {
+                        Pause.Focus(FocusState.Programmatic);
+                    }
                 });
             }
             else
@@ -77,8 +82,13 @@ namespace Boxify
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     uiUpdateTimer.Stop();
-                    PlayPause.Content = "\uE768";
-                    PlayPause.Foreground = new SolidColorBrush(Colors.Green);
+                    bool manualClick = Pause.FocusState == FocusState.Keyboard;
+                    Play.Visibility = Visibility.Visible;
+                    Pause.Visibility = Visibility.Collapsed;
+                    if (manualClick)
+                    {
+                        Play.Focus(FocusState.Programmatic);
+                    }
                 });
             }
         }

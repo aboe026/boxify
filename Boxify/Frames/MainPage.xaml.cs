@@ -22,7 +22,7 @@ namespace Boxify
     public sealed partial class MainPage : Page
     {
         ListViewItem currentNavSelection = new ListViewItem();
-        private bool tvSafeOn;
+        public static ElementTheme theme;
 
         /// <summary>
         /// The main page for the Boxify application
@@ -55,12 +55,11 @@ namespace Boxify
                 PlaybackMenu.Visibility = Visibility.Collapsed;
             }
 
-            // tv safe area
+            // settings
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
             ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
             if (composite != null)
             {
-                object val = composite["TvSafeAreaOff"];
                 if ((bool)composite["TvSafeAreaOff"])
                 {
                     safeAreaOff();
@@ -68,6 +67,21 @@ namespace Boxify
                 else
                 {
                     safeAreaOn();
+                }
+
+                if (composite["Theme"].ToString() == "Light")
+                {
+                    this.RequestedTheme = ElementTheme.Light;
+                    Settings.theme = Settings.Theme.Light;
+                }
+                else if (composite["Theme"].ToString() == "Dark")
+                {
+                    this.RequestedTheme = ElementTheme.Dark;
+                    Settings.theme = Settings.Theme.Dark;
+                }
+                else
+                {
+                    Settings.theme = Settings.Theme.System;
                 }
             }
             else
@@ -121,7 +135,7 @@ namespace Boxify
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (tvSafeOn)
+                if (Settings.tvSafeArea)
                 {
                     MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
                 }
@@ -174,7 +188,7 @@ namespace Boxify
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
-                SettingsButton.Background = new SolidColorBrush(Colors.LightBlue);
+                SettingsButton.Background = new SolidColorBrush((Color)this.Resources["SystemAccentColor"]);
                 SettingsButton.Focus(FocusState.Programmatic);
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
@@ -281,12 +295,13 @@ namespace Boxify
         /// </summary>
         public void safeAreaOff()
         {
-            tvSafeOn = false;
+            Settings.tvSafeArea = false;
             NavLeftBorder.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
             MySplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
             PlaybackMenu.Margin = new Thickness(82, 0, 82, 0);
+            RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
             if (PlaybackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
@@ -303,12 +318,13 @@ namespace Boxify
         /// </summary>
         public void safeAreaOn()
         {
-            tvSafeOn = true;
+            Settings.tvSafeArea = true;
             NavLeftBorder.Visibility = Visibility.Visible;
             Header.Margin = new Thickness(48, 27, 48, 0);
             MySplitView.Margin = new Thickness(48, 0, 48, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
             PlaybackMenu.Margin = new Thickness(130, 0, 130, 0);
+            RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
             if (PlaybackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 148);

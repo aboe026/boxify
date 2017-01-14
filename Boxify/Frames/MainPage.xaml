@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Name="BackgroundGrid" Background="{ThemeResource SystemControlPageBackgroundAltMediumBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -31,14 +31,13 @@
                        Margin="48,27,48,0"
                        Canvas.ZIndex="1">
 
-            <Button Name="Hamburger" 
+            <Button Name="Hamburger"
                     RelativePanel.AlignLeftWithPanel="True"
                     Height="67"
                     Content="&#xE700;"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="46"
-                    Background="#FFF2F2F2"
-                    BorderBrush="Black"
+                    BorderBrush="{ThemeResource AppButtonBorder}"
                     Click="hamburgerButton_Click"
                     XYFocusDown="{x:Bind BrowseItem}"/>
 
@@ -71,7 +70,7 @@
                      Margin="0,17,17,0"
                      Height="50"
                      Width="50"
-                     Stroke="Black"
+                     Stroke="{ThemeResource AppButtonBorder}"
                      StrokeThickness="0.5"
                      PointerReleased="userElement_PointerReleased">
 
@@ -96,9 +95,17 @@
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 Grid.Column="0"
-                Width="106"
+                Width="114"
                 HorizontalAlignment="Left"
-                Background="#FFF2F2F2"/>
+                Background="{ThemeResource NavBarBackground}"/>
+
+        <Canvas Name="RightMainBackground"
+                Grid.Row="0"
+                Grid.RowSpan="3"
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Margin="114,0,0,0"
+                Background="{ThemeResource MainBackground}"/>
 
         <SplitView Name="MySplitView"
                    Grid.Row="1"
@@ -139,7 +146,7 @@
                         </StackPanel>
                     </ListViewItem>
                     <ListView.Footer>
-                        <Button Name="SettingsButton" Width="250" Background="Transparent" Click="SettingsButton_Click">
+                        <Button Name="SettingsButton" Width="250" Height="67" Background="Transparent" Click="SettingsButton_Click">
                             <StackPanel Orientation="Horizontal" Width="250">
                                 <TextBlock Text="&#xE713;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
                                 <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Settings</TextBlock>
@@ -151,19 +158,32 @@
                 
             </SplitView.Pane>
             <SplitView.Content>
-                
-                <Frame Name="MainContentFrame"
-                       Margin="0,0,0,148"/>
-                
+
+                <RelativePanel HorizontalAlignment="Stretch">
+                    <Frame Name="MainContentFrame"
+                           RelativePanel.AlignTopWithPanel="True"
+                           RelativePanel.AlignBottomWith="PlaybackMenu"
+                           RelativePanel.AlignLeftWithPanel="True"
+                           RelativePanel.AlignRightWithPanel="True"
+                           RelativePanel.Above="PlaybackMenu"
+                           Margin="0,0,0,148"
+                           XYFocusDown="{Binding PlaybackMenu}"/>
+
+                    <local:Playback x:Name="PlaybackMenu"
+                                    RelativePanel.AlignBottomWithPanel="True"
+                                    RelativePanel.AlignLeftWithPanel="True"
+                                    RelativePanel.AlignRightWithPanel="True"
+                                    Canvas.ZIndex="1"
+                                    Grid.Row="3"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="130,0,130,0"/>
+                </RelativePanel>
+
             </SplitView.Content>
 
         </SplitView>
 
-        <local:Playback x:Name="PlaybackMenu"
-                        Canvas.ZIndex="1"
-                        Grid.Row="3"
-                        HorizontalAlignment="Stretch"
-                        Margin="130,0,130,0"/>
+        
 
     </Grid>
 </Page>

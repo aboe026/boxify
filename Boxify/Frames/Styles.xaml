@@ -8,7 +8,6 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="TextTrimming" Value="None"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="LineStackingStrategy" Value="MaxHeight"/>
         <Setter Property="TextLineBounds" Value="Full"/>
     </Style>
@@ -67,7 +66,7 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderBrush" Value="{ThemeResource AppButtonBorder}"/>
     </Style>
 
     <Style x:Key="TextBoxStyle" TargetType="TextBox">
@@ -87,5 +86,198 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="20"/>
     </Style>
+
+    <Style x:Key="RadioButtonStyle" TargetType="RadioButton">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Margin" Value="0,0,30,0"/>
+    </Style>
+
+    <Style x:Key="PlaybackSmallButtonStyle" TargetType="Button">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="45"/>
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="Foreground" Value="{ThemeResource PlaybackButtonForeground}"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="PlaybackLargeButtonStyle" TargetType="Button">
+        <Setter Property="Height" Value="60"/>
+        <Setter Property="Width" Value="65"/>
+        <Setter Property="Margin" Value="20,0,14,0"/>
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="50"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <ControlTemplate x:Key="RadioButtonControlTemplate" TargetType="RadioButton">
+        <Grid Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="PointerOver">
+                        <Storyboard>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OuterEllipse"
+                                                           Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightBaseHighBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                            Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightTransparentBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckGlyph"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <Storyboard>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OuterEllipse"
+                                                           Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightBaseMediumBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                           Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightBaseMediumBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightTransparentBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckGlyph"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseMediumBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="Disabled">
+                        <Storyboard>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OuterEllipse"
+                                                           Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                           Storyboard.TargetProperty="Stroke">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckOuterEllipse"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckGlyph"
+                                                           Storyboard.TargetProperty="Fill">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                           Storyboard.TargetProperty="Foreground">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                </VisualStateGroup>
+                <VisualStateGroup x:Name="CheckStates">
+                    <VisualState x:Name="Checked">
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="CheckGlyph"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="0" />
+                            <DoubleAnimation Storyboard.TargetName="OuterEllipse"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0" />
+                            <DoubleAnimation Storyboard.TargetName="CheckOuterEllipse"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="0" />
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="Unchecked" />
+                    <VisualState x:Name="Indeterminate" />
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid VerticalAlignment="Center" Height="32" >
+                <Ellipse x:Name="OuterEllipse"
+                         Width="20"
+                         Height="20"
+                         UseLayoutRounding="False"
+                         Stroke="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+                         StrokeThickness="{ThemeResource RadioButtonBorderThemeThickness}" />
+                <Ellipse x:Name="CheckOuterEllipse"
+                         Width="20"
+                         Height="20"
+                         UseLayoutRounding="False"
+                         Stroke="{ThemeResource SystemControlHighlightAltAccentBrush}"
+                         Fill="{ThemeResource SystemControlHighlightTransparentBrush}"
+                         Opacity="0"
+                         StrokeThickness="{ThemeResource RadioButtonBorderThemeThickness}"
+                             />
+                <Ellipse x:Name="CheckGlyph"
+                         Width="10"
+                         Height="10"
+                         UseLayoutRounding="False"
+                         Opacity="0"
+                         Fill="{ThemeResource SystemControlHighlightAltBaseMediumHighBrush}" />
+            </Grid>
+            <ContentPresenter x:Name="ContentPresenter"
+                              Content="{TemplateBinding Content}"
+                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Margin="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Grid.Column="1"
+                              AutomationProperties.AccessibilityView="Raw"
+                              TextWrapping="Wrap" />
+        </Grid>
+    </ControlTemplate>
+
+    <!-- ######################################################################### -->
+    <!--                             THEME RESOURCES                               -->
+    <!-- ######################################################################### -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="NavBarBackground" Color="#171717"/>
+            <SolidColorBrush x:Key="AppButtonBorder" Color="White"/>
+            <SolidColorBrush x:Key="AppTitleBarBackground" Color="{ThemeResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="AppTitleBarForeground" Color="White"/>
+            <SolidColorBrush x:Key="PlaybackBackground" Color="{ThemeResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="PlaybackText" Color="White"/>
+            <SolidColorBrush x:Key="PlaybackButtonForeground" Color="White"/>
+            <SolidColorBrush x:Key="PlaybackProgressBackground" Color="{ThemeResource SystemAccentColorDark3}"/>
+            <LinearGradientBrush x:Key="MainBackground" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0"/>
+                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="1"/>
+            </LinearGradientBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="NavBarBackground" Color="#F2F2F2"/>
+            <SolidColorBrush x:Key="AppButtonBorder" Color="Black"/>
+            <SolidColorBrush x:Key="AppTitleBarBackground" Color="{ThemeResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="AppTitleBarForeground" Color="Black"/>
+            <SolidColorBrush x:Key="PlaybackBackground" Color="{ThemeResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="PlaybackText" Color="Black"/>
+            <SolidColorBrush x:Key="PlaybackButtonForeground" Color="Black"/>
+            <SolidColorBrush x:Key="PlaybackProgressBackground" Color="{ThemeResource SystemAccentColorLight3}"/>
+            <LinearGradientBrush x:Key="MainBackground" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0"/>
+                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="1"/>
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
 
 </ResourceDictionary>
