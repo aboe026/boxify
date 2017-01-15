@@ -29,7 +29,7 @@ namespace Boxify
         public static void playQueue(List<Track> tracks)
         {
             queue.Items.Clear();
-            Player.Play();
+            Player.Source = queue;
             foreach (Track track in tracks)
             {
                 if (track.previewUrl != "")

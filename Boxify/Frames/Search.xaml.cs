@@ -109,6 +109,7 @@ namespace Boxify.Frames
                 UriBuilder searchUriBuilder = new UriBuilder(searchUri);
                 List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
                 queryParams.Add(new KeyValuePair<string, string>("type", selectedString));
+                queryParams.Add(new KeyValuePair<string, string>("limit", "10"));
                 queryParams.Add(new KeyValuePair<string, string>("q", SearchBox.Text.Replace(" ", "+")));
                 string queryParamsString = RequestHandler.convertToQueryString(queryParams);
                 searchUriBuilder.Query = queryParamsString;

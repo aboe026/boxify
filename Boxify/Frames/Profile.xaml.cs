@@ -69,6 +69,7 @@ namespace Boxify
                     mainPage.updateUserUI();
                 }
                 mainPage.selectHamburgerOption("ProfileItem");
+                YourMusic.playlistsSave = null;
                 mainPage.loadUserPlaylists();
             }
         }

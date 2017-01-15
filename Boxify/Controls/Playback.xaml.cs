@@ -200,5 +200,20 @@ namespace Boxify
                 Repeat.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
+
+        /// <summary>
+        /// Move UI focus to the Play/Pause button
+        /// </summary>
+        public void focusPlayPause()
+        {
+            if (Play.Visibility == Visibility.Visible)
+            {
+                Play.Focus(FocusState.Programmatic);
+            }
+            else if (Pause.Visibility == Visibility.Visible)
+            {
+                Pause.Focus(FocusState.Programmatic);
+            }
+        }
     }
 }

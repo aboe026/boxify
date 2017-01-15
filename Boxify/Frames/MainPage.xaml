@@ -141,7 +141,7 @@
                     </ListViewItem>
                     <ListViewItem Name="SearchItem" Style="{StaticResource NavOptionListViewItemStyle}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE721;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
+                            <TextBlock Text="&#xE721;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets" Margin="-2,0,0,0"/>
                             <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Search</TextBlock>
                         </StackPanel>
                     </ListViewItem>
@@ -176,7 +176,7 @@
                                     Canvas.ZIndex="1"
                                     Grid.Row="3"
                                     HorizontalAlignment="Stretch"
-                                    Margin="130,0,130,0"/>
+                                    Margin="30,0,30,0"/>
                 </RelativePanel>
 
             </SplitView.Content>
