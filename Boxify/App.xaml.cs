@@ -36,9 +36,9 @@ namespace Boxify
             this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
 
             // Playback Service "Initialization" of static class
-            PlaybackService.Player.Source = PlaybackService.queue;
             PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
             PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
+            PlaybackService.Player.AutoPlay = true;
         }
 
         /// <summary>

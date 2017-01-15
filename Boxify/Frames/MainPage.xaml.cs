@@ -22,7 +22,6 @@ namespace Boxify
     public sealed partial class MainPage : Page
     {
         ListViewItem currentNavSelection = new ListViewItem();
-        public static ElementTheme theme;
 
         /// <summary>
         /// The main page for the Boxify application
@@ -188,7 +187,7 @@ namespace Boxify
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
-                SettingsButton.Background = new SolidColorBrush((Color)this.Resources["SystemAccentColor"]);
+                SettingsButton.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
                 SettingsButton.Focus(FocusState.Programmatic);
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
@@ -300,7 +299,6 @@ namespace Boxify
             Header.Margin = new Thickness(0, 0, 0, 0);
             MySplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
-            PlaybackMenu.Margin = new Thickness(82, 0, 82, 0);
             RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
             if (PlaybackService.showing)
             {
@@ -323,7 +321,6 @@ namespace Boxify
             Header.Margin = new Thickness(48, 27, 48, 0);
             MySplitView.Margin = new Thickness(48, 0, 48, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
-            PlaybackMenu.Margin = new Thickness(130, 0, 130, 0);
             RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
             if (PlaybackService.showing)
             {
@@ -360,6 +357,13 @@ namespace Boxify
             else if (e.Key == VirtualKey.GamepadY)
             {
                 selectHamburgerOption("SearchItem");
+            }
+            else if (e.Key == VirtualKey.GamepadX)
+            {
+                if (PlaybackService.showing)
+                {
+                    PlaybackMenu.focusPlayPause();
+                }
             }
             else if (e.Key == VirtualKey.GamepadRightThumbstickButton)
             {
