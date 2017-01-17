@@ -94,9 +94,9 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Updates client credentials from file
+        /// Reads the client credentials from file
         /// </summary>
-        public async static Task refreshClientCredentials()
+        public async static Task retrieveClientCredentials()
         {
             StorageFile clientCredentialsFile;
             try
@@ -128,6 +128,43 @@ namespace Boxify
                 clientSecret = clientSecretJson.GetString();
             }
         }
+
+        /// <summary>
+        /// Set the token values
+        /// </summary>
+        public async static Task initializeTokens()
+        {
+            await retrieveClientCredentials();
+
+            await RequestHandler.retrieveClientCredentials();
+
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["Tokens"];
+            if (composite != null)
+            {
+                accessToken = composite["access_token"] != null ? composite["access_token"].ToString() : "";
+                if (composite["expires_in"] != null)
+                {
+                    expireTime.AddSeconds(Convert.ToDouble(composite["expires_in"].ToString()));
+                }
+                refreshToken = composite["refresh_token"] != null ? composite["refresh_token"].ToString() : "";
+                if (composite["expire_time"] != null)
+                {
+                    expireTime = new DateTime(Convert.ToInt64(composite["expire_time"].ToString()));
+                }
+                ccAccessToken = composite["ccAccess_token"] != null ? composite["ccAccess_token"].ToString() : "";
+                if (composite["ccExpire_time"] != null)
+                {
+                    ccExpireTime = new DateTime(Convert.ToInt64(composite["ccExpire_time"].ToString()));
+                }
+            }
+
+            string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
+            await UserProfile.updateInfo(userJson);
+
+            await getClientCredentialsTokens();
+        }
+
 
         /// <summary>
         /// Retrieves the tokens used for subsequent rest authentication based on the Client Credentials security model
@@ -293,22 +330,18 @@ namespace Boxify
         /// <summary>
         /// Writes the tokens to file as JSON
         /// </summary>
-        private async static void saveTokens()
+        private static void saveTokens()
         {
-            JsonObject tokensJson = new JsonObject();
-            tokensJson.Add("refresh_token", JsonValue.CreateStringValue(refreshToken));
-            tokensJson.Add("access_token", JsonValue.CreateStringValue(accessToken));
-            tokensJson.Add("expire_time", JsonValue.CreateStringValue(expireTime.Ticks.ToString()));
-            tokensJson.Add("ccAccess_token", JsonValue.CreateStringValue(ccAccessToken));
-            tokensJson.Add("ccExpire_time", JsonValue.CreateStringValue(ccExpireTime.Ticks.ToString()));
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
 
-            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
-            StorageFile dataFile = await roamingFolder.CreateFileAsync("BoxifyTokens.json", CreationCollisionOption.ReplaceExisting);
-            try
-            {
-                await FileIO.WriteTextAsync(dataFile, tokensJson.Stringify());
-            }
-            catch (Exception) { }
+            composite["refresh_token"] = refreshToken;
+            composite["access_token"] = accessToken;
+            composite["expire_time"] = expireTime.Ticks.ToString();
+            composite["ccAccess_token"] = ccAccessToken;
+            composite["ccExpire_time"] = ccExpireTime.Ticks.ToString();
+
+            roamingSettings.Values["Tokens"] = composite;
         }
 
         /// <summary>
@@ -454,20 +487,17 @@ namespace Boxify
         /// Clears the tokens (unauthorizes the user)
         /// </summary>
         /// <returns></returns>
-        public async static Task clearTokens()
+        public static void clearTokens()
         {
             authorizationCode = "";
             accessToken = "";
             expireTime = new DateTime(DateTime.MinValue.Ticks);
             refreshToken = "";
 
-            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
-            StorageFile dataFile = await roamingFolder.CreateFileAsync("BoxifyTokens.json", CreationCollisionOption.ReplaceExisting);
-            try
-            {
-                await dataFile.DeleteAsync();
-            }
-            catch (Exception) { }
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
+
+            roamingSettings.Values["Tokens"] = null;
 
             UserProfile.userId = "";
             UserProfile.displalyName = "";
