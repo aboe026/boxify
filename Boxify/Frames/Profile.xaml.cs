@@ -98,7 +98,7 @@ namespace Boxify
                 userPicContainer.StrokeThickness = 2;
                 status.Text = loggedOutText;
                 login.Content = "Log In";
-                await RequestHandler.clearTokens();
+                RequestHandler.clearTokens();
             }
             if (mainPage != null)
             {

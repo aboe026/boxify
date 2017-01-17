@@ -86,6 +86,9 @@ namespace Boxify
                 titleBar.ButtonForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
                 titleBar.ButtonInactiveForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
             }
+
+            // load tokens
+            await RequestHandler.initializeTokens();
             
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -102,8 +105,6 @@ namespace Boxify
                 {
                     //TODO: Load state from previously suspended application
                 }
-
-                await loadTokenData();
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
@@ -145,27 +146,6 @@ namespace Boxify
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
-        }
-
-        /// <summary>
-        /// Loads token information from file
-        /// </summary>
-        /// <returns></returns>
-        private async Task loadTokenData()
-        {
-            string tokensString = "";
-            StorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
-            try
-            {
-                StorageFile dataFile = await roamingFolder.GetFileAsync("BoxifyTokens.json");
-                tokensString = await FileIO.ReadTextAsync(dataFile);
-                
-            }
-            catch (FileNotFoundException) { }
-
-            await RequestHandler.refreshClientCredentials();
-            await RequestHandler.setTokens(tokensString, RequestHandler.SecurityFlow.AuthorizationCode);
-            await RequestHandler.getClientCredentialsTokens();
         }
     }
 }
