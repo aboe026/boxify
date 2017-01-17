@@ -130,7 +130,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Set the token values
+        /// Reads and sets the token values from file
         /// </summary>
         public async static Task initializeTokens()
         {
