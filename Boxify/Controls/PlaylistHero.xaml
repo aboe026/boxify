@@ -1,0 +1,55 @@
+﻿<UserControl
+    x:Class="Boxify.PlaylistHero"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Boxify"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Height="100"
+    Width="250">
+
+    <Grid>
+
+        <RelativePanel>
+
+            <Image Name="displayImage"
+                   Source="{x:Bind playlist.image, Mode=OneWay}"
+                   RelativePanel.AlignLeftWithPanel="True"
+                   Margin="0,0,5,0"
+                   Width="100"
+                   Height="100"/>
+
+            <TextBlock Name="displayName"
+                       Text="{x:Bind playlist.Name, Mode=OneWay}"
+                       RelativePanel.RightOf="displayImage"
+                       RelativePanel.AlignRightWithPanel="True"
+                       Style="{StaticResource BodyTextBlockStyle}"/>
+
+            <TextBlock Name="displayDescription"
+                       Text="{x:Bind playlist.Description, Mode=OneWay}"
+                       RelativePanel.RightOf="displayImage"
+                       RelativePanel.Below="displayName"
+                       RelativePanel.Above="Tracks"
+                       RelativePanel.AlignRightWithPanel="True"
+                       Margin="0,5,0,0"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       TextWrapping="WrapWholeWords"/>
+
+            <TextBlock Name="tracksLabel"
+                       RelativePanel.RightOf="displayImage"
+                       RelativePanel.AlignBottomWithPanel="True"
+                       Margin="0,0,5,0"
+                       Text="Tracks: "
+                       Style="{StaticResource BodyTextBlockStyle}"/>
+
+            <TextBlock Name="Tracks"
+                       RelativePanel.RightOf="tracksLabel"
+                       RelativePanel.AlignBottomWithPanel="True"
+                       Text="{x:Bind playlist.TracksCount, Mode=OneWay}"
+                       Style="{StaticResource BodyTextBlockStyle}"/>
+
+        </RelativePanel>
+
+    </Grid>
+</UserControl>

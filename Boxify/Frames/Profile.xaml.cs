@@ -62,6 +62,7 @@ namespace Boxify
                 status.Text = loggedInText + UserProfile.displalyName;
                 status.Visibility = Visibility.Visible;
                 userPic.ImageSource = UserProfile.userPic;
+                userPicContainer.Visibility = Visibility.Visible;
                 login.Content = "Log Out";
                 login.Visibility = Visibility.Visible;
                 if (mainPage != null)
@@ -79,14 +80,14 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The actionButton that was clicked</param>
         /// <param name="e">The routed event arguments</param>
-        private async void login_Click(object sender, RoutedEventArgs e)
+        private void login_Click(object sender, RoutedEventArgs e)
         {
             if (login.Content.ToString() == "Log In")
             {
                 status.Visibility = Visibility.Collapsed;
                 login.Visibility = Visibility.Collapsed;
+                userPicContainer.Visibility = Visibility.Collapsed;
                 blankUser.Text = "";
-                userPicContainer.StrokeThickness = 0;
                 webView.Visibility = Visibility.Visible;
                 webView.Focus(FocusState.Programmatic);
                 webView.Navigate(RequestHandler.getAuthorizationUri());
@@ -95,7 +96,6 @@ namespace Boxify
             {
                 userPic.ImageSource = new BitmapImage();
                 blankUser.Text = "\uE77B";
-                userPicContainer.StrokeThickness = 2;
                 status.Text = loggedOutText;
                 login.Content = "Log In";
                 RequestHandler.clearTokens();
@@ -115,7 +115,6 @@ namespace Boxify
             {
                 webView.Visibility = Visibility.Collapsed;
                 blankUser.Text = "\uE77B";
-                userPicContainer.StrokeThickness = 2;
                 status.Text = loggedOutText;
                 status.Visibility = Visibility.Visible;
                 login.Content = "Log In";
@@ -125,7 +124,6 @@ namespace Boxify
             {
                 webView.Visibility = Visibility.Collapsed;
                 status.Text = loggedInText + UserProfile.displalyName;
-                userPicContainer.StrokeThickness = 0;
                 userPic.ImageSource = UserProfile.userPic;
                 blankUser.Text = "";
                 status.Visibility = Visibility.Visible;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
@@ -16,6 +17,7 @@ namespace Boxify
         public string id { get; set; }
         public string href { get; set; }
         public string name;
+        public string description;
         public string tracksHref { get; set; }
         public int tracksCount;
         public List<BitmapImage> images { get; set; }
@@ -42,6 +44,15 @@ namespace Boxify
         {
             get { return this.name; }
             set { this.SetProperty(ref this.name, value); }
+        }
+
+        /// <summary>
+        /// The name of the playlist
+        /// </summary>
+        public string Description
+        {
+            get { return this.description; }
+            set { this.SetProperty(ref this.description, value); }
         }
 
         /// <summary>
@@ -81,6 +92,7 @@ namespace Boxify
             IJsonValue idJson;
             IJsonValue hrefJson;
             IJsonValue nameJson;
+            IJsonValue descriptionJson;
             IJsonValue tracksJson;
             IJsonValue imagesJson;
             if (playlistJson.TryGetValue("id", out idJson))
@@ -95,6 +107,11 @@ namespace Boxify
             {
                 name = nameJson.GetString();
             }
+            if (playlistJson.TryGetValue("description", out descriptionJson))
+            {
+                description = Regex.Replace(descriptionJson.GetString(), "<.+?>", string.Empty);
+            }
+
             if (playlistJson.TryGetValue("tracks", out tracksJson))
             {
                 JsonObject trackJson = tracksJson.GetObject();
