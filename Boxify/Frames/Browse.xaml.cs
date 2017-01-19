@@ -18,9 +18,9 @@ namespace Boxify
     {
         private static MainPage mainPage;
         private static string featuredPlaylistsHref = "https://api.spotify.com/v1/browse/featured-playlists";
-        private static int featuredPlaylistLimit = 5;
+        private static int featuredPlaylistLimit = 6;
         private static string featuredPlaylistsMessageSave = "";
-        private static List<PlaylistList> featuredPlaylistsSave;
+        private static List<PlaylistHero> featuredPlaylistsSave;
 
         /// <summary>
         /// The main constructor
@@ -48,9 +48,13 @@ namespace Boxify
             else
             {
                 featuredPlaylistMessage.Text = featuredPlaylistsMessageSave;
-                foreach (PlaylistList playlist in featuredPlaylistsSave)
+                foreach (PlaylistHero playlist in featuredPlaylistsSave)
                 {
-                    featuredPlaylists.Items.Add(playlist);
+                    try
+                    {
+                        FeaturedPlaylists.Items.Add(playlist);
+                    }
+                    catch (COMException) { }
                 }
             }
         }
@@ -61,7 +65,7 @@ namespace Boxify
         /// <param name="e">The naviagation event arguments</param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            featuredPlaylists.Items.Clear();
+            FeaturedPlaylists.Items.Clear();
             base.OnNavigatedFrom(e);
         }
 
@@ -71,7 +75,7 @@ namespace Boxify
         /// <param name="e">The navigation cancelled event arguments</param>
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            featuredPlaylists.Items.Clear();
+            FeaturedPlaylists.Items.Clear();
             base.OnNavigatingFrom(e);
         }
 
@@ -114,15 +118,19 @@ namespace Boxify
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
                     LoadingProgress.Maximum = playlistsArray.Count;
-                    featuredPlaylistsSave = new List<PlaylistList>();
+                    featuredPlaylistsSave = new List<PlaylistHero>();
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
-                        Playlist playlist = new Playlist();
-                        await playlist.setInfo(playlistJson.Stringify());
-                        PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                        featuredPlaylists.Items.Add(playlistList);
-                        featuredPlaylistsSave.Add(playlistList);
-                        LoadingProgress.Value = featuredPlaylistsSave.Count;
+                        IJsonValue fullHref;
+                        if (playlistJson.GetObject().TryGetValue("href", out fullHref)) {
+                            string fullPlaylistString = await RequestHandler.sendCliGetRequest(fullHref.GetString());
+                            Playlist playlist = new Playlist();
+                            await playlist.setInfo(fullPlaylistString);
+                            PlaylistHero playlistHero = new PlaylistHero(playlist, mainPage);
+                            FeaturedPlaylists.Items.Add(playlistHero);
+                            featuredPlaylistsSave.Add(playlistHero);
+                            LoadingProgress.Value = featuredPlaylistsSave.Count;
+                        }
                     }
                 }
             }
@@ -137,7 +145,7 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private async void refresh_Click(object sender, RoutedEventArgs e)
         {
-            featuredPlaylists.Items.Clear();
+            FeaturedPlaylists.Items.Clear();
             await setFeaturedPlaylists();
         }
 
@@ -146,21 +154,10 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void featuredPlaylists_GotFocus(object sender, RoutedEventArgs e)
+        private void FeaturedPlaylists_GotFocus(object sender, RoutedEventArgs e)
         {
-            ListViewItem item = e.OriginalSource as ListViewItem;
-            featuredPlaylists.SelectedIndex = getListIndex(item);
-            (item.Content as PlaylistList).showPlay();
-        }
-
-        /// <summary>
-        /// When User hovers away from PlaylistList
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void featuredPlaylists_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
+            GridViewItem item = e.OriginalSource as GridViewItem;
+            FeaturedPlaylists.SelectedIndex = getListIndex(item);
         }
 
         /// <summary>
@@ -168,11 +165,11 @@ namespace Boxify
         /// </summary>
         /// <param name="item">The item currently hovered</param>
         /// <returns>The index of the currently hovered item in the ListView</returns>
-        private int getListIndex(ListViewItem item)
+        private int getListIndex(GridViewItem item)
         {
-            for (int i=0; i < featuredPlaylists.Items.Count; i++)
+            for (int i=0; i < FeaturedPlaylists.Items.Count; i++)
             {
-                if ((featuredPlaylists.Items[i] as PlaylistList).playlist.id == (item.Content as PlaylistList).playlist.id)
+                if ((FeaturedPlaylists.Items[i] as PlaylistHero).playlist.id == (item.Content as PlaylistHero).playlist.id)
                 {
                     return i;
                 }
@@ -181,13 +178,13 @@ namespace Boxify
         }
 
         /// <summary>
-        /// PlaylistList is clicked for playing
+        /// User clicks a playlist to play the tracks
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void featuredPlaylists_ItemClick(object sender, ItemClickEventArgs e)
+        private async void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            await (e.ClickedItem as PlaylistList).playlist.playTracks();
+            await (e.ClickedItem as PlaylistHero).playlist.playTracks();
         }
     }
 }

@@ -7,7 +7,7 @@
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="15"/>
-        <Setter Property="TextTrimming" Value="None"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         <Setter Property="LineStackingStrategy" Value="MaxHeight"/>
         <Setter Property="TextLineBounds" Value="Full"/>
     </Style>

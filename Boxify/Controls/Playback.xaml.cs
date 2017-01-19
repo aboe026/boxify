@@ -172,14 +172,28 @@ namespace Boxify
         /// <param name="e"></param>
         private void Shuffle_Click(object sender, RoutedEventArgs e)
         {
-            var shuffleEnabled = PlaybackService.toggleShuffle();
-            if (shuffleEnabled)
+            var shuffleOn = PlaybackService.toggleShuffle();
+            if (shuffleOn)
             {
-                Shuffle.Foreground = new SolidColorBrush(Colors.Green);
+                Shuffle.Visibility = Visibility.Collapsed;
+                ShuffleEnabled.Visibility = Visibility.Visible;
+                RelativePanel.SetAbove(Repeat, ShuffleEnabled);
+                RelativePanel.SetAbove(RepeatEnabled, ShuffleEnabled);
+                RelativePanel.SetLeftOf(Duration, ShuffleEnabled);
+                RelativePanel.SetLeftOf(TrackName, ShuffleEnabled);
+                RelativePanel.SetLeftOf(TrackAlbum, ShuffleEnabled);
+                ShuffleEnabled.Focus(FocusState.Programmatic);
             }
             else
             {
-                Shuffle.Foreground = new SolidColorBrush(Colors.Black);
+                Shuffle.Visibility = Visibility.Visible;
+                ShuffleEnabled.Visibility = Visibility.Collapsed;
+                RelativePanel.SetAbove(Repeat, Shuffle);
+                RelativePanel.SetAbove(RepeatEnabled, Shuffle);
+                RelativePanel.SetLeftOf(Duration, Shuffle);
+                RelativePanel.SetLeftOf(TrackName, Shuffle);
+                RelativePanel.SetLeftOf(TrackAlbum, Shuffle);
+                Shuffle.Focus(FocusState.Programmatic);
             }
         }
 
@@ -190,14 +204,18 @@ namespace Boxify
         /// <param name="e"></param>
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            var repeatEnabled = PlaybackService.toggleRepeat();
-            if (repeatEnabled)
+            var repeatOn = PlaybackService.toggleRepeat();
+            if (repeatOn)
             {
-                Repeat.Foreground = new SolidColorBrush(Colors.Green);
+                Repeat.Visibility = Visibility.Collapsed;
+                RepeatEnabled.Visibility = Visibility.Visible;
+                RepeatEnabled.Focus(FocusState.Programmatic);
             }
             else
             {
-                Repeat.Foreground = new SolidColorBrush(Colors.Black);
+                Repeat.Visibility = Visibility.Visible;
+                RepeatEnabled.Visibility = Visibility.Collapsed;
+                Repeat.Focus(FocusState.Programmatic);
             }
         }
 

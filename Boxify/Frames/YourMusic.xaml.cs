@@ -63,7 +63,11 @@ namespace Boxify
                     }
                     foreach (PlaylistList playlist in playlistsSave)
                     {
-                        playlists.Items.Add(playlist);
+                        try
+                        {
+                            playlists.Items.Add(playlist);
+                        }
+                        catch (COMException) { }
                     }
                     refresh.Visibility = Visibility.Visible;
                     LoadingProgress.Visibility = Visibility.Collapsed;

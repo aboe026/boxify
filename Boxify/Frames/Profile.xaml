@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="806"
-    d:DesignHeight="315">
+    d:DesignHeight="415">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -19,18 +19,23 @@
 
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <WebView x:Name="webView"
-                 Margin="50,50,50,50"
+                 Grid.Row="0"
+                 Grid.RowSpan="3"
+                 Margin="20"
                  NavigationStarting="WebView_NavigationStarting"/>
 
-        <RelativePanel>
+        <RelativePanel Grid.Row="1">
             <Ellipse Name="userPicContainer"
-                     RelativePanel.Above="status"
                      RelativePanel.AlignHorizontalCenterWithPanel="True"
-                     Canvas.ZIndex="1"
                      Height="120"
                      Width="120"
-                     Margin="0,0,0,20"
                      Stroke="{ThemeResource AppButtonBorder}"
                      StrokeThickness="2">
 
@@ -41,19 +46,17 @@
             </Ellipse>
 
             <TextBlock Name="blankUser"
-                       RelativePanel.Above="status"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        RelativePanel.AlignVerticalCenterWith="userPicContainer"
-                       Margin="0,0,0,20"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="60"
                        Text="&#xE77B;"/>
 
             <TextBlock x:Name="status"
-                       RelativePanel.AlignHorizontalCenterWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.Below="userPicContainer"
                        RelativePanel.AlignLeftWithPanel="True"
                        RelativePanel.AlignRightWithPanel="True"
+                       Margin="0,20,0,0"
                        TextAlignment="Center"
                        TextWrapping="Wrap"
                        Width="Auto"
