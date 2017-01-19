@@ -80,11 +80,31 @@
                     Content="&#xE8B1;"
                     Click="Shuffle_Click" />
 
+            <Button Name="ShuffleEnabled"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    Margin="0,0,0,0"
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
+                    Foreground="Green"
+                    Visibility="Collapsed"
+                    Content="&#xE8B1;"
+                    Click="Shuffle_Click" />
+
             <Button Name="Repeat"
                     RelativePanel.LeftOf="Previous"
                     RelativePanel.Above="Shuffle"
                     Margin="0,0,0,0"
                     Style="{StaticResource PlaybackSmallButtonStyle}"
+                    Content="&#xE8EE;"
+                    Click="Repeat_Click" />
+
+            <Button Name="RepeatEnabled"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.Above="Shuffle"
+                    Margin="0,0,0,0"
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
+                    Foreground="Green"
+                    Visibility="Collapsed"
                     Content="&#xE8EE;"
                     Click="Repeat_Click" />
 

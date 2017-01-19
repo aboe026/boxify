@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Margin="50,0,50,0" >
+    <Grid Margin="20,0,20,0" >
 
         <RelativePanel>
 
@@ -51,24 +51,24 @@
                        Margin="0,0,0,20"
                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-            <ListView Name="featuredPlaylists"
-                      RelativePanel.Below="featuredPlaylistMessage" 
+            <GridView Name="FeaturedPlaylists"
+                      RelativePanel.Below="featuredPlaylistMessage"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
+                      RelativePanel.AlignBottomWithPanel="True"
                       IsItemClickEnabled="True"
-                      GotFocus="featuredPlaylists_GotFocus"
-                      LostFocus="featuredPlaylists_LostFocus"
-                      ItemClick="featuredPlaylists_ItemClick"
-                      XYFocusUp="{x:Bind refresh}">
+                      ItemClick="FeaturedPlaylists_ItemClick"
+                      
+                      XYFocusUp="{x:Bind refresh}" GotFocus="FeaturedPlaylists_GotFocus">
 
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Background" Value="Transparent" />
-                    </Style>
-                </ListView.ItemContainerStyle>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapGrid Orientation="Horizontal" HorizontalChildrenAlignment="Left" VerticalChildrenAlignment="Stretch">
+                        </WrapGrid>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
 
-            </ListView>
+            </GridView>
 
         </RelativePanel>
 
