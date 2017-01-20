@@ -19,6 +19,8 @@ namespace Boxify
         private static MainPage mainPage;
         private static string featuredPlaylistsHref = "https://api.spotify.com/v1/browse/featured-playlists";
         private static int featuredPlaylistLimit = 6;
+        private static int featuredPlaylistsOffset = 0;
+        private static int featuredPlaylistsTotal = 15;
         private static string featuredPlaylistsMessageSave = "";
         private static List<PlaylistHero> featuredPlaylistsSave;
 
@@ -43,7 +45,7 @@ namespace Boxify
             }
             if (featuredPlaylistsSave == null)
             {
-                await setFeaturedPlaylists();
+                await LoadFeaturedPlaylists();
             }
             else
             {
@@ -56,6 +58,16 @@ namespace Boxify
                     }
                     catch (COMException) { }
                 }
+            }
+            if (featuredPlaylistsOffset + featuredPlaylistLimit >= featuredPlaylistsTotal)
+            {
+                More.Content = "No More";
+                More.IsEnabled = false;
+            }
+            else
+            {
+                More.Content = "More...";
+                More.IsEnabled = true;
             }
         }
 
@@ -80,19 +92,20 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Updates the featured playlists
+        /// Loads the featured playlists
         /// </summary>
         /// <returns></returns>
-        private async Task setFeaturedPlaylists()
+        private async Task LoadFeaturedPlaylists()
         {
+            More.IsEnabled = false;
             refresh.Visibility = Visibility.Collapsed;
             LoadingProgress.Value = 0;
             LoadingProgress.Visibility = Visibility.Visible;
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
-            string queryParamsString = RequestHandler.convertToQueryString(queryParams);
-            featuredPlaylistsBuilder.Query = queryParamsString;
+            queryParams.Add(new KeyValuePair<string, string>("offset", featuredPlaylistsOffset.ToString()));
+            featuredPlaylistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
             string playlistsString = await RequestHandler.sendCliGetRequest(featuredPlaylistsBuilder.Uri.ToString());
             JsonObject featuredPlaylistsJson = new JsonObject();
             try
@@ -104,12 +117,17 @@ namespace Boxify
                 return;
             }
             IJsonValue messageJson;
+            IJsonValue totalJson;
             IJsonValue playlistsJson;
             IJsonValue itemsJson;
             if (featuredPlaylistsJson.TryGetValue("message", out messageJson))
             {
                 featuredPlaylistMessage.Text = messageJson.GetString();
                 featuredPlaylistsMessageSave = featuredPlaylistMessage.Text;
+            }
+            if (featuredPlaylistsJson.TryGetValue("total", out totalJson))
+            {
+                featuredPlaylistsTotal = Convert.ToInt32(totalJson.GetNumber());
             }
             if (featuredPlaylistsJson.TryGetValue("playlists", out playlistsJson))
             {
@@ -118,7 +136,10 @@ namespace Boxify
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
                     LoadingProgress.Maximum = playlistsArray.Count;
-                    featuredPlaylistsSave = new List<PlaylistHero>();
+                    if (featuredPlaylistsSave == null)
+                    {
+                        featuredPlaylistsSave = new List<PlaylistHero>();
+                    }
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
                         IJsonValue fullHref;
@@ -136,6 +157,16 @@ namespace Boxify
             }
             refresh.Visibility = Visibility.Visible;
             LoadingProgress.Visibility = Visibility.Collapsed;
+            if (featuredPlaylistsOffset + featuredPlaylistLimit >= featuredPlaylistsTotal)
+            {
+                More.Content = "No More";
+                More.IsEnabled = false;
+            }
+            else
+            {
+                More.Content = "More...";
+                More.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -145,8 +176,10 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private async void refresh_Click(object sender, RoutedEventArgs e)
         {
+            featuredPlaylistsOffset = 0;
+            featuredPlaylistsSave = new List<PlaylistHero>();
             FeaturedPlaylists.Items.Clear();
-            await setFeaturedPlaylists();
+            await LoadFeaturedPlaylists();
         }
 
         /// <summary>
@@ -185,6 +218,18 @@ namespace Boxify
         private async void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
             await (e.ClickedItem as PlaylistHero).playlist.playTracks();
+        }
+
+        /// <summary>
+        /// User wishes to load more Featured Playlists
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void More_Click(object sender, RoutedEventArgs e)
+        {
+            FeaturedPlaylists.Focus(FocusState.Programmatic);
+            featuredPlaylistsOffset += featuredPlaylistLimit;
+            await LoadFeaturedPlaylists();
         }
     }
 }

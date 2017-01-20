@@ -65,6 +65,7 @@
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.Below="playlistsLabel"
+                      Margin="0,0,0,50"
                       IsItemClickEnabled="True"
                       GotFocus="playlists_GotFocus"
                       LostFocus="playlists_LostFocus"
@@ -79,6 +80,14 @@
                 </ListView.ItemContainerStyle>
 
             </ListView>
+
+            <Button Name="More"
+                    RelativePanel.Below="playlists"
+                    RelativePanel.AlignHorizontalCenterWith="playlists"
+                    Margin="0,-40,0,0"
+                    Content="Load More"
+                    Style="{StaticResource ButtonStyle}"
+                    Click="More_Click"/>
 
         </RelativePanel>
 

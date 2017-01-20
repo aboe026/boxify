@@ -18,6 +18,9 @@ namespace Boxify
     {
         private static MainPage mainPage;
         private static string playlistsHref = "https://api.spotify.com/v1/me/playlists";
+        private static int playlistLimit = 10;
+        private static int playlistsOffset = 0;
+        private static int playlistsTotal = 20;
         public static List<PlaylistList> playlistsSave;
         public static bool refreshing = false;
         private static int playlistsCount = 0;
@@ -43,11 +46,12 @@ namespace Boxify
             }
             if (UserProfile.isLoggedIn())
             {
+                More.IsEnabled = false;
                 warning.Visibility = Visibility.Collapsed;
                 logIn.Visibility = Visibility.Collapsed;
                 if (playlistsSave == null)
                 {
-                    await refreshPlaylists();
+                    await LoadPlaylists();
                 }
                 else
                 {
@@ -72,9 +76,21 @@ namespace Boxify
                     refresh.Visibility = Visibility.Visible;
                     LoadingProgress.Visibility = Visibility.Collapsed;
                 }
+
+                if (playlistsOffset + playlistLimit >= playlistsTotal)
+                {
+                    More.Content = "No More";
+                    More.IsEnabled = false;
+                }
+                else
+                {
+                    More.Content = "More...";
+                    More.IsEnabled = true;
+                }
             }
             else
             {
+                More.Visibility = Visibility.Collapsed;
                 playlistsSave = null;
                 playlistsLabel.Visibility = Visibility.Collapsed;
                 refresh.Visibility = Visibility.Collapsed;
@@ -82,7 +98,6 @@ namespace Boxify
                 warning.Visibility = Visibility.Visible;
                 logIn.Visibility = Visibility.Visible;
             }
-            
         }
 
         /// <summary>
@@ -109,12 +124,19 @@ namespace Boxify
         /// Refreshes the users playlists
         /// </summary>
         /// <returns></returns>
-        private async Task refreshPlaylists()
+        private async Task LoadPlaylists()
         {
+            More.IsEnabled = false;
             refresh.Visibility = Visibility.Collapsed;
             LoadingProgress.Value = 0;
             LoadingProgress.Visibility = Visibility.Visible;
-            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
+
+            UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
+            queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
+            queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
+            playlistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
+            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
             try
             {
@@ -125,11 +147,19 @@ namespace Boxify
                 return;
             }
             IJsonValue itemsJson;
+            IJsonValue totalJson;
+            if (playlistsJson.TryGetValue("total", out totalJson))
+            {
+                playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
+            }
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 LoadingProgress.Maximum = playlistsArray.Count;
-                playlistsSave = new List<PlaylistList>();
+                if (playlistsSave == null)
+                {
+                    playlistsSave = new List<PlaylistList>();
+                }
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
@@ -142,6 +172,16 @@ namespace Boxify
             }
             refresh.Visibility = Visibility.Visible;
             LoadingProgress.Visibility = Visibility.Collapsed;
+            if (playlistsOffset + playlistLimit >= playlistsTotal)
+            {
+                More.Content = "No More";
+                More.IsEnabled = false;
+            }
+            else
+            {
+                More.Content = "More...";
+                More.IsEnabled = true;
+            }
         }
 
         /// <summary>
@@ -150,7 +190,12 @@ namespace Boxify
         /// <returns></returns>
         public static async Task setPlaylists()
         {
-            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsHref);
+            UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
+            queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
+            queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
+            playlistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
+            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
             try
             {
@@ -161,11 +206,19 @@ namespace Boxify
                 return;
             }
             IJsonValue itemsJson;
+            IJsonValue totalJson;
+            if (playlistsJson.TryGetValue("total", out totalJson))
+            {
+                playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
+            }
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 playlistsCount = playlistsArray.Count;
-                playlistsSave = new List<PlaylistList>();
+                if (playlistsSave == null)
+                {
+                    playlistsSave = new List<PlaylistList>();
+                }
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
@@ -193,8 +246,10 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private async void refresh_Click(object sender, RoutedEventArgs e)
         {
+            playlistsOffset = 0;
+            playlistsSave = new List<PlaylistList>();
             playlists.Items.Clear();
-            await refreshPlaylists();
+            await LoadPlaylists();
         }
 
         /// <summary>
@@ -244,6 +299,18 @@ namespace Boxify
         private async void playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
             await (e.ClickedItem as PlaylistList).playlist.playTracks();
+        }
+
+        /// <summary>
+        /// User wishes to load more of their playlists
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void More_Click(object sender, RoutedEventArgs e)
+        {
+            playlists.Focus(FocusState.Programmatic);
+            playlistsOffset += playlistLimit;
+            await LoadPlaylists();
         }
     }
 }
