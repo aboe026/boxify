@@ -48,7 +48,14 @@ namespace Boxify
         /// </summary>
         public BitmapImage Image
         {
-            get { return this.album.images.ElementAt(0); }
+            get
+            {
+                if (this.album.images.Count > 0)
+                {
+                    return this.album.images.ElementAt(0);
+                }
+                return new BitmapImage();
+            }
         }
 
         /// <summary>
@@ -56,7 +63,14 @@ namespace Boxify
         /// </summary>
         public string ArtistName
         {
-            get { return this.artists.ElementAt(0).name; }
+            get
+            {
+                if (this.artists.Count > 0)
+                {
+                    return this.artists.ElementAt(0).name;
+                }
+                return "";
+            }
         }
 
         /// <summary>
@@ -143,11 +157,9 @@ namespace Boxify
         /// <summary>
         /// Play the track
         /// </summary>
-        public void playTrack()
+        public async void playTrack()
         {
-            List<Track> tracks = new List<Track>();
-            tracks.Add(this);
-            PlaybackService.playQueue(tracks);
+            await PlaybackService.playTrack(this, 1);
         }
     }
 }

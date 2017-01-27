@@ -40,34 +40,56 @@ namespace Boxify.Frames
                 mainPage = (MainPage)e.Parameter;
             }
             Feedback.Text = feedbackMessage;
-            ResultsLoading.Visibility = Visibility.Collapsed;
             if (playlistResultsSave != null)
             {
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 Results.Visibility = Visibility.Visible;
-                ResultsLoading.Visibility = Visibility.Collapsed;
                 SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
                 SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
                 foreach (PlaylistList playlist in playlistResultsSave)
                 {
-                    Results.Items.Add(playlist);
+                    try
+                    {
+                        Results.Items.Add(playlist);
+                    }
+                    catch (COMException) { }
                 }
             }
             else if (trackResultsSave != null)
             {
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 Results.Visibility = Visibility.Visible;
-                ResultsLoading.Visibility = Visibility.Collapsed;
                 SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
                 SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
                 foreach (TrackList track in trackResultsSave)
                 {
-                    Results.Items.Add(track);
+                    try
+                    {
+                        Results.Items.Add(track);
+                    }
+                    catch (COMException) { }
                 }
             }
-            else
+            else if (albumResultsSave != null)
             {
-                Results.Visibility = Visibility.Collapsed;
+                RelativePanel.SetAlignTopWithPanel(SearchBox, true);
+                Results.Visibility = Visibility.Visible;
+                SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
+                SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
+                foreach (AlbumList album in albumResultsSave)
+                {
+                    try
+                    {
+                        Results.Items.Add(album);
+                    }
+                    catch (COMException) { }
+                }
             }
         }
 
@@ -147,23 +169,23 @@ namespace Boxify.Frames
                             else
                             {
                                 playlistResultsSave = new List<PlaylistList>();
-                                ResultsLoading.Maximum = playlistsArray.Count;
-                                ResultsLoading.Value = 0;
-                                ResultsLoading.Visibility = Visibility.Visible;
+                                mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
+                                mainPage.setSpotifyLoadingValue(0);
+                                mainPage.bringUpSpotify();
                                 foreach (JsonValue playlistJson in playlistsArray)
                                 {
 
                                     Playlist playlist = new Playlist();
                                     await playlist.setInfo(playlistJson.Stringify());
                                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                                    if (playlistResultsSave != null)
+                                    try
                                     {
                                         Results.Items.Add(playlistList);
-                                        playlistResultsSave.Add(playlistList);
                                     }
-                                    ResultsLoading.Value = Results.Items.Count;
+                                    catch (COMException) { }
+                                    playlistResultsSave.Add(playlistList);
+                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
                                 }
-                                ResultsLoading.Visibility = Visibility.Collapsed;
                             }
                         }
                     }
@@ -187,19 +209,22 @@ namespace Boxify.Frames
                             else
                             {
                                 trackResultsSave = new List<TrackList>();
-                                ResultsLoading.Maximum = tracksArray.Count;
-                                ResultsLoading.Value = 0;
-                                ResultsLoading.Visibility = Visibility.Visible;
+                                mainPage.setSpotifyLoadingMaximum(tracksArray.Count);
+                                mainPage.setSpotifyLoadingValue(0);
+                                mainPage.bringUpSpotify();
                                 foreach (JsonValue trackJson in tracksArray)
                                 {
                                     Track track = new Track();
                                     await track.setInfoDirect(trackJson.Stringify());
                                     TrackList trackList = new TrackList(track, mainPage);
-                                    Results.Items.Add(trackList);
+                                    try
+                                    {
+                                        Results.Items.Add(trackList);
+                                    }
+                                    catch (COMException) { }
                                     trackResultsSave.Add(trackList);
-                                    ResultsLoading.Value = Results.Items.Count;
+                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
                                 }
-                                ResultsLoading.Visibility = Visibility.Collapsed;
                             }
                         }
                     }
@@ -223,19 +248,22 @@ namespace Boxify.Frames
                             else
                             {
                                 albumResultsSave = new List<AlbumList>();
-                                ResultsLoading.Maximum = albumsArray.Count;
-                                ResultsLoading.Value = 0;
-                                ResultsLoading.Visibility = Visibility.Visible;
+                                mainPage.setSpotifyLoadingMaximum(albumsArray.Count);
+                                mainPage.setSpotifyLoadingValue(0);
+                                mainPage.bringUpSpotify();
                                 foreach (JsonValue albumJson in albumsArray)
                                 {
                                     Album album = new Album();
                                     await album.setInfo(albumJson.Stringify());
-                                    AlbumList trackList = new AlbumList(album, mainPage);
-                                    Results.Items.Add(trackList);
-                                    albumResultsSave.Add(trackList);
-                                    ResultsLoading.Value = Results.Items.Count;
+                                    AlbumList albumList = new AlbumList(album, mainPage);
+                                    try
+                                    {
+                                        Results.Items.Add(albumList);
+                                    }
+                                    catch (COMException) { }
+                                    albumResultsSave.Add(albumList);
+                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
                                 }
-                                ResultsLoading.Visibility = Visibility.Collapsed;
                             }
                         }
                     }

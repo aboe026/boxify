@@ -38,7 +38,6 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            LoadingProgress.Visibility = Visibility.Collapsed;
             if (e.Parameter != null)
             {
                 mainPage = (MainPage)e.Parameter;
@@ -98,9 +97,9 @@ namespace Boxify
         private async Task LoadFeaturedPlaylists()
         {
             More.IsEnabled = false;
-            refresh.Visibility = Visibility.Collapsed;
-            LoadingProgress.Value = 0;
-            LoadingProgress.Visibility = Visibility.Visible;
+            refresh.IsEnabled = false;
+            mainPage.setSpotifyLoadingValue(0);
+            mainPage.bringUpSpotify();
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
@@ -125,17 +124,17 @@ namespace Boxify
                 featuredPlaylistMessage.Text = messageJson.GetString();
                 featuredPlaylistsMessageSave = featuredPlaylistMessage.Text;
             }
-            if (featuredPlaylistsJson.TryGetValue("total", out totalJson))
-            {
-                featuredPlaylistsTotal = Convert.ToInt32(totalJson.GetNumber());
-            }
             if (featuredPlaylistsJson.TryGetValue("playlists", out playlistsJson))
             {
                 JsonObject playlists = playlistsJson.GetObject();
+                if (playlists.TryGetValue("total", out totalJson))
+                {
+                    featuredPlaylistsTotal = Convert.ToInt32(totalJson.GetNumber());
+                }
                 if (playlists.TryGetValue("items", out itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
-                    LoadingProgress.Maximum = playlistsArray.Count;
+                    mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
                     if (featuredPlaylistsSave == null)
                     {
                         featuredPlaylistsSave = new List<PlaylistHero>();
@@ -150,13 +149,12 @@ namespace Boxify
                             PlaylistHero playlistHero = new PlaylistHero(playlist, mainPage);
                             FeaturedPlaylists.Items.Add(playlistHero);
                             featuredPlaylistsSave.Add(playlistHero);
-                            LoadingProgress.Value = featuredPlaylistsSave.Count;
+                            mainPage.setSpotifyLoadingValue(featuredPlaylistsSave.Count);
                         }
                     }
                 }
             }
-            refresh.Visibility = Visibility.Visible;
-            LoadingProgress.Visibility = Visibility.Collapsed;
+            refresh.IsEnabled = true;
             if (featuredPlaylistsOffset + featuredPlaylistLimit >= featuredPlaylistsTotal)
             {
                 More.Content = "No More";

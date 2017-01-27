@@ -39,7 +39,6 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            LoadingProgress.Visibility = Visibility.Collapsed;
             if (e.Parameter != null)
             {
                 mainPage = (MainPage)e.Parameter;
@@ -55,15 +54,18 @@ namespace Boxify
                 }
                 else
                 {
-                    refresh.Visibility = Visibility.Collapsed;
-                    LoadingProgress.Maximum = playlistsCount;
-                    LoadingProgress.Value = 0;
-                    LoadingProgress.Visibility = Visibility.Visible;
-                    while (refreshing)
+                    if (refreshing)
                     {
-                        LoadingProgress.Maximum = playlistsCount;
-                        LoadingProgress.Value = playlistsSave.Count;
-                        await Task.Delay(TimeSpan.FromMilliseconds(100));
+                        refresh.Visibility = Visibility.Collapsed;
+                        mainPage.setSpotifyLoadingMaximum(playlistsCount);
+                        mainPage.setSpotifyLoadingValue(0);
+                        mainPage.bringUpSpotify();
+                        while (refreshing)
+                        {
+                            mainPage.setSpotifyLoadingMaximum(playlistsCount);
+                            mainPage.setSpotifyLoadingValue(playlistsSave.Count);
+                            await Task.Delay(TimeSpan.FromMilliseconds(100));
+                        }
                     }
                     foreach (PlaylistList playlist in playlistsSave)
                     {
@@ -74,7 +76,6 @@ namespace Boxify
                         catch (COMException) { }
                     }
                     refresh.Visibility = Visibility.Visible;
-                    LoadingProgress.Visibility = Visibility.Collapsed;
                 }
 
                 if (playlistsOffset + playlistLimit >= playlistsTotal)
@@ -94,7 +95,6 @@ namespace Boxify
                 playlistsSave = null;
                 playlistsLabel.Visibility = Visibility.Collapsed;
                 refresh.Visibility = Visibility.Collapsed;
-                LoadingProgress.Visibility = Visibility.Collapsed;
                 warning.Visibility = Visibility.Visible;
                 logIn.Visibility = Visibility.Visible;
             }
@@ -127,9 +127,9 @@ namespace Boxify
         private async Task LoadPlaylists()
         {
             More.IsEnabled = false;
-            refresh.Visibility = Visibility.Collapsed;
-            LoadingProgress.Value = 0;
-            LoadingProgress.Visibility = Visibility.Visible;
+            refresh.IsEnabled = false;
+            mainPage.setSpotifyLoadingValue(0);
+            mainPage.bringUpSpotify();
 
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
@@ -155,7 +155,7 @@ namespace Boxify
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                LoadingProgress.Maximum = playlistsArray.Count;
+                mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
                 if (playlistsSave == null)
                 {
                     playlistsSave = new List<PlaylistList>();
@@ -167,11 +167,10 @@ namespace Boxify
                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                     playlistsSave.Add(playlistList);
                     playlists.Items.Add(playlistList);
-                    LoadingProgress.Value = playlistsSave.Count;
+                    mainPage.setSpotifyLoadingValue(playlistsSave.Count);
                 }
             }
-            refresh.Visibility = Visibility.Visible;
-            LoadingProgress.Visibility = Visibility.Collapsed;
+            refresh.IsEnabled = true;
             if (playlistsOffset + playlistLimit >= playlistsTotal)
             {
                 More.Content = "No More";
@@ -271,7 +270,11 @@ namespace Boxify
         /// <param name="e"></param>
         private void playlists_LostFocus(object sender, RoutedEventArgs e)
         {
-            ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
+            try
+            {
+                ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
+            }
+            catch (NullReferenceException) { }
         }
 
         /// <summary>

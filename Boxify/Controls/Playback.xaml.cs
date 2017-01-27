@@ -1,11 +1,9 @@
 ﻿using System;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -124,7 +122,7 @@ namespace Boxify
                 Progress.Value = PlaybackService.Player.PlaybackSession.Position.TotalSeconds;
 
                 CurrentTime.Text = PlaybackService.Player.PlaybackSession.Position.ToString(@"mm\:ss");
-                Duration.Text = PlaybackService.Player.PlaybackSession.NaturalDuration.ToString(@"mm\:ss");
+                Duration.Text = (PlaybackService.Player.PlaybackSession.NaturalDuration - PlaybackService.Player.PlaybackSession.Position).ToString(@"mm\:ss");
             }
         }
 

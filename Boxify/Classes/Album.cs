@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -43,15 +44,29 @@ namespace Boxify
         /// </summary>
         public BitmapImage Image
         {
-            get { return this.images.ElementAt(0); }
+            get
+            {
+                if (this.images.Count > 0)
+                {
+                    return this.images.ElementAt(0);
+                }
+                return new BitmapImage();
+            }
         }
 
         /// <summary>
         /// The main artist for the album
         /// </summary>
-        public string Artist
+        public string ArtistName
         {
-            get { return this.artists.ElementAt(0).name; }
+            get
+            {
+                if (this.artists.Count > 0)
+                {
+                    return this.artists.ElementAt(0).name;
+                }
+                return "";
+            }
         }
 
         /// <summary>
@@ -145,7 +160,13 @@ namespace Boxify
         /// <returns></returns>
         public async Task playTracks()
         {
-            PlaybackService.playQueue(await getTracks());
+            List<Track> tracks = await getTracks();
+            if (tracks.Count > 0)
+            {
+                TimeSpan localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count());
+                tracks.RemoveAt(0);
+                await PlaybackService.addToQueue(tracks, tracks.Count, 1, localPlaybackAttempt);
+            }
         }
     }
 }

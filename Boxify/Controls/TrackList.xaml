@@ -30,6 +30,7 @@
             <TextBlock Name="displayName"
                        Text="{x:Bind track.Name, Mode=OneWay}"
                        RelativePanel.RightOf="displayImage"
+                       RelativePanel.LeftOf="displayArtistLabel"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="20,0,0,0"
                        Width="Auto"

@@ -35,15 +35,16 @@
                     FontSize="24" 
                     Content="&#xE72C;"
                     Background="{x:Null}"
-                    Click="refresh_Click" />
+                    Click="refresh_Click"
+                    XYFocusRight="{x:Bind More}"/>
 
-            <ProgressBar Name="LoadingProgress"
-                         RelativePanel.RightOf="refresh"
-                         RelativePanel.AlignRightWithPanel="True"
-                         RelativePanel.AlignVerticalCenterWith="featuredPlaylistLabel"
-                         HorizontalAlignment="Stretch"
-                         Height="15"
-                         Margin="20,0,20,-6"/>
+            <Button Name="More"
+                    RelativePanel.RightOf="refresh"
+                    RelativePanel.AlignVerticalCenterWith="featuredPlaylistLabel"
+                    Margin="20,5,0,-6"
+                    Content="Load More"
+                    Style="{StaticResource ButtonStyle}"
+                    Click="More_Click"/>
 
             <TextBlock Name="featuredPlaylistMessage"
                        Text="What others are listending to now..."
@@ -55,12 +56,10 @@
                       RelativePanel.Below="featuredPlaylistMessage"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
-                      Margin="0,0,0,50"
                       IsItemClickEnabled="True"
                       GotFocus="FeaturedPlaylists_GotFocus"
                       ItemClick="FeaturedPlaylists_ItemClick"
-                      XYFocusUp="{x:Bind refresh}"
-                      XYFocusDown="{x:Bind More}">
+                      XYFocusUp="{x:Bind refresh}">
 
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -70,14 +69,6 @@
                 </GridView.ItemsPanel>
 
             </GridView>
-
-            <Button Name="More"
-                    RelativePanel.Below="FeaturedPlaylists"
-                    RelativePanel.AlignHorizontalCenterWith="FeaturedPlaylists"
-                    Margin="0,-40,0,0"
-                    Content="Load More"
-                    Style="{StaticResource ButtonStyle}"
-                    Click="More_Click"/>
 
         </RelativePanel>
 

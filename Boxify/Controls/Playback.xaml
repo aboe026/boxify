@@ -36,7 +36,7 @@
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.AlignTopWithPanel="True"
                        HorizontalAlignment="Stretch"
-                       Text="Track Name"
+                       Text=""
                        Style="{StaticResource SubheaderTextBlockStyle}"
                        TextAlignment="Center" />
 
@@ -44,7 +44,7 @@
                        RelativePanel.AlignLeftWith="TrackName"
                        RelativePanel.LeftOf="Shuffle"
                        RelativePanel.Below="TrackName"
-                       Text="Album Name"
+                       Text=""
                        Style="{StaticResource TitleTextBlockStyle}"
                        TextAlignment="Center"/>
 

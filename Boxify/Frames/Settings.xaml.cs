@@ -13,10 +13,12 @@ namespace Boxify
     public sealed partial class Settings : Page
     {
         public enum Theme { System, Light, Dark }
+        public enum Playbacksource { Spotify, YouTube }
 
         private static MainPage mainPage;
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
+        public static Playbacksource playbackSource = Playbacksource.Spotify;
 
         /// <summary>
         /// Main constructor
@@ -37,7 +39,7 @@ namespace Boxify
                 mainPage = (MainPage)e.Parameter;
             }
 
-            tvSafe.IsOn = tvSafeArea;
+            // color theme
             if (theme == Theme.Light)
             {
                 Light.IsChecked = true;
@@ -52,23 +54,16 @@ namespace Boxify
             }
 
             // tv safe area
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
-            if (composite != null)
+            tvSafe.IsOn = tvSafeArea;
+
+            // playback source
+            if (playbackSource == Playbacksource.YouTube)
             {
-                object val = composite["TvSafeAreaOff"];
-                if ((bool)composite["TvSafeAreaOff"])
-                {
-                    tvSafe.IsOn = false;
-                }
-                else
-                {
-                    tvSafe.IsOn = true;
-                }
+                YouTube.IsChecked = true;
             }
             else
             {
-                tvSafe.IsOn = true;
+                Spotify.IsChecked = true;
             }
         }
 
@@ -101,9 +96,6 @@ namespace Boxify
         /// <param name="e"></param>
         private void ThemeColor_Click(object sender, RoutedEventArgs e)
         {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
-
             if (((RadioButton)sender).Name == "System")
             {
                 theme = Theme.System;
@@ -130,6 +122,24 @@ namespace Boxify
         }
 
         /// <summary>
+        /// User clicks an options for Playback Source
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Playbacksource_Click(object sender, RoutedEventArgs e)
+        {
+            if (((RadioButton)sender).Name == "Spotify")
+            {
+                playbackSource = Playbacksource.Spotify;
+            }
+            else if (((RadioButton)sender).Name == "YouTube")
+            {
+                playbackSource = Playbacksource.YouTube;
+            }
+            saveSettings();
+        }
+
+        /// <summary>
         /// Set the roaming settings for the application
         /// </summary>
         private void saveSettings()
@@ -139,6 +149,7 @@ namespace Boxify
             ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
             composite["TvSafeAreaOff"] = !tvSafe.IsOn;
             composite["Theme"] = theme.ToString();
+            composite["PlaybackSource"] = playbackSource.ToString();
 
             roamingSettings.Values["UserSettings"] = composite;
         }

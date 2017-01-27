@@ -30,6 +30,7 @@
             <TextBlock Name="displayName"
                        Text="{x:Bind album.Name, Mode=OneWay}"
                        RelativePanel.RightOf="displayImage"
+                       RelativePanel.LeftOf="displayArtistLabel"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="20,0,0,0"
                        Width="Auto"
@@ -43,7 +44,7 @@
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <TextBlock Name="displayArtist"
-                       Text="{x:Bind album.Artist, Mode=OneWay}"
+                       Text="{x:Bind album.ArtistName, Mode=OneWay}"
                        RelativePanel.LeftOf="action"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,20,0"
