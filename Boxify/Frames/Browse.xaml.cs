@@ -187,8 +187,8 @@ namespace Boxify
         /// <param name="e"></param>
         private void FeaturedPlaylists_GotFocus(object sender, RoutedEventArgs e)
         {
-                GridViewItem item = e.OriginalSource as GridViewItem;
-                FeaturedPlaylists.SelectedIndex = getListIndex(item);
+            GridViewItem item = e.OriginalSource as GridViewItem;
+            FeaturedPlaylists.SelectedIndex = getListIndex(item);
         }
 
         /// <summary>
