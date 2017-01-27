@@ -57,6 +57,43 @@
                        Text="Title"
                        Style="{StaticResource HeaderTextBlockStyle}"/>
 
+            <Image Name="SpotifyLogo"
+                   RelativePanel.AlignTopWithPanel="True"
+                   RelativePanel.AlignHorizontalCenterWithPanel="True"
+                   Width="95"
+                   Margin="14"
+                   Source="{ThemeResource SpotifyLogo}"/>
+
+            <ProgressBar Name="SpotifyLoading"
+                         RelativePanel.AlignHorizontalCenterWithPanel="True"
+                         RelativePanel.Below="SpotifyLogo"
+                         Height="8"
+                         Width="150"
+                         Foreground="#FF1DB954"
+                         Background="#FF191414"/>
+
+            <Image Name="YouTubeLogo"
+                   RelativePanel.AlignTopWithPanel="True"
+                   RelativePanel.AlignHorizontalCenterWithPanel="True"
+                   Height="55"
+                   Source="{ThemeResource YouTubeLogo}"
+                   Canvas.ZIndex="0"/>
+
+            <ProgressBar Name="YouTubeLoading"
+                         RelativePanel.AlignHorizontalCenterWithPanel="True"
+                         RelativePanel.Below="YouTubeLogo"
+                         Height="8"
+                         Width="150"
+                         Foreground="#e52d27"
+                         Background="#000000"/>
+
+            <TextBlock Name="YouTubeMessage"
+                       RelativePanel.Above="YouTubeLoading"
+                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       Text="X tracks failed to match"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Canvas.ZIndex="1"/>
+
             <TextBlock Name="UserName"
                        RelativePanel.LeftOf="UserPicContainer" 
                        Margin="0,25,10,0"

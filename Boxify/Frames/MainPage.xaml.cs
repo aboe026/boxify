@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using static Boxify.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -37,6 +38,11 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            SpotifyLogo.Visibility = Visibility.Collapsed;
+            SpotifyLoading.Visibility = Visibility.Collapsed;
+            YouTubeLogo.Visibility = Visibility.Collapsed;
+            YouTubeLoading.Visibility = Visibility.Collapsed;
+
             selectHamburgerOption("BrowseItem");
             updateUserUI();
             if (PlaybackService.mainPage == null)
@@ -59,7 +65,8 @@ namespace Boxify
             ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
             if (composite != null)
             {
-                if ((bool)composite["TvSafeAreaOff"])
+                // tv safe area
+                if (composite["TvSafeAreaOff"] != null && composite["TvSafeAreaOff"].ToString() == "True")
                 {
                     safeAreaOff();
                 }
@@ -68,7 +75,8 @@ namespace Boxify
                     safeAreaOn();
                 }
 
-                if (composite["Theme"].ToString() == "Light")
+                // theme
+                if (composite["Theme"] != null && composite["Theme"].ToString() == "Light")
                 {
                     this.RequestedTheme = ElementTheme.Light;
                     Settings.theme = Settings.Theme.Light;
@@ -81,6 +89,16 @@ namespace Boxify
                 else
                 {
                     Settings.theme = Settings.Theme.System;
+                }
+
+                // playback source
+                if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
+                {
+                    Settings.playbackSource = Playbacksource.YouTube;
+                }
+                else
+                {
+                    Settings.playbackSource = Playbacksource.Spotify;
                 }
             }
             else
@@ -414,6 +432,81 @@ namespace Boxify
 
             MainContentFrame.Navigate(typeof(Settings), this);
             Title.Text = "Settings";
+        }
+
+        /// <summary>
+        /// Set whether or not the Spotify logo/loading are visible
+        /// </summary>
+        /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
+        public void bringUpSpotify()
+        {
+            YouTubeLogo.Visibility = Visibility.Collapsed;
+            YouTubeLoading.Visibility = Visibility.Collapsed;
+            YouTubeMessage.Visibility = Visibility.Collapsed;
+            SpotifyLogo.Visibility = Visibility.Visible;
+            SpotifyLoading.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Set the current Spotify loading progress
+        /// </summary>
+        /// <param name="value">The amount of progress made</param>
+        public void setSpotifyLoadingValue(double value)
+        {
+            SpotifyLoading.Value = value;
+        }
+
+        /// <summary>
+        /// Set the maximum Spotify loading value
+        /// </summary>
+        /// <param name="max">The limit of progress</param>
+        public void setSpotifyLoadingMaximum(double max)
+        {
+            SpotifyLoading.Maximum = max;
+        }
+
+        /// <summary>
+        /// Set whether or not the YouTube log/loading are visible
+        /// </summary>
+        /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
+        public void bringUpYouTube()
+        {
+            SpotifyLogo.Visibility = Visibility.Collapsed;
+            SpotifyLoading.Visibility = Visibility.Collapsed;
+            YouTubeLogo.Visibility = Visibility.Visible;
+            YouTubeLoading.Visibility = Visibility.Visible;
+            if (YouTubeMessage.Visibility == Visibility.Collapsed)
+            {
+                YouTubeMessage.Visibility = Visibility.Visible;
+                YouTubeMessage.Text = "";
+            }
+        }
+
+        /// <summary>
+        /// Set the current YouTube loading progress
+        /// </summary>
+        /// <param name="value">The amount of progress made</param>
+        public void setYouTubeLoadingValue(double value)
+        {
+            YouTubeLoading.Value = value;
+        }
+
+        /// <summary>
+        /// Set the maximum YouTube loading value
+        /// </summary>
+        /// <param name="max">The limit of progress</param>
+        public void setYouTubeLoadingMaximum(double max)
+        {
+            YouTubeLoading.Maximum = max;
+        }
+
+        /// <summary>
+        /// Set the message displayed under the YouTube logo
+        /// </summary>
+        /// <param name="message"></param>
+        public void setYouTubeMessage(String message)
+        {
+            YouTubeMessage.Text = message;
         }
     }
 }

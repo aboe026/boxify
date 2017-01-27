@@ -49,29 +49,31 @@ namespace Boxify
             if (userJson.TryGetValue("images", out imagesJson))
             {
                 JsonArray imageArray = imagesJson.GetArray();
-                JsonObject imageObject = imageArray.ElementAt(0).GetObject();
-                JsonValue urlJson = imageObject.GetNamedValue("url");
-                string url = urlJson.GetString();
-                UriBuilder uri = new UriBuilder(url);
-
-                BitmapImage bitmapImage = new BitmapImage();
-                HttpClient client = new HttpClient();
-                HttpResponseMessage httpResponse = new HttpResponseMessage();
-
-                try
+                if (imageArray.Count > 0)
                 {
-                    httpResponse = await client.GetAsync(uri.Uri);
-                    httpResponse.EnsureSuccessStatusCode();
-                    IInputStream st = await client.GetInputStreamAsync(uri.Uri);
-                    var memoryStream = new MemoryStream();
-                    await st.AsStreamForRead().CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
-                    userPic = bitmapImage;
-                    saveProfileData();
-                }
-                catch (Exception) { }
+                    JsonObject imageObject = imageArray.ElementAt(0).GetObject();
+                    JsonValue urlJson = imageObject.GetNamedValue("url");
+                    string url = urlJson.GetString();
+                    UriBuilder uri = new UriBuilder(url);
 
+                    BitmapImage bitmapImage = new BitmapImage();
+                    HttpClient client = new HttpClient();
+                    HttpResponseMessage httpResponse = new HttpResponseMessage();
+
+                    try
+                    {
+                        httpResponse = await client.GetAsync(uri.Uri);
+                        httpResponse.EnsureSuccessStatusCode();
+                        IInputStream st = await client.GetInputStreamAsync(uri.Uri);
+                        var memoryStream = new MemoryStream();
+                        await st.AsStreamForRead().CopyToAsync(memoryStream);
+                        memoryStream.Position = 0;
+                        await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
+                        userPic = bitmapImage;
+                        saveProfileData();
+                    }
+                    catch (Exception) { }
+                }
             }
         }
 

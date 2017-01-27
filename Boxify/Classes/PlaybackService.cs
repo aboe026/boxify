@@ -1,6 +1,14 @@
-﻿using System;
+﻿using Google.Apis.Requests;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
+using Google.Apis.YouTube.v3.Data;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using VideoLibrary;
 using Windows.ApplicationModel.Core;
 using Windows.Media;
 using Windows.Media.Core;
@@ -8,6 +16,7 @@ using Windows.Media.Playback;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
+using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -21,63 +30,242 @@ namespace Boxify
         public static MediaPlaybackList queue = new MediaPlaybackList();
         public static MainPage mainPage;
         public static bool showing = false;
+        public static TimeSpan currentPlaybackAttempt;
+        private static int failuresCount;
+        public static string youtubeApplicationName = "";
+        public static string youtubeApiKey = "";
+        private const string _videoUrlFormat = "http://www.youtube.com/watch?v={0}";
 
         /// <summary>
         /// Plays the desired tracks
         /// </summary>
         /// <param name="tracks">A list of desired tracks to be played</param>
-        public static void playQueue(List<Track> tracks)
+        public static async Task<TimeSpan> playTrack(Track track, int total)
         {
+            TimeSpan localPlaybackAttempt = new TimeSpan(DateTime.Now.Ticks);
+            currentPlaybackAttempt = localPlaybackAttempt;
+            failuresCount = 0;
             queue.Items.Clear();
             Player.Source = queue;
-            foreach (Track track in tracks)
+            Playbacksource currentPlaybackType = Settings.playbackSource;
+            if (currentPlaybackType == Playbacksource.Spotify)
+            {
+                mainPage.setSpotifyLoadingMaximum(total);
+                mainPage.setSpotifyLoadingValue(0);
+                mainPage.bringUpSpotify();
+            }
+            else if (currentPlaybackType == Playbacksource.YouTube)
+            {
+                mainPage.setYouTubeLoadingMaximum(total);
+                mainPage.setYouTubeLoadingValue(0);
+                mainPage.bringUpYouTube();
+            }
+
+            MediaSource source = null;
+            bool validTrack = false;
+            if (currentPlaybackType == Playbacksource.Spotify)
             {
                 if (track.previewUrl != "")
                 {
-                    MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
-                    MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
-                    MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
-                    displayProperties.Type = MediaPlaybackType.Music;
-                    displayProperties.MusicProperties.Title = track.name;
-                    displayProperties.MusicProperties.AlbumTitle = track.album.name;
-                    if (track.album.images.Count > 0 && track.album.images.ElementAt(0) != null)
-                    {
-                        displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
-                    }
-                    playbackItem.ApplyDisplayProperties(displayProperties);
-                    source.CustomProperties["mediaItemId"] = track.id;
-
-                    queue.Items.Add(playbackItem);
+                    source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
+                    validTrack = true;
                 }
             }
+            else if (currentPlaybackType == Playbacksource.YouTube)
+            {
+                string videoId = searchForVideoId(track);
+                try
+                {
+                    source = await GetAudioAsync(videoId);
+                    validTrack = true;
+                }
+                catch (UriFormatException) { failuresCount++; }
+                catch (KeyNotFoundException) { failuresCount++; }
+                catch (InvalidOperationException) { failuresCount++; }
+            }
+
+            if (validTrack)
+            {
+                MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
+                MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                displayProperties.Type = MediaPlaybackType.Music;
+                displayProperties.MusicProperties.Title = track.name;
+                displayProperties.MusicProperties.AlbumTitle = track.album.name;
+                if (track.album.images.Count > 0 && track.album.images.ElementAt(0) != null)
+                {
+                    displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
+                }
+                playbackItem.ApplyDisplayProperties(displayProperties);
+                source.CustomProperties["mediaItemId"] = track.id;
+
+                queue.Items.Add(playbackItem);
+            }
+            if (currentPlaybackType == Playbacksource.Spotify)
+            {
+                mainPage.setSpotifyLoadingValue(1);
+
+            }
+            else if (currentPlaybackType == Playbacksource.YouTube)
+            {
+                mainPage.setYouTubeLoadingValue(1);
+                if (failuresCount == 1)
+                {
+                    mainPage.setYouTubeMessage(failuresCount.ToString() + " track failed to match");
+                }
+                else
+                {
+                    mainPage.setYouTubeMessage("");
+                }
+            }
+            return localPlaybackAttempt;
         }
 
         /// <summary>
         /// Add the desired tracks to the playlist queue
         /// </summary>
         /// <param name="tracks">Add the list of tracks to the playlist</param>
-        public static void addToQueue(List<Track> tracks)
+        public static async Task<bool> addToQueue(List<Track> tracks, int total, int offset, TimeSpan localPlaybackAttempt)
         {
-            foreach (Track track in tracks)
+            if (localPlaybackAttempt.Ticks != currentPlaybackAttempt.Ticks)
             {
-                if (track.previewUrl != "")
-                {
-                    MediaSource source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
-                    MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
-                    MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
-                    displayProperties.Type = MediaPlaybackType.Music;
-                    displayProperties.MusicProperties.Title = track.name;
-                    displayProperties.MusicProperties.AlbumTitle = track.album.name;
-                    if (track.album.images.ElementAt(0) != null)
-                    {
-                        displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
-                    }
-                    playbackItem.ApplyDisplayProperties(displayProperties);
-                    source.CustomProperties["mediaItemId"] = track.id;
+                return false;
+            }
+            Playbacksource currentPlaybackType = Settings.playbackSource;
+            if (currentPlaybackType == Playbacksource.Spotify)
+            {
+                mainPage.setSpotifyLoadingMaximum(total);
+                mainPage.setSpotifyLoadingValue(offset);
+                mainPage.bringUpSpotify();
+            }
+            else if (currentPlaybackType == Playbacksource.YouTube)
+            {
+                mainPage.setYouTubeLoadingMaximum(total);
+                mainPage.setYouTubeLoadingValue(offset);
+                mainPage.bringUpYouTube();
+            }
 
-                    queue.Items.Add(playbackItem);
+            if (currentPlaybackType == Playbacksource.Spotify)
+            {
+                for (int i = 0; i < tracks.Count; i++)
+                {
+                    if (localPlaybackAttempt.Ticks != currentPlaybackAttempt.Ticks)
+                    {
+                        return false;
+                    }
+                    Track track = tracks.ElementAt(i);
+                    MediaSource source = null;
+                    bool validTrack = false;
+                    if (track.previewUrl != "")
+                    {
+                        source = MediaSource.CreateFromUri(new Uri(track.previewUrl));
+                        validTrack = true;
+                    }
+
+                    if (validTrack)
+                    {
+                        MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
+                        MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                        displayProperties.Type = MediaPlaybackType.Music;
+                        displayProperties.MusicProperties.Title = track.name;
+                        displayProperties.MusicProperties.AlbumTitle = track.album.name;
+                        if (track.album.images.Count > 0 && track.album.images.ElementAt(0) != null)
+                        {
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
+                        }
+                        playbackItem.ApplyDisplayProperties(displayProperties);
+                        source.CustomProperties["mediaItemId"] = track.id;
+
+                        if (localPlaybackAttempt.Ticks == currentPlaybackAttempt.Ticks)
+                        {
+                            queue.Items.Add(playbackItem);
+                        }
+                    }
+                    else
+                    {
+                        failuresCount++;
+                    }
+                    if (localPlaybackAttempt.Ticks == currentPlaybackAttempt.Ticks)
+                    {
+                        if (failuresCount == 1)
+                        {
+                            mainPage.setYouTubeMessage(failuresCount.ToString() + " track failed to match");
+                        }
+                        else if (failuresCount > 1)
+                        {
+                            mainPage.setYouTubeMessage(failuresCount.ToString() + " tracks failed to match");
+                        }
+                        mainPage.setSpotifyLoadingValue(i + offset);
+                    }
                 }
             }
+            else if (currentPlaybackType == Playbacksource.YouTube)
+            {
+                List<string> videoIds = await bulkSearchForVideoId(tracks);
+                int previousFailuesCount = failuresCount;
+                failuresCount += tracks.Count - videoIds.Count;
+                int countOffset = tracks.Count - videoIds.Count;
+                if (failuresCount != previousFailuesCount && failuresCount == 1)
+                {
+                    mainPage.setYouTubeMessage(failuresCount.ToString() + " track failed to match");
+                }
+                else if (failuresCount != previousFailuesCount && failuresCount > 1)
+                {
+                    mainPage.setYouTubeMessage(failuresCount.ToString() + " tracks failed to match");
+                }
+                for (int i = 0; i < videoIds.Count; i++)
+                {
+                    if (localPlaybackAttempt.Ticks != currentPlaybackAttempt.Ticks)
+                    {
+                        return false;
+                    }
+                    string videoId = videoIds.ElementAt(i);
+                    Track track = tracks.ElementAt(i);
+                    bool validTrack = false;
+                    MediaSource source = null;
+
+                    try
+                    {
+                        source = await GetAudioAsync(videoId);
+                        validTrack = true;
+                    }
+                    catch (UriFormatException) { failuresCount++; }
+                    catch (KeyNotFoundException) { failuresCount++; }
+                    catch (InvalidOperationException) { failuresCount++; }
+
+                    if (validTrack)
+                    {
+                        MediaPlaybackItem playbackItem = new MediaPlaybackItem(source);
+                        MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                        displayProperties.Type = MediaPlaybackType.Music;
+                        displayProperties.MusicProperties.Title = track.name;
+                        displayProperties.MusicProperties.AlbumTitle = track.album.name;
+                        if (track.album.images.Count > 0 && track.album.images.ElementAt(0) != null)
+                        {
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(track.album.imageUrl));
+                        }
+                        playbackItem.ApplyDisplayProperties(displayProperties);
+                        source.CustomProperties["mediaItemId"] = track.id;
+
+                        if (localPlaybackAttempt.Ticks == currentPlaybackAttempt.Ticks)
+                        {
+                            queue.Items.Add(playbackItem);
+                        }
+                    }
+                    if (localPlaybackAttempt.Ticks == currentPlaybackAttempt.Ticks)
+                    {
+                        if (failuresCount == 1)
+                        {
+                            mainPage.setYouTubeMessage(failuresCount.ToString() + " track failed to match");
+                        }
+                        else if (failuresCount > 1)
+                        {
+                            mainPage.setYouTubeMessage(failuresCount.ToString() + " tracks failed to match");
+                        }
+                        mainPage.setYouTubeLoadingValue(i + 1 + offset + countOffset);
+                    }
+                }
+            }
+            return localPlaybackAttempt.Ticks == currentPlaybackAttempt.Ticks;
         }
 
         /// <summary>
@@ -150,6 +338,129 @@ namespace Boxify
                 mainPage.showPlaybackMenu();
             }
             mainPage.getPlaybackMenu().setActionState(Player.PlaybackSession.PlaybackState);
+        }
+
+        /// <summary>
+        /// Get the video id of the matching song in YouTube
+        /// </summary>
+        /// <param name="track">The track to search for a match in YouTube</param>
+        /// <returns>The YouTube ID of the video</returns>
+        private static string searchForVideoId(Track track)
+        {
+            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApplicationName = youtubeApplicationName,
+                ApiKey = youtubeApiKey,
+            });
+            SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
+            listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
+            listRequest.MaxResults = 1;
+            listRequest.Type = "video";
+            SearchListResponse resp = listRequest.Execute();
+            if (resp.Items.Count == 1)
+            {
+                return resp.Items[0].Id.VideoId;
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// Get video ids for multiple songs in YouTube
+        /// </summary>
+        /// <param name="tracks">The list of tracks to search for a match in YouTube</param>
+        /// <returns>A list of YouTube IDs of teh videos</returns>
+        private async static Task<List<string>> bulkSearchForVideoId(List<Track> tracks)
+        {
+            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApplicationName = youtubeApplicationName,
+                ApiKey = youtubeApiKey,
+            });
+            BatchRequest batch = new BatchRequest(youtube);
+
+            List<string> returnIds = new List<string>();
+
+            foreach (Track track in tracks)
+            {
+                SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
+                listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
+                listRequest.MaxResults = 1;
+                listRequest.Type = "video";
+                batch.Queue<SearchListResponse>(listRequest, (content, error, i, message) =>
+                {
+                    if (content.Items.Count > 0)
+                    {
+                        string videoId = content.Items[0].Id.VideoId;
+                        returnIds.Add(videoId);
+                    }
+                });
+            }
+
+            await batch.ExecuteAsync();
+
+            return returnIds;
+        }
+
+        /// <summary>
+        /// Get the MediaSource of the specified youtube video, preferring audio stream to video
+        /// </summary>
+        /// <param name="videoId"></param>
+        /// <returns></returns>
+        private static async Task<MediaSource> GetAudioAsync(string videoId)
+        {
+            IEnumerable<YouTubeVideo> videos = await YouTube.Default.GetAllVideosAsync(string.Format(_videoUrlFormat, videoId));
+            int maxAudioBitrate = 0;
+            int maxNonAudioBitrate = 0;
+            YouTubeVideo maxAudioVideo = null;
+            YouTubeVideo maxNonAudioVideo = null;
+            try
+            {
+                for (int i = 0; i < videos.Count(); i++)
+                {
+                    YouTubeVideo video = videos.ElementAt(i);
+                    if (video.AdaptiveKind == AdaptiveKind.Audio)
+                    {
+                        if (video.AudioBitrate > maxAudioBitrate)
+                        {
+                            maxAudioBitrate = video.AudioBitrate;
+                            maxAudioVideo = video;
+                        }
+                    }
+                    else
+                    {
+                        if (video.AudioBitrate > maxNonAudioBitrate)
+                        {
+                            maxNonAudioBitrate = video.AudioBitrate;
+                            maxNonAudioVideo = video;
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException)
+            {
+                try
+                {
+                    return MediaSource.CreateFromUri(new Uri(videos.ElementAt(0).Uri));
+                }
+                catch (Exception)
+                {
+                    return MediaSource.CreateFromUri(new Uri(""));
+                }
+            }
+            if (maxAudioVideo != null)
+            {
+                return MediaSource.CreateFromUri(new Uri(maxAudioVideo.Uri));
+            }
+            else if (maxNonAudioVideo != null)
+            {
+                var handler = new HttpClientHandler();
+                handler.AllowAutoRedirect = true;
+                HttpClient client = new HttpClient(handler);
+                HttpResponseMessage response = await client.GetAsync(new Uri(maxNonAudioVideo.Uri), HttpCompletionOption.ResponseContentRead);
+                Stream stream = await response.Content.ReadAsStreamAsync();
+                return MediaSource.CreateFromStream(stream.AsRandomAccessStream(), "video/x-flv");
+            }
+            return MediaSource.CreateFromUri(new Uri(""));
         }
     }
 }

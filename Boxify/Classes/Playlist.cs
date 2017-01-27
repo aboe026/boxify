@@ -19,6 +19,7 @@ namespace Boxify
         public string name;
         public string description;
         public string tracksHref { get; set; }
+        private const int maxTracksPerRequest = 100;
         public int tracksCount;
         public List<BitmapImage> images { get; set; }
         public BitmapImage image;
@@ -136,7 +137,10 @@ namespace Boxify
                     BitmapImage image = await RequestHandler.downloadImage(url);
                     images.Add(image);
                 }
-                image = images.ElementAt(0);
+                if (images.Count > 0)
+                {
+                    image = images.ElementAt(0);
+                }
             }
         }
 
@@ -146,37 +150,61 @@ namespace Boxify
         /// <returns></returns>
         public async Task playTracks()
         {
-            string tracksString = await RequestHandler.sendCliGetRequest(tracksHref);
-            JsonObject tracksJson = new JsonObject();
-            try
+            bool firstTrack = true;
+            bool proceed = true;
+            int remainingCount = tracksCount;
+            TimeSpan localPlaybackAttempt;
+            int tracksToGetPerRequest = 1;
+
+            while (proceed && remainingCount > 0)
             {
-                tracksJson = JsonObject.Parse(tracksString);
-            }
-            catch (COMException)
-            {
-                
-            }
-            IJsonValue itemsJson;
-            if (tracksJson.TryGetValue("items", out itemsJson))
-            {
-                JsonArray tracksArray = itemsJson.GetArray();
-                for (int i=0; i < tracksArray.Count; i++)
+                UriBuilder tracksBuilder = new UriBuilder(tracksHref);
+                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
+                queryParams.Add(new KeyValuePair<string, string>("limit", tracksToGetPerRequest.ToString()));
+                queryParams.Add(new KeyValuePair<string, string>("offset", (tracksCount - remainingCount).ToString()));
+                tracksBuilder.Query = RequestHandler.convertToQueryString(queryParams);
+                string tracksString = await RequestHandler.sendCliGetRequest(tracksBuilder.Uri.ToString());
+
+                JsonObject tracksJson = new JsonObject();
+                try
                 {
-                    Track track = new Track();
-                    JsonObject trackJson = tracksArray.ElementAt(i).GetObject();
-                    await track.setInfo(trackJson.Stringify());
-                    if (i == 0)
+                    tracksJson = JsonObject.Parse(tracksString);
+                }
+                catch (COMException) { }
+
+                IJsonValue itemsJson;
+                if (tracksJson.TryGetValue("items", out itemsJson))
+                {
+                    JsonArray tracksArray = itemsJson.GetArray();
+                    List<Track> tracksList = new List<Track>();
+                    int localOffset = tracksCount - remainingCount;
+                    for (int i = 0; i < tracksArray.Count; i++)
                     {
-                        List<Track> tracks = new List<Track>();
-                        tracks.Add(track);
-                        PlaybackService.playQueue(tracks);
+                        Track track = new Track();
+                        JsonObject trackJson = tracksArray.ElementAt(i).GetObject();
+                        await track.setInfo(trackJson.Stringify());
+                        if (firstTrack)
+                        {
+                            firstTrack = false;
+                            localPlaybackAttempt = await PlaybackService.playTrack(track, tracksCount);
+                            localOffset = 1;
+                        }
+                        else
+                        {
+                            tracksList.Add(track);
+                        }
                     }
-                    else
+                    proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt);
+                    remainingCount -= tracksToGetPerRequest;
+                    tracksToGetPerRequest = 2 * tracksToGetPerRequest;
+                    if (tracksToGetPerRequest > maxTracksPerRequest)
                     {
-                        List<Track> tracks = new List<Track>();
-                        tracks.Add(track);
-                        PlaybackService.addToQueue(tracks);
+                        tracksToGetPerRequest = maxTracksPerRequest;
                     }
+                }
+                else
+                {
+                    proceed = false;
                 }
             }
         }

@@ -22,7 +22,7 @@ namespace Boxify
         public static string callbackUrl = "https://example.com/callback/";
         public static string state = "";
         private static string scopes = "playlist-read-private";
-        private static string clientCredentailsFilePath = "ms-appx:///Assets/ClientCredentials.json";
+        private static string credentailsFilePath = "ms-appx:///Assets/Credentials.json";
         private static string clientId = "";
         private static string clientSecret = "";
         private static string authorizationBase = "https://accounts.spotify.com/authorize";
@@ -94,38 +94,56 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Reads the client credentials from file
+        /// Reads the Spotify and YouTube credentials from file
         /// </summary>
-        public async static Task retrieveClientCredentials()
+        public async static Task retrieveCredentials()
         {
-            StorageFile clientCredentialsFile;
+            StorageFile credentialsFile;
             try
             {
-                clientCredentialsFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(clientCredentailsFilePath)).AsTask().ConfigureAwait(false);
+                credentialsFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(credentailsFilePath)).AsTask().ConfigureAwait(false);
             }
-            catch (FileNotFoundException)
-            {
-                return;
-            }
-            string clientCredentailsText = await FileIO.ReadTextAsync(clientCredentialsFile);
-            JsonObject clientCredentialsJson = new JsonObject();
+            catch (FileNotFoundException) { return; }
+            catch (UnauthorizedAccessException) { return; }
+            string credentailsText = await FileIO.ReadTextAsync(credentialsFile);
+            JsonObject credentialsJson = new JsonObject();
             try
             {
-                clientCredentialsJson = JsonObject.Parse(clientCredentailsText);
+                credentialsJson = JsonObject.Parse(credentailsText);
             }
             catch (COMException)
             {
 
             }
-            IJsonValue clientIdJson;
-            IJsonValue clientSecretJson;
-            if (clientCredentialsJson.TryGetValue("clientId", out clientIdJson))
+            IJsonValue spotifyJson;
+            IJsonValue youtubeJson;
+            if (credentialsJson.TryGetValue("Spotify", out spotifyJson))
             {
-                clientId = clientIdJson.GetString();
+                JsonObject spotifyObject = spotifyJson.GetObject();
+                IJsonValue clientIdJson;
+                IJsonValue clientSecretJson;
+                if (spotifyObject.TryGetValue("clientId", out clientIdJson))
+                {
+                    clientId = clientIdJson.GetString();
+                }
+                if (spotifyObject.TryGetValue("clientSecret", out clientSecretJson))
+                {
+                    clientSecret = clientSecretJson.GetString();
+                }
             }
-            if (clientCredentialsJson.TryGetValue("clientSecret", out clientSecretJson))
+            if (credentialsJson.TryGetValue("YouTube", out youtubeJson))
             {
-                clientSecret = clientSecretJson.GetString();
+                JsonObject youtubeObject = youtubeJson.GetObject();
+                IJsonValue applicationNameJson;
+                IJsonValue apiKeyJson;
+                if (youtubeObject.TryGetValue("applicationName", out applicationNameJson))
+                {
+                    PlaybackService.youtubeApplicationName = applicationNameJson.GetString();
+                }
+                if (youtubeObject.TryGetValue("apiKey", out apiKeyJson))
+                {
+                    PlaybackService.youtubeApiKey = apiKeyJson.GetString();
+                }
             }
         }
 
@@ -134,9 +152,7 @@ namespace Boxify
         /// </summary>
         public async static Task initializeTokens()
         {
-            await retrieveClientCredentials();
-
-            await RequestHandler.retrieveClientCredentials();
+            await retrieveCredentials();
 
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
             ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["Tokens"];

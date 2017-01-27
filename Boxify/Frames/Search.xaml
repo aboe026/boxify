@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="0,20,0,0">
 
         <RelativePanel>
 
@@ -56,15 +56,8 @@
                        Text="Please enter text to search for (I can't ready you mind...yet)"
                        Style="{StaticResource BodyTextBlockStyle}"/>
 
-            <ProgressBar Name="ResultsLoading"
-                         RelativePanel.Below="Feedback"
-                         RelativePanel.AlignLeftWithPanel="True"
-                         RelativePanel.AlignRightWithPanel="True"
-                         Margin="20,20,20,0"
-                         Height="15"/>
-
             <ListView Name="Results"
-                      RelativePanel.Below="ResultsLoading"
+                      RelativePanel.Below="Feedback"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.AlignBottomWithPanel="True"

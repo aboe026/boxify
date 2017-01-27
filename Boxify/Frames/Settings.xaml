@@ -24,7 +24,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="10"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="20"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -55,7 +57,7 @@
                    VerticalAlignment="Center"
                    Margin="100,0,10,0"
                    Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
-                   Style="{StaticResource SubtitleTextBlockStyle}"
+                   Style="{StaticResource BodyTextBlockStyle}"
                    TextWrapping="Wrap"/>
 
             <TextBlock Name="themeLabel"
@@ -92,6 +94,74 @@
                          Style="{StaticResource RadioButtonStyle}"
                          GroupName="ThemeColor"
                          Click="ThemeColor_Click"/>
+
+            </RelativePanel>
+
+            <TextBlock Name="playbackLabel"
+                   Grid.Row="5"
+                   Grid.Column="0"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center"
+                   Text="Playback Source"
+                   Style="{StaticResource TitleTextBlockStyle}"/>
+
+            <RelativePanel Grid.Row="5"
+                       Grid.Column="2">
+
+                <RadioButton Name="Spotify"
+                         RelativePanel.AlignLeftWithPanel="True"
+                         Content=""
+                         Template="{StaticResource RadioButtonControlTemplate}"
+                         Style="{StaticResource RadioButtonStyle}"
+                         GroupName="PlaybackSource"
+                         Click="Playbacksource_Click">
+
+                    <RadioButton.Background>
+                        <ImageBrush ImageSource="{ThemeResource SpotifyLogo}"
+                                    Stretch="Uniform">
+
+                            <ImageBrush.Transform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
+                            </ImageBrush.Transform>
+
+                        </ImageBrush>
+                    </RadioButton.Background>
+
+                </RadioButton>
+
+                <TextBlock Name="SpotifyLabel"
+                           RelativePanel.RightOf="Spotify"
+                           RelativePanel.AlignVerticalCenterWith="Spotify"
+                           Text="Only 30 second previews but songs load faster."
+                           Style="{StaticResource BodyTextBlockStyle}"/>
+
+                <RadioButton Name="YouTube"
+                         RelativePanel.Below="Spotify"
+                         Content=""
+                         Template="{StaticResource RadioButtonControlTemplate}"
+                         Style="{StaticResource RadioButtonStyle}"
+                         GroupName="PlaybackSource"
+                         Click="Playbacksource_Click">
+
+                    <RadioButton.Background>
+                        <ImageBrush ImageSource="{ThemeResource YouTubeLogo}"
+                                    Stretch="UniformToFill">
+
+                            <ImageBrush.Transform>
+                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
+                            </ImageBrush.Transform>
+
+                        </ImageBrush>
+                    </RadioButton.Background>
+
+                </RadioButton>
+
+                <TextBlock Name="YoutubeLabel"
+                           RelativePanel.RightOf="YouTube"
+                           RelativePanel.AlignVerticalCenterWith="YouTube"
+                           Text="Full song playback but takes longer to load. Might not find song."
+                           Style="{StaticResource BodyTextBlockStyle}"
+                           TextWrapping="WrapWholeWords"/>
 
             </RelativePanel>
 

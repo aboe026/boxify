@@ -90,7 +90,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="Assets\ClientCredentials.json">
+    <Content Include="Assets\Credentials.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="project.json" />
@@ -149,6 +149,10 @@
     <None Include="Boxify_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Spotify_Logo_RGB_Black.png" />
+    <Content Include="Assets\Spotify_Logo_RGB_Green.png" />
+    <Content Include="Assets\YouTube-logo-full_color.png" />
+    <Content Include="Assets\YouTube-logo-light.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
