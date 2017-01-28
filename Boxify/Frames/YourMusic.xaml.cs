@@ -252,49 +252,6 @@ namespace Boxify
         }
 
         /// <summary>
-        /// When user hovers onto PlaylistList
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void playlists_GotFocus(object sender, RoutedEventArgs e)
-        {
-            ListViewItem item = e.OriginalSource as ListViewItem;
-            playlists.SelectedIndex = getListIndex(item);
-            (item.Content as PlaylistList).showPlay();
-        }
-
-        /// <summary>
-        /// When user hovers away from PlaylistList
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void playlists_LostFocus(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ((e.OriginalSource as ListViewItem).Content as PlaylistList).hidePlay();
-            }
-            catch (NullReferenceException) { }
-        }
-
-        /// <summary>
-        /// Gets the index of the currently hovered PlaylistList
-        /// </summary>
-        /// <param name="item">The item currently hovered</param>
-        /// <returns>The index of the currently hovered item in the ListView</returns>
-        private int getListIndex(ListViewItem item)
-        {
-            for (int i = 0; i < playlists.Items.Count; i++)
-            {
-                if ((playlists.Items[i] as PlaylistList).playlist.id == (item.Content as PlaylistList).playlist.id)
-                {
-                    return i;
-                }
-            }
-            return 0;
-        }
-
-        /// <summary>
         /// When user clicks a PlaylistList for playing
         /// </summary>
         /// <param name="sender"></param>

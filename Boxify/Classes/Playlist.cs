@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
+using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -155,6 +156,7 @@ namespace Boxify
             int remainingCount = tracksCount;
             TimeSpan localPlaybackAttempt;
             int tracksToGetPerRequest = 1;
+            Playbacksource currentPlaybackType = Settings.playbackSource;
 
             while (proceed && remainingCount > 0)
             {
@@ -186,7 +188,7 @@ namespace Boxify
                         if (firstTrack)
                         {
                             firstTrack = false;
-                            localPlaybackAttempt = await PlaybackService.playTrack(track, tracksCount);
+                            localPlaybackAttempt = await PlaybackService.playTrack(track, tracksCount, currentPlaybackType);
                             localOffset = 1;
                         }
                         else
@@ -194,7 +196,7 @@ namespace Boxify
                             tracksList.Add(track);
                         }
                     }
-                    proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt);
+                    proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt, currentPlaybackType);
                     remainingCount -= tracksToGetPerRequest;
                     tracksToGetPerRequest = 2 * tracksToGetPerRequest;
                     if (tracksToGetPerRequest > maxTracksPerRequest)

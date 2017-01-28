@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
+using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -161,11 +162,12 @@ namespace Boxify
         public async Task playTracks()
         {
             List<Track> tracks = await getTracks();
+            Playbacksource currentPlaybackType = Settings.playbackSource;
             if (tracks.Count > 0)
             {
-                TimeSpan localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count());
+                TimeSpan localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count(), currentPlaybackType);
                 tracks.RemoveAt(0);
-                await PlaybackService.addToQueue(tracks, tracks.Count, 1, localPlaybackAttempt);
+                await PlaybackService.addToQueue(tracks, tracks.Count, 1, localPlaybackAttempt, currentPlaybackType);
             }
         }
     }

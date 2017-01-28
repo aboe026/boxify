@@ -57,7 +57,6 @@
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
                       IsItemClickEnabled="True"
-                      GotFocus="FeaturedPlaylists_GotFocus"
                       ItemClick="FeaturedPlaylists_ItemClick"
                       XYFocusUp="{x:Bind refresh}">
 
@@ -67,6 +66,21 @@
                         </WrapGrid>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
+
+                <GridView.ItemContainerStyle>
+
+                    <Style TargetType="GridViewItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="GridViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                </GridView.ItemContainerStyle>
 
             </GridView>
 

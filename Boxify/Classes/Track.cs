@@ -159,7 +159,7 @@ namespace Boxify
         /// </summary>
         public async void playTrack()
         {
-            await PlaybackService.playTrack(this, 1);
+            await PlaybackService.playTrack(this, 1, Settings.playbackSource);
         }
     }
 }

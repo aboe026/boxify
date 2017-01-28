@@ -181,34 +181,6 @@ namespace Boxify
         }
 
         /// <summary>
-        /// When user hovers onto PlaylistList
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FeaturedPlaylists_GotFocus(object sender, RoutedEventArgs e)
-        {
-            GridViewItem item = e.OriginalSource as GridViewItem;
-            FeaturedPlaylists.SelectedIndex = getListIndex(item);
-        }
-
-        /// <summary>
-        /// Gets the index of the currently hovered PlaylistList
-        /// </summary>
-        /// <param name="item">The item currently hovered</param>
-        /// <returns>The index of the currently hovered item in the ListView</returns>
-        private int getListIndex(GridViewItem item)
-        {
-            for (int i=0; i < FeaturedPlaylists.Items.Count; i++)
-            {
-                if ((FeaturedPlaylists.Items[i] as PlaylistHero).playlist.id == (item.Content as PlaylistHero).playlist.id)
-                {
-                    return i;
-                }
-            }
-            return 0;
-        }
-
-        /// <summary>
         /// User clicks a playlist to play the tracks
         /// </summary>
         /// <param name="sender"></param>
