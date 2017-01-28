@@ -67,8 +67,6 @@
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.Below="playlistsLabel"
                       IsItemClickEnabled="True"
-                      GotFocus="playlists_GotFocus"
-                      LostFocus="playlists_LostFocus"
                       ItemClick="playlists_ItemClick"
                       XYFocusUp="{x:Bind refresh}">
 
@@ -76,6 +74,13 @@
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </ListView.ItemContainerStyle>
 

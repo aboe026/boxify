@@ -40,21 +40,20 @@ namespace Boxify
         /// Plays the desired tracks
         /// </summary>
         /// <param name="tracks">A list of desired tracks to be played</param>
-        public static async Task<TimeSpan> playTrack(Track track, int total)
+        public static async Task<TimeSpan> playTrack(Track track, int total, Playbacksource playbackType)
         {
             TimeSpan localPlaybackAttempt = new TimeSpan(DateTime.Now.Ticks);
             currentPlaybackAttempt = localPlaybackAttempt;
             failuresCount = 0;
             queue.Items.Clear();
             Player.Source = queue;
-            Playbacksource currentPlaybackType = Settings.playbackSource;
-            if (currentPlaybackType == Playbacksource.Spotify)
+            if (playbackType == Playbacksource.Spotify)
             {
                 mainPage.setSpotifyLoadingMaximum(total);
                 mainPage.setSpotifyLoadingValue(0);
                 mainPage.bringUpSpotify();
             }
-            else if (currentPlaybackType == Playbacksource.YouTube)
+            else if (playbackType == Playbacksource.YouTube)
             {
                 mainPage.setYouTubeLoadingMaximum(total);
                 mainPage.setYouTubeLoadingValue(0);
@@ -63,7 +62,7 @@ namespace Boxify
 
             MediaSource source = null;
             bool validTrack = false;
-            if (currentPlaybackType == Playbacksource.Spotify)
+            if (playbackType == Playbacksource.Spotify)
             {
                 if (track.previewUrl != "")
                 {
@@ -71,7 +70,7 @@ namespace Boxify
                     validTrack = true;
                 }
             }
-            else if (currentPlaybackType == Playbacksource.YouTube)
+            else if (playbackType == Playbacksource.YouTube)
             {
                 string videoId = searchForVideoId(track);
                 try
@@ -100,12 +99,12 @@ namespace Boxify
 
                 queue.Items.Add(playbackItem);
             }
-            if (currentPlaybackType == Playbacksource.Spotify)
+            if (playbackType == Playbacksource.Spotify)
             {
                 mainPage.setSpotifyLoadingValue(1);
 
             }
-            else if (currentPlaybackType == Playbacksource.YouTube)
+            else if (playbackType == Playbacksource.YouTube)
             {
                 mainPage.setYouTubeLoadingValue(1);
                 if (failuresCount == 1)
@@ -124,27 +123,26 @@ namespace Boxify
         /// Add the desired tracks to the playlist queue
         /// </summary>
         /// <param name="tracks">Add the list of tracks to the playlist</param>
-        public static async Task<bool> addToQueue(List<Track> tracks, int total, int offset, TimeSpan localPlaybackAttempt)
+        public static async Task<bool> addToQueue(List<Track> tracks, int total, int offset, TimeSpan localPlaybackAttempt, Playbacksource playbackType)
         {
             if (localPlaybackAttempt.Ticks != currentPlaybackAttempt.Ticks)
             {
                 return false;
             }
-            Playbacksource currentPlaybackType = Settings.playbackSource;
-            if (currentPlaybackType == Playbacksource.Spotify)
+            if (playbackType == Playbacksource.Spotify)
             {
                 mainPage.setSpotifyLoadingMaximum(total);
                 mainPage.setSpotifyLoadingValue(offset);
                 mainPage.bringUpSpotify();
             }
-            else if (currentPlaybackType == Playbacksource.YouTube)
+            else if (playbackType == Playbacksource.YouTube)
             {
                 mainPage.setYouTubeLoadingMaximum(total);
                 mainPage.setYouTubeLoadingValue(offset);
                 mainPage.bringUpYouTube();
             }
 
-            if (currentPlaybackType == Playbacksource.Spotify)
+            if (playbackType == Playbacksource.Spotify)
             {
                 for (int i = 0; i < tracks.Count; i++)
                 {
@@ -198,7 +196,7 @@ namespace Boxify
                     }
                 }
             }
-            else if (currentPlaybackType == Playbacksource.YouTube)
+            else if (playbackType == Playbacksource.YouTube)
             {
                 List<string> videoIds = await bulkSearchForVideoId(tracks);
                 int previousFailuesCount = failuresCount;
