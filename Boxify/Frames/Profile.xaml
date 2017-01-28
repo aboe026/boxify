@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="20,0,20,0">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
