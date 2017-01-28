@@ -1,4 +1,7 @@
-﻿using Windows.Storage;
+﻿using System;
+using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -65,6 +68,13 @@ namespace Boxify
             {
                 Spotify.IsChecked = true;
             }
+
+            // version
+            version.Text = string.Format("{0}.{1}.{2}.{3}",
+                                         Package.Current.Id.Version.Major,
+                                         Package.Current.Id.Version.Minor,
+                                         Package.Current.Id.Version.Build,
+                                         Package.Current.Id.Version.Revision);
         }
 
         /// <summary>
@@ -152,6 +162,36 @@ namespace Boxify
             composite["PlaybackSource"] = playbackSource.ToString();
 
             roamingSettings.Values["UserSettings"] = composite;
+        }
+
+        /// <summary>
+        /// User selects to go to browser for repository
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Repo_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify"));
+        }
+
+        /// <summary>
+        /// User selects to go to browser for Spotify support page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void SpotifyGitHub_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/spotify/web-api/issues/57"));
+        }
+
+        /// <summary>
+        /// User selects to go to store to rate
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void rate_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Package.Current.Id.FamilyName)));
         }
     }
 }

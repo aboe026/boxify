@@ -17,155 +17,310 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <ScrollViewer>
+    <Grid Margin="8,0,8,0">
 
-        <Grid Margin="20">
+        <Pivot>
+            <PivotItem Margin="0,0,0,0">
+                <PivotItem.Header>
+                    <TextBlock Text="General"
+                               Style="{StaticResource SubheaderTextBlockStyle}"/>
+                </PivotItem.Header>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="20"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="3*"/>
-            </Grid.ColumnDefinitions>
+                <ScrollViewer>
 
-            <TextBlock Name="tvSaveLabel"
-                   Grid.Row="1"
-                   Grid.Column="0"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Center"
-                   Text="TV Safe Area"
-                   Style="{StaticResource TitleTextBlockStyle}"/>
+                    <Grid Margin="20">
 
-            <ToggleSwitch Name="tvSafe"
-                      Grid.Row="1"
-                      Grid.Column="2"
-                      VerticalAlignment="Center"
-                      Style="{StaticResource ToggleButtonStyle}"
-                      Toggled="tvSafe_Toggled"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
 
-            <TextBlock Name="tvSafeDesc"
-                   Grid.Row="1"
-                   Grid.Column="2"
-                   VerticalAlignment="Center"
-                   Margin="100,0,10,0"
-                   Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
-                   Style="{StaticResource BodyTextBlockStyle}"
-                   TextWrapping="Wrap"/>
+                        <TextBlock Name="tvSaveLabel"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="TV Safe Area"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
 
-            <TextBlock Name="themeLabel"
-                   Grid.Row="3"
-                   Grid.Column="0"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Center"
-                   Text="Theme Color"
-                   Style="{StaticResource TitleTextBlockStyle}"/>
+                        <ToggleSwitch Name="tvSafe"
+                                      Grid.Row="1"
+                                      Grid.Column="2"
+                                      VerticalAlignment="Center"
+                                      Style="{StaticResource ToggleButtonStyle}"
+                                      Toggled="tvSafe_Toggled"/>
 
-            <RelativePanel Grid.Row="3"
-                       Grid.Column="2">
+                        <TextBlock Name="tvSafeDesc"
+                                   Grid.Row="1"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   Margin="100,0,10,0"
+                                   Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
+                                   Style="{StaticResource BodyTextBlockStyle}"
+                                   TextWrapping="Wrap"/>
 
-                <RadioButton Name="System"
-                         RelativePanel.AlignLeftWithPanel="True"
-                         Content="System"
-                         Template="{StaticResource RadioButtonControlTemplate}"
-                         Style="{StaticResource RadioButtonStyle}"
-                         GroupName="ThemeColor"
-                         Click="ThemeColor_Click"/>
+                        <TextBlock Name="themeLabel"
+                                   Grid.Row="3"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Theme Color"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
 
-                <RadioButton Name="Light"
-                         RelativePanel.RightOf="System"
-                         Content="Light"
-                         Template="{StaticResource RadioButtonControlTemplate}"
-                         Style="{StaticResource RadioButtonStyle}"
-                         GroupName="ThemeColor"
-                         Click="ThemeColor_Click"/>
+                        <RelativePanel Grid.Row="3"
+                                       Grid.Column="2">
 
-                <RadioButton Name="Dark"
-                         RelativePanel.RightOf="Light"
-                         Content="Dark"
-                         Template="{StaticResource RadioButtonControlTemplate}"
-                         Style="{StaticResource RadioButtonStyle}"
-                         GroupName="ThemeColor"
-                         Click="ThemeColor_Click"/>
+                            <RadioButton Name="System"
+                                         RelativePanel.AlignLeftWithPanel="True"
+                                         Content="System"
+                                         Template="{StaticResource RadioButtonControlTemplate}"
+                                         Style="{StaticResource RadioButtonStyle}"
+                                         GroupName="ThemeColor"
+                                         Click="ThemeColor_Click"/>
 
-            </RelativePanel>
+                            <RadioButton Name="Light"
+                                         RelativePanel.RightOf="System"
+                                         Content="Light"
+                                         Template="{StaticResource RadioButtonControlTemplate}"
+                                         Style="{StaticResource RadioButtonStyle}"
+                                         GroupName="ThemeColor"
+                                         Click="ThemeColor_Click"/>
 
-            <TextBlock Name="playbackLabel"
-                   Grid.Row="5"
-                   Grid.Column="0"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Center"
-                   Text="Playback Source"
-                   Style="{StaticResource TitleTextBlockStyle}"/>
+                            <RadioButton Name="Dark"
+                                         RelativePanel.RightOf="Light"
+                                         Content="Dark"
+                                         Template="{StaticResource RadioButtonControlTemplate}"
+                                         Style="{StaticResource RadioButtonStyle}"
+                                         GroupName="ThemeColor"
+                                         Click="ThemeColor_Click"/>
 
-            <RelativePanel Grid.Row="5"
-                       Grid.Column="2">
+                        </RelativePanel>
 
-                <RadioButton Name="Spotify"
-                         RelativePanel.AlignLeftWithPanel="True"
-                         Content=""
-                         Template="{StaticResource RadioButtonControlTemplate}"
-                         Style="{StaticResource RadioButtonStyle}"
-                         GroupName="PlaybackSource"
-                         Click="Playbacksource_Click">
+                        <TextBlock Name="playbackLabel"
+                                   Grid.Row="5"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Playback Source"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
 
-                    <RadioButton.Background>
-                        <ImageBrush ImageSource="{ThemeResource SpotifyLogo}"
-                                    Stretch="Uniform">
+                        <RelativePanel Grid.Row="5"
+                                       Grid.Column="2">
 
-                            <ImageBrush.Transform>
-                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
-                            </ImageBrush.Transform>
+                            <RadioButton Name="Spotify"
+                                         RelativePanel.AlignLeftWithPanel="True"
+                                         Content=""
+                                         Template="{StaticResource RadioButtonControlTemplate}"
+                                         Style="{StaticResource RadioButtonStyle}"
+                                         GroupName="PlaybackSource"
+                                         Click="Playbacksource_Click">
 
-                        </ImageBrush>
-                    </RadioButton.Background>
+                                <RadioButton.Background>
+                                    <ImageBrush ImageSource="{ThemeResource SpotifyLogo}"
+                                                Stretch="Uniform">
 
-                </RadioButton>
+                                        <ImageBrush.Transform>
+                                            <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
+                                        </ImageBrush.Transform>
 
-                <TextBlock Name="SpotifyLabel"
-                           RelativePanel.RightOf="Spotify"
-                           RelativePanel.AlignVerticalCenterWith="Spotify"
-                           Text="Only 30 second previews but songs load faster."
-                           Style="{StaticResource BodyTextBlockStyle}"/>
+                                    </ImageBrush>
+                                </RadioButton.Background>
 
-                <RadioButton Name="YouTube"
-                         RelativePanel.Below="Spotify"
-                         Content=""
-                         Template="{StaticResource RadioButtonControlTemplate}"
-                         Style="{StaticResource RadioButtonStyle}"
-                         GroupName="PlaybackSource"
-                         Click="Playbacksource_Click">
+                            </RadioButton>
 
-                    <RadioButton.Background>
-                        <ImageBrush ImageSource="{ThemeResource YouTubeLogo}"
-                                    Stretch="UniformToFill">
+                            <TextBlock Name="SpotifyLabel"
+                                       RelativePanel.RightOf="Spotify"
+                                       RelativePanel.AlignVerticalCenterWith="Spotify"
+                                       Text="Only 30 second previews but songs load faster."
+                                       Style="{StaticResource BodyTextBlockStyle}"/>
 
-                            <ImageBrush.Transform>
-                                <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
-                            </ImageBrush.Transform>
+                            <RadioButton Name="YouTube"
+                                         RelativePanel.Below="Spotify"
+                                         Content=""
+                                         Template="{StaticResource RadioButtonControlTemplate}"
+                                         Style="{StaticResource RadioButtonStyle}"
+                                         GroupName="PlaybackSource"
+                                         Click="Playbacksource_Click">
 
-                        </ImageBrush>
-                    </RadioButton.Background>
+                                <RadioButton.Background>
+                                    <ImageBrush ImageSource="{ThemeResource YouTubeLogo}"
+                                                Stretch="UniformToFill">
 
-                </RadioButton>
+                                        <ImageBrush.Transform>
+                                            <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="80" CenterY="20"/>
+                                        </ImageBrush.Transform>
 
-                <TextBlock Name="YoutubeLabel"
-                           RelativePanel.RightOf="YouTube"
-                           RelativePanel.AlignVerticalCenterWith="YouTube"
-                           Text="Full song playback but takes longer to load. Might not find song."
-                           Style="{StaticResource BodyTextBlockStyle}"
-                           TextWrapping="WrapWholeWords"/>
+                                    </ImageBrush>
+                                </RadioButton.Background>
 
-            </RelativePanel>
+                            </RadioButton>
 
-        </Grid>
+                            <TextBlock Name="YoutubeLabel"
+                                       RelativePanel.RightOf="YouTube"
+                                       RelativePanel.AlignVerticalCenterWith="YouTube"
+                                       Text="Full song playback but takes longer to load. Might not find song."
+                                       Style="{StaticResource BodyTextBlockStyle}"
+                                       TextWrapping="WrapWholeWords"/>
 
-    </ScrollViewer>
+                        </RelativePanel>
+
+                    </Grid>
+
+                </ScrollViewer>
+
+            </PivotItem>
+
+            <PivotItem>
+                
+                <PivotItem.Header>
+                    <TextBlock Text="About" Style="{StaticResource SubheaderTextBlockStyle}"></TextBlock>
+                </PivotItem.Header>
+
+                <ScrollViewer>
+
+                    <Grid Margin="20">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Name="versionLabel"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Version"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+
+                        <TextBlock Name="version"
+                                   Grid.Row="1"
+                                   Grid.Column="2"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Text="x.y.z.w"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+                        
+                        <TextBlock Name="rateLabel"
+                                   Grid.Row="3"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Rate"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+
+                        <RelativePanel Grid.Row="3"
+                                       Grid.Column="2">
+
+                            <TextBlock Name="rateMessage"
+                                       RelativePanel.AlignLeftWithPanel="True"
+                                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                                       Text="I'd appreciate if you took the time to rate us in the store!"
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       TextWrapping="WrapWholeWords"
+                                       Margin="0,0,0,10"/>
+
+                            <Button Name="rate"
+                                    RelativePanel.Below="rateMessage"
+                                    RelativePanel.AlignLeftWithPanel="True"
+                                    Content="Got to Store"
+                                    Style="{StaticResource ButtonStyle}"
+                                    Click="rate_Click"/>
+
+                        </RelativePanel>
+
+                        <TextBlock Name="contactLabel"
+                                   Grid.Row="5"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Contact"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+
+                        <RelativePanel Grid.Row="5"
+                                       Grid.Column="2">
+
+                            <TextBlock Name="contact"
+                                       RelativePanel.AlignTopWithPanel="True"
+                                       RelativePanel.AlignLeftWithPanel="True"
+                                       RelativePanel.AlignRightWithPanel="True"
+                                       Margin="0,0,0,10"
+                                       HorizontalAlignment="Left"
+                                       Text="Comments? Feedback? Suggestions? Complaints? I would love to hear from you! Please feel free to create an issue on the Boxify GitHub repository or email me at aboe026-boxify@outlook.com."
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       TextWrapping="WrapWholeWords"/>
+
+                            <Button Name="Repo"
+                                    RelativePanel.AlignLeftWithPanel="True"
+                                    RelativePanel.Below="contact"
+                                    Content="Boxify GitHub"
+                                    Style="{StaticResource ButtonStyle}"
+                                    Click="Repo_Click"/>
+
+                        </RelativePanel>
+
+                        <TextBlock Name="spotifyLabel"
+                                   Grid.Row="7"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text="Why Only 30 Second Previews For Spotify?"
+                                   Style="{StaticResource TitleTextBlockStyle}"
+                                   TextWrapping="WrapWholeWords"/>
+
+                        <RelativePanel Grid.Row="7"
+                                       Grid.Column="2">
+
+                            <TextBlock Name="spotifyMessage"
+                                       RelativePanel.AlignTopWithPanel="True"
+                                       RelativePanel.AlignLeftWithPanel="True"
+                                       RelativePanel.AlignRightWithPanel="True"
+                                       Margin="0,0,0,10"
+                                       HorizontalAlignment="Left"
+                                       Text="Unfortunately, Spotify doesn't have a C# API for writing UWP apps, so I had to use their Web API. Currently, even though their Android and iOS APIs support full song playback, their Web API doesn't. If you (like me!) want official full song playbabck from Spotify, let your voice be heard in their GitHub issue."
+                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                       TextWrapping="WrapWholeWords"/>
+
+                            <Button Name="SpotifyGitHub"
+                                    RelativePanel.AlignLeftWithPanel="True"
+                                    RelativePanel.Below="spotifyMessage"
+                                    Content="Spotify Issue"
+                                    Style="{StaticResource ButtonStyle}"
+                                    Click="SpotifyGitHub_Click"/>
+
+                        </RelativePanel>
+
+                    </Grid>
+
+                </ScrollViewer>
+
+            </PivotItem>
+        </Pivot>
+
+    </Grid>
+    
 </Page>
