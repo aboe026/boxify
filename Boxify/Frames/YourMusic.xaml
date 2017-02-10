@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="806"
-    d:DesignHeight="315">
+    d:DesignHeight="315"
+    Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -58,7 +59,7 @@
                     RelativePanel.RightOf="refresh"
                     RelativePanel.AlignVerticalCenterWith="playlistsLabel"
                     Margin="20,-15,0,0"
-                    Content="Load More"
+                    Content="More..."
                     Style="{StaticResource ButtonStyle}"
                     Click="More_Click"/>
 

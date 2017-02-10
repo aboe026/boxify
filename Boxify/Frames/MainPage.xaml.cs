@@ -2,7 +2,6 @@
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
-using Windows.Storage;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -22,7 +21,8 @@ namespace Boxify
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        ListViewItem currentNavSelection = new ListViewItem();
+        public static ListViewItem currentNavSelection = new ListViewItem();
+        public static bool returningFromMemoryReduction = false;
 
         /// <summary>
         /// The main page for the Boxify application
@@ -36,23 +36,45 @@ namespace Boxify
         /// When the user navigates to the page
         /// </summary>
         /// <param name="e">The navigation event arguments</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            // settings
+            if (Settings.theme == Theme.Light)
+            {
+                this.RequestedTheme = ElementTheme.Light;
+            }
+            else if (Settings.theme == Theme.Dark)
+            {
+                this.RequestedTheme = ElementTheme.Dark;
+            }
+            if (Settings.tvSafeArea)
+            {
+                safeAreaOn();
+            }
+            else
+            {
+                safeAreaOff();
+            }
+
             SpotifyLogo.Visibility = Visibility.Collapsed;
             SpotifyLoading.Visibility = Visibility.Collapsed;
             YouTubeLogo.Visibility = Visibility.Collapsed;
             YouTubeLoading.Visibility = Visibility.Collapsed;
+            YouTubeMessage.Visibility = Visibility.Collapsed;
 
-            selectHamburgerOption("BrowseItem");
+            selectHamburgerOption(App.hamburgerOptionToLoadTo);
             updateUserUI();
-            if (PlaybackService.mainPage == null)
-            {
-                PlaybackService.mainPage = this;
-            }
+
+            PlaybackService.mainPage = this;
             if (PlaybackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 PlaybackMenu.Visibility = Visibility.Visible;
+                if (returningFromMemoryReduction)
+                {
+                    await PlaybackMenu.updateUI();
+                    returningFromMemoryReduction = false;
+                }
             }
             else
             {
@@ -60,53 +82,6 @@ namespace Boxify
                 PlaybackMenu.Visibility = Visibility.Collapsed;
             }
 
-            // settings
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["UserSettings"];
-            if (composite != null)
-            {
-                // tv safe area
-                if (composite["TvSafeAreaOff"] != null && composite["TvSafeAreaOff"].ToString() == "True")
-                {
-                    safeAreaOff();
-                }
-                else
-                {
-                    safeAreaOn();
-                }
-
-                // theme
-                if (composite["Theme"] != null && composite["Theme"].ToString() == "Light")
-                {
-                    this.RequestedTheme = ElementTheme.Light;
-                    Settings.theme = Settings.Theme.Light;
-                }
-                else if (composite["Theme"].ToString() == "Dark")
-                {
-                    this.RequestedTheme = ElementTheme.Dark;
-                    Settings.theme = Settings.Theme.Dark;
-                }
-                else
-                {
-                    Settings.theme = Settings.Theme.System;
-                }
-
-                // playback source
-                if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
-                {
-                    Settings.playbackSource = Playbacksource.YouTube;
-                }
-                else
-                {
-                    Settings.playbackSource = Playbacksource.Spotify;
-                }
-            }
-            else
-            {
-                safeAreaOn();
-            }
-
-            // load users playlists
             loadUserPlaylists();
 
             // Back button in title bar
@@ -128,8 +103,6 @@ namespace Boxify
                 // Remove the UI from the title bar if in-app back stack is empty.
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             }
-
-            selectHamburgerOption("BrowseItem");
         }
 
         /// <summary>
@@ -180,7 +153,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void hamburgerButton_Click(object sender, RoutedEventArgs e)
         {
-            MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
+            MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
         }
 
         /// <summary>
@@ -238,7 +211,7 @@ namespace Boxify
         /// <param name="e">The selection changed event arguments</param>
         private void HamburgerOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MySplitView.IsPaneOpen = false;
+            MainSplitView.IsPaneOpen = false;
             if (e.AddedItems.Count > 0)
             {
                 ListViewItem selectedItem = (ListViewItem)e.AddedItems[e.AddedItems.Count - 1];
@@ -312,10 +285,9 @@ namespace Boxify
         /// </summary>
         public void safeAreaOff()
         {
-            Settings.tvSafeArea = false;
             NavLeftBorder.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
-            MySplitView.Margin = new Thickness(0, 0, 0, 0);
+            MainSplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
             RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
             if (PlaybackService.showing)
@@ -334,10 +306,9 @@ namespace Boxify
         /// </summary>
         public void safeAreaOn()
         {
-            Settings.tvSafeArea = true;
             NavLeftBorder.Visibility = Visibility.Visible;
             Header.Margin = new Thickness(48, 27, 48, 0);
-            MySplitView.Margin = new Thickness(48, 0, 48, 0);
+            MainSplitView.Margin = new Thickness(48, 0, 48, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
             RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
             if (PlaybackService.showing)
@@ -370,7 +341,7 @@ namespace Boxify
         {
             if (e.Key == VirtualKey.GamepadView)
             {
-                MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
+                MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
             }
             else if (e.Key == VirtualKey.GamepadY)
             {
@@ -424,9 +395,9 @@ namespace Boxify
         /// <param name="e"></param>
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (MySplitView.IsPaneOpen)
+            if (MainSplitView.IsPaneOpen)
             {
-                MySplitView.IsPaneOpen = false;
+                MainSplitView.IsPaneOpen = false;
             }
             selectHamburgerOption("SettingsItem");
 
@@ -471,14 +442,17 @@ namespace Boxify
         /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
         public void bringUpYouTube()
         {
-            SpotifyLogo.Visibility = Visibility.Collapsed;
-            SpotifyLoading.Visibility = Visibility.Collapsed;
-            YouTubeLogo.Visibility = Visibility.Visible;
-            YouTubeLoading.Visibility = Visibility.Visible;
-            if (YouTubeMessage.Visibility == Visibility.Collapsed)
+            if (SpotifyLogo != null && SpotifyLoading != null && YouTubeLogo != null && YouTubeLoading != null && YouTubeMessage != null)
             {
-                YouTubeMessage.Visibility = Visibility.Visible;
-                YouTubeMessage.Text = "";
+                SpotifyLogo.Visibility = Visibility.Collapsed;
+                SpotifyLoading.Visibility = Visibility.Collapsed;
+                YouTubeLogo.Visibility = Visibility.Visible;
+                YouTubeLoading.Visibility = Visibility.Visible;
+                if (YouTubeMessage.Visibility == Visibility.Collapsed)
+                {
+                    YouTubeMessage.Visibility = Visibility.Visible;
+                    YouTubeMessage.Text = "";
+                }
             }
         }
 
@@ -488,7 +462,10 @@ namespace Boxify
         /// <param name="value">The amount of progress made</param>
         public void setYouTubeLoadingValue(double value)
         {
-            YouTubeLoading.Value = value;
+            if (YouTubeLoading != null)
+            {
+                YouTubeLoading.Value = value;
+            }
         }
 
         /// <summary>
@@ -497,7 +474,10 @@ namespace Boxify
         /// <param name="max">The limit of progress</param>
         public void setYouTubeLoadingMaximum(double max)
         {
-            YouTubeLoading.Maximum = max;
+            if (YouTubeLoading != null)
+            {
+                YouTubeLoading.Maximum = max;
+            }
         }
 
         /// <summary>
@@ -506,7 +486,24 @@ namespace Boxify
         /// <param name="message"></param>
         public void setYouTubeMessage(String message)
         {
-            YouTubeMessage.Text = message;
+            if (YouTubeMessage != null)
+            {
+                YouTubeMessage.Text = message;
+            }
+        }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                this.KeyDown -= Page_KeyDown;
+                currentNavSelection = null;
+            }
         }
     }
 }

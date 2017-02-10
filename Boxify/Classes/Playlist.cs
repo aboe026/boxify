@@ -151,11 +151,13 @@ namespace Boxify
         /// <returns></returns>
         public async Task playTracks()
         {
+            long appDownloadMarker = DateTime.Now.Ticks;
+            App.pendingDownloads.Add(appDownloadMarker);
             bool firstTrack = true;
             bool proceed = true;
             int remainingCount = tracksCount;
-            TimeSpan localPlaybackAttempt;
-            int tracksToGetPerRequest = 1;
+            long localPlaybackAttempt = 0;
+            int tracksToGetPerRequest = 2;
             Playbacksource currentPlaybackType = Settings.playbackSource;
 
             while (proceed && remainingCount > 0)
@@ -196,9 +198,12 @@ namespace Boxify
                             tracksList.Add(track);
                         }
                     }
-                    proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt, currentPlaybackType);
+                    if (tracksList.Count > 0)
+                    {
+                        proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt, currentPlaybackType);
+                    }
                     remainingCount -= tracksToGetPerRequest;
-                    tracksToGetPerRequest = 2 * tracksToGetPerRequest;
+                    //tracksToGetPerRequest = 2 * tracksToGetPerRequest;
                     if (tracksToGetPerRequest > maxTracksPerRequest)
                     {
                         tracksToGetPerRequest = maxTracksPerRequest;
@@ -209,6 +214,7 @@ namespace Boxify
                     proceed = false;
                 }
             }
+            App.pendingDownloads.Remove(appDownloadMarker);
         }
     }
 }

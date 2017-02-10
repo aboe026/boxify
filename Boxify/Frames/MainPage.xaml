@@ -8,7 +8,8 @@
     mc:Ignorable="d"
     d:DesignWidth="960"
     d:DesignHeight="540"
-    KeyDown="Page_KeyDown">
+    KeyDown="Page_KeyDown"
+    Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -144,12 +145,13 @@
                 Margin="114,0,0,0"
                 Background="{ThemeResource MainBackground}"/>
 
-        <SplitView Name="MySplitView"
+        <SplitView Name="MainSplitView"
                    Grid.Row="1"
                    Grid.RowSpan="2"
                    Margin="48,0,48,0"
                    DisplayMode="CompactOverlay" 
-                   OpenPaneLength="250" Canvas.ZIndex="2"
+                   OpenPaneLength="250"
+                   Canvas.ZIndex="2"
                    CompactPaneLength="66">
             <SplitView.Pane>
                 <ListView Name="HamburgerOptions"
@@ -192,7 +194,7 @@
                     </ListView.Footer>
 
                 </ListView>
-                
+
             </SplitView.Pane>
             <SplitView.Content>
 
@@ -219,8 +221,6 @@
             </SplitView.Content>
 
         </SplitView>
-
-        
 
     </Grid>
 </Page>

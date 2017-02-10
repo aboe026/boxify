@@ -57,7 +57,7 @@ namespace Boxify
             }
 
             // tv safe area
-            tvSafe.IsOn = tvSafeArea;
+            TvSafeArea.IsOn = tvSafeArea;
 
             // playback source
             if (playbackSource == Playbacksource.YouTube)
@@ -70,7 +70,7 @@ namespace Boxify
             }
 
             // version
-            version.Text = string.Format("{0}.{1}.{2}.{3}",
+            Version.Text = string.Format("{0}.{1}.{2}.{3}",
                                          Package.Current.Id.Version.Major,
                                          Package.Current.Id.Version.Minor,
                                          Package.Current.Id.Version.Build,
@@ -87,6 +87,7 @@ namespace Boxify
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
+                tvSafeArea = toggleSwitch.IsOn;
                 if (toggleSwitch.IsOn)
                 {
                     mainPage.safeAreaOn();   
@@ -157,7 +158,7 @@ namespace Boxify
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
             ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
-            composite["TvSafeAreaOff"] = !tvSafe.IsOn;
+            composite["TvSafeAreaOff"] = !TvSafeArea.IsOn;
             composite["Theme"] = theme.ToString();
             composite["PlaybackSource"] = playbackSource.ToString();
 

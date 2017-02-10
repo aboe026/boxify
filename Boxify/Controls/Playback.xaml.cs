@@ -29,6 +29,29 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Updates the UI with the information of the currently playing track
+        /// </summary>
+        public async Task updateUI()
+        {
+            MediaItemDisplayProperties displayProperties = PlaybackService.currentlyPlayingItem.GetDisplayProperties();
+            TrackName.Text = displayProperties.MusicProperties.Title;
+            TrackAlbum.Text = displayProperties.MusicProperties.AlbumTitle;
+            IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.SetSource(thumbnail);
+            AlbumArt.Source = bitmapImage;
+            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+            {
+                Play.Visibility = Visibility.Collapsed;
+                uiUpdateTimer.Start();
+            }
+            else
+            {
+                Pause.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
         /// Set the currently playing track image
         /// </summary>
         /// <param name="image">The image of the currently playing song</param>
@@ -229,6 +252,19 @@ namespace Boxify
             else if (Pause.Visibility == Visibility.Visible)
             {
                 Pause.Focus(FocusState.Programmatic);
+            }
+        }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                this.uiUpdateTimer.Tick -= uiUpdateTimer_Tick;
             }
         }
     }

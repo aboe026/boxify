@@ -272,5 +272,19 @@ namespace Boxify
             playlistsOffset += playlistLimit;
             await LoadPlaylists();
         }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                playlistsOffset = 0;
+                playlistsSave = null;
+            }
+        }
     }
 }

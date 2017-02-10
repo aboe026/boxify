@@ -91,6 +91,16 @@ namespace Boxify.Frames
                     catch (COMException) { }
                 }
             }
+            else if (playlistResultsSave == null && trackResultsSave == null && albumResultsSave == null && searchSave != "")
+            {
+                RelativePanel.SetAlignTopWithPanel(SearchBox, true);
+                Results.Visibility = Visibility.Visible;
+                SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
+                SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
+                SearchButton_Click(SearchButton, null);
+            }
         }
 
         /// <summary>
@@ -297,6 +307,21 @@ namespace Boxify.Frames
             }
             else if (e.ClickedItem is AlbumList) {
                 await (e.ClickedItem as AlbumList).album.playTracks();
+            }
+        }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                playlistResultsSave = null;
+                trackResultsSave = null;
+                albumResultsSave = null;
             }
         }
     }

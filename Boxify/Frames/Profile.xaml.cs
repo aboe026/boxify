@@ -21,7 +21,6 @@ namespace Boxify
         public Profile()
         {
             this.InitializeComponent();
-            updateUI();
         }
 
         /// <summary>
@@ -33,6 +32,33 @@ namespace Boxify
             if (e.Parameter != null)
             {
                 mainPage = (MainPage)e.Parameter;
+            }
+            updateUI();
+        }
+
+        /// <summary>
+        /// Updates the UI of the frame
+        /// </summary>
+        private void updateUI()
+        {
+            if (UserProfile.displalyName == "")
+            {
+                webView.Visibility = Visibility.Collapsed;
+                blankUser.Text = "\uE77B";
+                status.Text = loggedOutText;
+                status.Visibility = Visibility.Visible;
+                login.Content = "Log In";
+                login.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                webView.Visibility = Visibility.Collapsed;
+                status.Text = loggedInText + UserProfile.displalyName;
+                userPic.ImageSource = UserProfile.userPic;
+                blankUser.Text = "";
+                status.Visibility = Visibility.Visible;
+                login.Content = "Log Out";
+                login.Visibility = Visibility.Visible;
             }
         }
 
@@ -103,32 +129,6 @@ namespace Boxify
             if (mainPage != null)
             {
                 mainPage.updateUserUI();
-            }
-        }
-
-        /// <summary>
-        /// Updates the UI of the frame
-        /// </summary>
-        private void updateUI()
-        {
-            if (UserProfile.displalyName == "")
-            {
-                webView.Visibility = Visibility.Collapsed;
-                blankUser.Text = "\uE77B";
-                status.Text = loggedOutText;
-                status.Visibility = Visibility.Visible;
-                login.Content = "Log In";
-                login.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                webView.Visibility = Visibility.Collapsed;
-                status.Text = loggedInText + UserProfile.displalyName;
-                userPic.ImageSource = UserProfile.userPic;
-                blankUser.Text = "";
-                status.Visibility = Visibility.Visible;
-                login.Content = "Log Out";
-                login.Visibility = Visibility.Visible;
             }
         }
     }

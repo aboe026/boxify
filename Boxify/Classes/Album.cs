@@ -165,7 +165,7 @@ namespace Boxify
             Playbacksource currentPlaybackType = Settings.playbackSource;
             if (tracks.Count > 0)
             {
-                TimeSpan localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count(), currentPlaybackType);
+                long localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count(), currentPlaybackType);
                 tracks.RemoveAt(0);
                 await PlaybackService.addToQueue(tracks, tracks.Count, 1, localPlaybackAttempt, currentPlaybackType);
             }
