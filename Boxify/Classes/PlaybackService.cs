@@ -438,7 +438,7 @@ namespace Boxify
             {
                 try
                 {
-                    return MediaSource.CreateFromUri(new Uri(videos.ElementAt(0).Uri));
+                    return MediaSource.CreateFromUri(new Uri(await videos.ElementAt(0).GetUriAsync()));
                 }
                 catch (Exception)
                 {
@@ -447,14 +447,14 @@ namespace Boxify
             }
             if (maxAudioVideo != null)
             {
-                return MediaSource.CreateFromUri(new Uri(maxAudioVideo.Uri));
+                return MediaSource.CreateFromUri(new Uri(await maxAudioVideo.GetUriAsync()));
             }
             else if (maxNonAudioVideo != null)
             {
                 var handler = new HttpClientHandler();
                 handler.AllowAutoRedirect = true;
                 HttpClient client = new HttpClient(handler);
-                HttpResponseMessage response = await client.GetAsync(new Uri(maxNonAudioVideo.Uri), HttpCompletionOption.ResponseContentRead);
+                HttpResponseMessage response = await client.GetAsync(new Uri(await maxNonAudioVideo.GetUriAsync()), HttpCompletionOption.ResponseContentRead);
                 Stream stream = await response.Content.ReadAsStreamAsync();
                 return MediaSource.CreateFromStream(stream.AsRandomAccessStream(), "video/x-flv");
             }
