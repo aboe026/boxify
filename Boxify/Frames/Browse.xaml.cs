@@ -185,9 +185,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
+        private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            await (e.ClickedItem as PlaylistHero).playlist.playTracks();
+            (e.ClickedItem as PlaylistHero).playlist.playTracks();
         }
 
         /// <summary>

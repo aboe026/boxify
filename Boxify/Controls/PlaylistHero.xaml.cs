@@ -36,9 +36,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The actionButton that was clicked</param>
         /// <param name="e">The routed event arguments</param>
-        private async void action_Click(object sender, RoutedEventArgs e)
+        private void action_Click(object sender, RoutedEventArgs e)
         {
-            await playlist.playTracks();
+            playlist.playTracks();
         }
     }
 }

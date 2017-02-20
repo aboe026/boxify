@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -49,6 +51,7 @@ namespace Boxify
             {
                 Pause.Visibility = Visibility.Collapsed;
             }
+            LoadingTrack.IsActive = false;
         }
 
         /// <summary>
@@ -252,6 +255,37 @@ namespace Boxify
             else if (Pause.Visibility == Visibility.Visible)
             {
                 Pause.Focus(FocusState.Programmatic);
+            }
+        }
+
+        /// <summary>
+        /// Set the visibility of the loading progress ring
+        /// </summary>
+        /// <param name="visible"></param>
+        public void setLoadingActive(bool active)
+        {
+            LoadingTrack.IsActive = active;
+            if (active)
+            {
+                uiUpdateTimer.Stop();
+                Next.IsEnabled = false;
+                Previous.IsEnabled = false;
+                Play.IsEnabled = false;
+                Pause.IsEnabled = false;
+                TrackName.Text = "";
+                TrackAlbum.Text = "";
+                Progress.Value = 0;
+                CurrentTime.Text = "00:00";
+                Duration.Text = "00:00";
+                AlbumArt.Source = new BitmapImage();
+            }
+            else
+            {
+                uiUpdateTimer.Start();
+                Next.IsEnabled = true;
+                Previous.IsEnabled = true;
+                Play.IsEnabled = true;
+                Pause.IsEnabled = true;
             }
         }
 

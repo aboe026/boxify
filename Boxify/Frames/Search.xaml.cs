@@ -295,7 +295,7 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Results_ItemClick(object sender, ItemClickEventArgs e)
+        private void Results_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is TrackList)
             {
@@ -303,10 +303,10 @@ namespace Boxify.Frames
             }
             else if (e.ClickedItem is PlaylistList)
             {
-                await (e.ClickedItem as PlaylistList).playlist.playTracks();
+                (e.ClickedItem as PlaylistList).playlist.playTracks();
             }
             else if (e.ClickedItem is AlbumList) {
-                await (e.ClickedItem as AlbumList).album.playTracks();
+                (e.ClickedItem as AlbumList).album.playTracks();
             }
         }
 

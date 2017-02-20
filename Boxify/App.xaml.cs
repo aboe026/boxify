@@ -21,7 +21,6 @@ namespace Boxify
     {
         public static bool isInBackgroundMode = false;
         private static bool finishedInitialization = false;
-        public static List<long> pendingDownloads = new List<long>();
         public static string hamburgerOptionToLoadTo = "BrowseItem";
 
         /// <summary>
@@ -229,7 +228,7 @@ namespace Boxify
             PlaybackService.queue.CurrentItemChanged -= PlaybackService.songChanges;
             PlaybackService.Player.PlaybackSession.PlaybackStateChanged -= PlaybackService.playStateChanges;
 
-            if (pendingDownloads.Count > 0)
+            if (PlaybackService.showing)
             {
                 hamburgerOptionToLoadTo = MainPage.currentNavSelection.Name;
                 ReduceMemoryUsage(MemoryManager.AppMemoryUsage);
@@ -250,10 +249,10 @@ namespace Boxify
             {
                 MainPage.returningFromMemoryReduction = true;
                 CreateRootFrame(ApplicationExecutionState.Running, string.Empty);
+                
+                PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
+                PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
             }
-
-            PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
-            PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
         }
 
         /// <summary>

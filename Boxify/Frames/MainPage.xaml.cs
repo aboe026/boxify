@@ -138,6 +138,18 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Set the visibility state of the PlaybackMenu progress ring
+        /// </summary>
+        /// <param name="visible"></param>
+        public async void setPlaybackMenu(bool active)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                PlaybackMenu.setLoadingActive(active);
+            });
+        }
+
+        /// <summary>
         /// Return the PlaybackMenu control. Needed for static PlaybackService class.
         /// </summary>
         /// <returns>The PlaybackMenu control</returns>
@@ -419,6 +431,18 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Ensure playlist has permission to bring up Spotify info
+        /// </summary>
+        /// <param name="localLock"></param>
+        public void bringUpSpotify(long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                bringUpSpotify();
+            }
+        }
+
+        /// <summary>
         /// Set the current Spotify loading progress
         /// </summary>
         /// <param name="value">The amount of progress made</param>
@@ -428,12 +452,36 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Ensure playlist has permission before setting the current Spotify loading progress
+        /// </summary>
+        /// <param name="value">The amount of progress made</param>
+        public void setSpotifyLoadingValue(double value, long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                setSpotifyLoadingValue(value);
+            }
+        }
+
+        /// <summary>
         /// Set the maximum Spotify loading value
         /// </summary>
         /// <param name="max">The limit of progress</param>
         public void setSpotifyLoadingMaximum(double max)
         {
             SpotifyLoading.Maximum = max;
+        }
+
+        /// <summary>
+        /// Ensure playlist has permission before setting the maximum Spotify loading value
+        /// </summary>
+        /// <param name="max">The limit of progress</param>
+        public void setSpotifyLoadingMaximum(double max, long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                setSpotifyLoadingMaximum(max);
+            }
         }
 
         /// <summary>
@@ -457,12 +505,24 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Ensure playlist has permission to bring up YouTube info
+        /// </summary>
+        /// <param name="localLock"></param>
+        public void bringUpYouTube(long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                bringUpYouTube();
+            }
+        }
+
+        /// <summary>
         /// Set the current YouTube loading progress
         /// </summary>
         /// <param name="value">The amount of progress made</param>
-        public void setYouTubeLoadingValue(double value)
+        public void setYouTubeLoadingValue(double value, long localLock)
         {
-            if (YouTubeLoading != null)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
                 YouTubeLoading.Value = value;
             }
@@ -472,9 +532,9 @@ namespace Boxify
         /// Set the maximum YouTube loading value
         /// </summary>
         /// <param name="max">The limit of progress</param>
-        public void setYouTubeLoadingMaximum(double max)
+        public void setYouTubeLoadingMaximum(double max, long localLock)
         {
-            if (YouTubeLoading != null)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
                 YouTubeLoading.Maximum = max;
             }
@@ -484,9 +544,9 @@ namespace Boxify
         /// Set the message displayed under the YouTube logo
         /// </summary>
         /// <param name="message"></param>
-        public void setYouTubeMessage(String message)
+        public void setYouTubeMessage(String message, long localLock)
         {
-            if (YouTubeMessage != null)
+            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
                 YouTubeMessage.Text = message;
             }

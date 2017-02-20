@@ -13,6 +13,7 @@ namespace Boxify
     /// </summary>
     public class Track : BindableBase
     {
+        public string href { get; set; }
         public string id { get; set; }
         public string name;
         public string albumString { get; set; }
@@ -113,12 +114,17 @@ namespace Boxify
             {
                 return;
             }
+            IJsonValue trackHref;
             IJsonValue trackId;
             IJsonValue trackName;
             IJsonValue trackPreview;
             IJsonValue trackDuration;
             IJsonValue trackAlbum;
             IJsonValue trackArtists;
+            if (trackObjectJson.TryGetValue("href", out trackHref))
+            {
+                href = trackHref.GetString();
+            }
             if (trackObjectJson.TryGetValue("id", out trackId))
             {
                 id = trackId.GetString();
@@ -157,9 +163,9 @@ namespace Boxify
         /// <summary>
         /// Play the track
         /// </summary>
-        public async void playTrack()
+        public void playTrack()
         {
-            await PlaybackService.playTrack(this, 1, Settings.playbackSource);
+            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Single, href);
         }
     }
 }

@@ -26,6 +26,15 @@
         <RelativePanel Name="MainPanel"
                        Margin="0,0,0,48">
 
+            <ProgressRing Name="LoadingTrack"
+                          RelativePanel.AlignHorizontalCenterWithPanel="True"
+                          RelativePanel.AlignTopWith="TrackName"
+                          RelativePanel.AlignBottomWith="TrackAlbum"
+                          Width="60"
+                          Height="60"
+                          Foreground="{ThemeResource SystemAccentColor}"
+                          IsActive="True"/>
+
             <Image Name="AlbumArt"
                    RelativePanel.AlignLeftWithPanel="True"
                    Height="100"

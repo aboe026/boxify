@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
-using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -19,7 +17,7 @@ namespace Boxify
         public List<Artist> artists { get; set; }
         public List<BitmapImage> images { get; set; }
         public string imageUrl { get; set; }
-        private static string tracksHref = "https://api.spotify.com/v1/albums/{id}/tracks";
+        private static string tracksHref = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
         /// The main constructor to create an empty instance
@@ -159,16 +157,9 @@ namespace Boxify
         /// Play all tracks in Album
         /// </summary>
         /// <returns></returns>
-        public async Task playTracks()
+        public void playTracks()
         {
-            List<Track> tracks = await getTracks();
-            Playbacksource currentPlaybackType = Settings.playbackSource;
-            if (tracks.Count > 0)
-            {
-                long localPlaybackAttempt = await PlaybackService.playTrack(tracks.ElementAt(0), tracks.Count(), currentPlaybackType);
-                tracks.RemoveAt(0);
-                await PlaybackService.addToQueue(tracks, tracks.Count, 1, localPlaybackAttempt, currentPlaybackType);
-            }
+            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
         }
     }
 }
