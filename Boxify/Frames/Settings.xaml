@@ -45,7 +45,7 @@
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Name="tvSaveLabel"
+                        <TextBlock Name="TvSafeAreaLabel"
                                    Grid.Row="1"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -53,14 +53,14 @@
                                    Text="TV Safe Area"
                                    Style="{StaticResource TitleTextBlockStyle}"/>
 
-                        <ToggleSwitch Name="tvSafe"
+                        <ToggleSwitch Name="TvSafeArea"
                                       Grid.Row="1"
                                       Grid.Column="2"
                                       VerticalAlignment="Center"
                                       Style="{StaticResource ToggleButtonStyle}"
                                       Toggled="tvSafe_Toggled"/>
 
-                        <TextBlock Name="tvSafeDesc"
+                        <TextBlock Name="TvSafeAreaDesc"
                                    Grid.Row="1"
                                    Grid.Column="2"
                                    VerticalAlignment="Center"
@@ -69,7 +69,7 @@
                                    Style="{StaticResource BodyTextBlockStyle}"
                                    TextWrapping="Wrap"/>
 
-                        <TextBlock Name="themeLabel"
+                        <TextBlock Name="ThemeLabel"
                                    Grid.Row="3"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -106,7 +106,7 @@
 
                         </RelativePanel>
 
-                        <TextBlock Name="playbackLabel"
+                        <TextBlock Name="PlaybackSourceLabel"
                                    Grid.Row="5"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -209,7 +209,7 @@
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Name="versionLabel"
+                        <TextBlock Name="VersionLabel"
                                    Grid.Row="1"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -217,7 +217,7 @@
                                    Text="Version"
                                    Style="{StaticResource TitleTextBlockStyle}"/>
 
-                        <TextBlock Name="version"
+                        <TextBlock Name="Version"
                                    Grid.Row="1"
                                    Grid.Column="2"
                                    HorizontalAlignment="Left"
@@ -225,7 +225,7 @@
                                    Text="x.y.z.w"
                                    Style="{StaticResource TitleTextBlockStyle}"/>
                         
-                        <TextBlock Name="rateLabel"
+                        <TextBlock Name="RateLabel"
                                    Grid.Row="3"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -236,7 +236,7 @@
                         <RelativePanel Grid.Row="3"
                                        Grid.Column="2">
 
-                            <TextBlock Name="rateMessage"
+                            <TextBlock Name="RateMessage"
                                        RelativePanel.AlignLeftWithPanel="True"
                                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                                        Text="I'd appreciate if you took the time to rate us in the store!"
@@ -244,8 +244,8 @@
                                        TextWrapping="WrapWholeWords"
                                        Margin="0,0,0,10"/>
 
-                            <Button Name="rate"
-                                    RelativePanel.Below="rateMessage"
+                            <Button Name="RateButton"
+                                    RelativePanel.Below="RateMessage"
                                     RelativePanel.AlignLeftWithPanel="True"
                                     Content="Got to Store"
                                     Style="{StaticResource ButtonStyle}"
@@ -253,7 +253,7 @@
 
                         </RelativePanel>
 
-                        <TextBlock Name="contactLabel"
+                        <TextBlock Name="ContactLabel"
                                    Grid.Row="5"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -264,7 +264,7 @@
                         <RelativePanel Grid.Row="5"
                                        Grid.Column="2">
 
-                            <TextBlock Name="contact"
+                            <TextBlock Name="ContactMessage"
                                        RelativePanel.AlignTopWithPanel="True"
                                        RelativePanel.AlignLeftWithPanel="True"
                                        RelativePanel.AlignRightWithPanel="True"
@@ -276,14 +276,14 @@
 
                             <Button Name="Repo"
                                     RelativePanel.AlignLeftWithPanel="True"
-                                    RelativePanel.Below="contact"
+                                    RelativePanel.Below="ContactMessage"
                                     Content="Boxify GitHub"
                                     Style="{StaticResource ButtonStyle}"
                                     Click="Repo_Click"/>
 
                         </RelativePanel>
 
-                        <TextBlock Name="spotifyLabel"
+                        <TextBlock Name="SpotifyExplanationLabel"
                                    Grid.Row="7"
                                    Grid.Column="0"
                                    HorizontalAlignment="Right"
@@ -295,7 +295,7 @@
                         <RelativePanel Grid.Row="7"
                                        Grid.Column="2">
 
-                            <TextBlock Name="spotifyMessage"
+                            <TextBlock Name="SpotifyExplanationMessage"
                                        RelativePanel.AlignTopWithPanel="True"
                                        RelativePanel.AlignLeftWithPanel="True"
                                        RelativePanel.AlignRightWithPanel="True"
@@ -307,7 +307,7 @@
 
                             <Button Name="SpotifyGitHub"
                                     RelativePanel.AlignLeftWithPanel="True"
-                                    RelativePanel.Below="spotifyMessage"
+                                    RelativePanel.Below="SpotifyExplanationMessage"
                                     Content="Spotify Issue"
                                     Style="{StaticResource ButtonStyle}"
                                     Click="SpotifyGitHub_Click"/>

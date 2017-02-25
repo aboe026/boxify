@@ -48,7 +48,7 @@ namespace Boxify
             }
             else
             {
-                featuredPlaylistMessage.Text = featuredPlaylistsMessageSave;
+                FeaturedPlaylistMessage.Text = featuredPlaylistsMessageSave;
                 foreach (PlaylistHero playlist in featuredPlaylistsSave)
                 {
                     try
@@ -76,8 +76,8 @@ namespace Boxify
         /// <param name="e">The naviagation event arguments</param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            FeaturedPlaylists.Items.Clear();
             base.OnNavigatedFrom(e);
+            FeaturedPlaylists.Items.Clear();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Boxify
         private async Task LoadFeaturedPlaylists()
         {
             More.IsEnabled = false;
-            refresh.IsEnabled = false;
+            Refresh.IsEnabled = false;
             mainPage.setSpotifyLoadingValue(0);
             mainPage.bringUpSpotify();
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
@@ -121,8 +121,8 @@ namespace Boxify
             IJsonValue itemsJson;
             if (featuredPlaylistsJson.TryGetValue("message", out messageJson))
             {
-                featuredPlaylistMessage.Text = messageJson.GetString();
-                featuredPlaylistsMessageSave = featuredPlaylistMessage.Text;
+                FeaturedPlaylistMessage.Text = messageJson.GetString();
+                featuredPlaylistsMessageSave = FeaturedPlaylistMessage.Text;
             }
             if (featuredPlaylistsJson.TryGetValue("playlists", out playlistsJson))
             {
@@ -154,7 +154,7 @@ namespace Boxify
                     }
                 }
             }
-            refresh.IsEnabled = true;
+            Refresh.IsEnabled = true;
             if (featuredPlaylistsOffset + featuredPlaylistLimit >= featuredPlaylistsTotal)
             {
                 More.Content = "No More";
@@ -185,9 +185,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
+        private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            await (e.ClickedItem as PlaylistHero).playlist.playTracks();
+            (e.ClickedItem as PlaylistHero).playlist.playTracks();
         }
 
         /// <summary>
@@ -200,6 +200,20 @@ namespace Boxify
             FeaturedPlaylists.Focus(FocusState.Programmatic);
             featuredPlaylistsOffset += featuredPlaylistLimit;
             await LoadFeaturedPlaylists();
+        }
+
+        /// <summary>
+        /// free memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                featuredPlaylistsOffset = 0;
+                featuredPlaylistsSave = null;
+            }
         }
     }
 }

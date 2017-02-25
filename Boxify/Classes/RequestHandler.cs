@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Boxify.Classes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -138,11 +139,11 @@ namespace Boxify
                 IJsonValue apiKeyJson;
                 if (youtubeObject.TryGetValue("applicationName", out applicationNameJson))
                 {
-                    PlaybackService.youtubeApplicationName = applicationNameJson.GetString();
+                    PlaybackSession.youtubeApplicationName = applicationNameJson.GetString();
                 }
                 if (youtubeObject.TryGetValue("apiKey", out apiKeyJson))
                 {
-                    PlaybackService.youtubeApiKey = apiKeyJson.GetString();
+                    PlaybackSession.youtubeApiKey = apiKeyJson.GetString();
                 }
             }
         }
@@ -175,10 +176,15 @@ namespace Boxify
                 }
             }
 
-            string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
-            await UserProfile.updateInfo(userJson);
-
-            await getClientCredentialsTokens();
+            if (ccAccessToken == "")
+            {
+                await getClientCredentialsTokens();
+            }
+            else
+            {
+                string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
+                await UserProfile.updateInfo(userJson);
+            }
         }
 
 
@@ -459,7 +465,7 @@ namespace Boxify
         /// Requests new access token with refresh token
         /// </summary>
         /// <returns></returns>
-        private async static Task refreshTokens()
+        private async static Task<bool> refreshTokens()
         {
             // Create an HTTP client object
             HttpClient client = new HttpClient();
@@ -486,17 +492,22 @@ namespace Boxify
             try
             {
                 httpResponse = await client.PostAsync(authRequestUri.Uri, body);
+                if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return false;
+                }
                 httpResponse.EnsureSuccessStatusCode();
                 httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
-                return;
+                return false;
             }
 
             await setTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
+            return true;
         }
 
         /// <summary>

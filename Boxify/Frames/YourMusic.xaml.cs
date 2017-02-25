@@ -256,9 +256,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void playlists_ItemClick(object sender, ItemClickEventArgs e)
+        private void playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            await (e.ClickedItem as PlaylistList).playlist.playTracks();
+            (e.ClickedItem as PlaylistList).playlist.playTracks();
         }
 
         /// <summary>
@@ -271,6 +271,20 @@ namespace Boxify
             playlists.Focus(FocusState.Programmatic);
             playlistsOffset += playlistLimit;
             await LoadPlaylists();
+        }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                playlistsOffset = 0;
+                playlistsSave = null;
+            }
         }
     }
 }

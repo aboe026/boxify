@@ -91,6 +91,16 @@ namespace Boxify.Frames
                     catch (COMException) { }
                 }
             }
+            else if (playlistResultsSave == null && trackResultsSave == null && albumResultsSave == null && searchSave != "")
+            {
+                RelativePanel.SetAlignTopWithPanel(SearchBox, true);
+                Results.Visibility = Visibility.Visible;
+                SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
+                SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
+                SearchButton_Click(SearchButton, null);
+            }
         }
 
         /// <summary>
@@ -285,7 +295,7 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Results_ItemClick(object sender, ItemClickEventArgs e)
+        private void Results_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is TrackList)
             {
@@ -293,10 +303,25 @@ namespace Boxify.Frames
             }
             else if (e.ClickedItem is PlaylistList)
             {
-                await (e.ClickedItem as PlaylistList).playlist.playTracks();
+                (e.ClickedItem as PlaylistList).playlist.playTracks();
             }
             else if (e.ClickedItem is AlbumList) {
-                await (e.ClickedItem as AlbumList).album.playTracks();
+                (e.ClickedItem as AlbumList).album.playTracks();
+            }
+        }
+
+        /// <summary>
+        /// Used when freeing memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                playlistResultsSave = null;
+                trackResultsSave = null;
+                albumResultsSave = null;
             }
         }
     }

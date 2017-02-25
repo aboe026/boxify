@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.UI.Xaml.Media.Imaging;
-using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -149,66 +148,9 @@ namespace Boxify
         /// Play the tracks in the playlist
         /// </summary>
         /// <returns></returns>
-        public async Task playTracks()
+        public void playTracks()
         {
-            bool firstTrack = true;
-            bool proceed = true;
-            int remainingCount = tracksCount;
-            TimeSpan localPlaybackAttempt;
-            int tracksToGetPerRequest = 1;
-            Playbacksource currentPlaybackType = Settings.playbackSource;
-
-            while (proceed && remainingCount > 0)
-            {
-                UriBuilder tracksBuilder = new UriBuilder(tracksHref);
-                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-                queryParams.Add(new KeyValuePair<string, string>("limit", tracksToGetPerRequest.ToString()));
-                queryParams.Add(new KeyValuePair<string, string>("offset", (tracksCount - remainingCount).ToString()));
-                tracksBuilder.Query = RequestHandler.convertToQueryString(queryParams);
-                string tracksString = await RequestHandler.sendCliGetRequest(tracksBuilder.Uri.ToString());
-
-                JsonObject tracksJson = new JsonObject();
-                try
-                {
-                    tracksJson = JsonObject.Parse(tracksString);
-                }
-                catch (COMException) { }
-
-                IJsonValue itemsJson;
-                if (tracksJson.TryGetValue("items", out itemsJson))
-                {
-                    JsonArray tracksArray = itemsJson.GetArray();
-                    List<Track> tracksList = new List<Track>();
-                    int localOffset = tracksCount - remainingCount;
-                    for (int i = 0; i < tracksArray.Count; i++)
-                    {
-                        Track track = new Track();
-                        JsonObject trackJson = tracksArray.ElementAt(i).GetObject();
-                        await track.setInfo(trackJson.Stringify());
-                        if (firstTrack)
-                        {
-                            firstTrack = false;
-                            localPlaybackAttempt = await PlaybackService.playTrack(track, tracksCount, currentPlaybackType);
-                            localOffset = 1;
-                        }
-                        else
-                        {
-                            tracksList.Add(track);
-                        }
-                    }
-                    proceed = await PlaybackService.addToQueue(tracksList, tracksCount, localOffset, localPlaybackAttempt, currentPlaybackType);
-                    remainingCount -= tracksToGetPerRequest;
-                    tracksToGetPerRequest = 2 * tracksToGetPerRequest;
-                    if (tracksToGetPerRequest > maxTracksPerRequest)
-                    {
-                        tracksToGetPerRequest = maxTracksPerRequest;
-                    }
-                }
-                else
-                {
-                    proceed = false;
-                }
-            }
+            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Playlist, tracksHref); 
         }
     }
 }

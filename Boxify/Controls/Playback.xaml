@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="148"
-    d:DesignWidth="500">
+    d:DesignWidth="500"
+    Unloaded="UserControl_Unloaded">
 
     <Control.Resources>
         <ResourceDictionary>
@@ -24,6 +25,15 @@
 
         <RelativePanel Name="MainPanel"
                        Margin="0,0,0,48">
+
+            <ProgressRing Name="LoadingTrack"
+                          RelativePanel.AlignHorizontalCenterWithPanel="True"
+                          RelativePanel.AlignTopWith="TrackName"
+                          RelativePanel.AlignBottomWith="TrackAlbum"
+                          Width="60"
+                          Height="60"
+                          Foreground="{ThemeResource SystemAccentColor}"
+                          IsActive="True"/>
 
             <Image Name="AlbumArt"
                    RelativePanel.AlignLeftWithPanel="True"
