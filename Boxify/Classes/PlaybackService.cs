@@ -26,6 +26,11 @@ namespace Boxify
 
         public static long globalLock { get; private set; }
 
+        /// <summary>
+        /// Begins playback of a new playlist of tracks
+        /// </summary>
+        /// <param name="type">The type of playlist (single track, album, or simple playlist)</param>
+        /// <param name="href">The uri to download tracks from</param>
         public static async void startNewSession(PlaybackType type, string href)
         {
             long currentLock = DateTime.Now.Ticks;
@@ -45,9 +50,14 @@ namespace Boxify
             currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, href);
             queue.Items.Clear();
             Player.Source = queue;
-            await currentSession.loadTrack(0, PlaybackSession.LoadDirection.Down);
+            await currentSession.loadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
         }
 
+        /// <summary>
+        /// Add a new track to the end of the playback queue
+        /// </summary>
+        /// <param name="item">The media item containing the track to add to the queue</param>
+        /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
         public static void addToQueue(MediaPlaybackItem item, long localLock)
         {
             if (localLock == globalLock)
@@ -56,12 +66,43 @@ namespace Boxify
             }
         }
 
+        /// <summary>
+        /// Add a new track at the beginning of the playback queue
+        /// </summary>
+        /// <param name="item">The media item containing the track to add to the queue</param>
+        /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
+        public static void addToBeginningOfQueue(MediaPlaybackItem item, long localLock)
+        {
+            if (localLock == globalLock)
+            {
+                queue.Items.Insert(0, item);
+            }
+        }
+
+        /// <summary>
+        /// Remove an existing track from the playback queue
+        /// </summary>
+        /// <param name="item">The id of the media item to remove</param>
+        /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
         public static void removeFromQueue(string mediaId, long localLock)
         {
             if (localLock == globalLock)
             {
                 MediaPlaybackItem item = queue.Items.First(kvp => kvp.Source.CustomProperties["mediaItemId"].ToString() == mediaId);
                 queue.Items.Remove(item);
+            }
+        }
+
+        /// <summary>
+        /// Start playback of the queue from the first track
+        /// </summary>
+        /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
+        public static void playFromBeginning(long localLock)
+        {
+            if (localLock == globalLock)
+            {
+                queue.MoveTo(0);
+                Player.Play();
             }
         }
 

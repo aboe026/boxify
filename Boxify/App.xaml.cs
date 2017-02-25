@@ -38,7 +38,6 @@ namespace Boxify
             // Playback Service "Initialization" of static class
             PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
             PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
-            PlaybackService.Player.AutoPlay = true;
 
             // Subscribe to key lifecyle events to know when the app
             // transitions to and from foreground and background.
@@ -225,7 +224,6 @@ namespace Boxify
         {
             isInBackgroundMode = true;
 
-            PlaybackService.queue.CurrentItemChanged -= PlaybackService.songChanges;
             PlaybackService.Player.PlaybackSession.PlaybackStateChanged -= PlaybackService.playStateChanges;
 
             if (PlaybackService.showing)
@@ -250,7 +248,6 @@ namespace Boxify
                 MainPage.returningFromMemoryReduction = true;
                 CreateRootFrame(ApplicationExecutionState.Running, string.Empty);
                 
-                PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
                 PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
             }
         }
