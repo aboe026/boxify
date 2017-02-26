@@ -51,6 +51,7 @@ namespace Boxify
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.loadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
+            mainPage.setPlaybackMenu(false);
         }
 
         /// <summary>
@@ -123,16 +124,6 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Toggle shuffling of the playlist
-        /// </summary>
-        /// <returns></returns>
-        public static bool toggleShuffle()
-        {
-            queue.ShuffleEnabled = !queue.ShuffleEnabled;
-            return queue.ShuffleEnabled;
-        }
-
-        /// <summary>
         /// Toggle repeating of the playlist
         /// </summary>
         /// <returns></returns>
@@ -147,7 +138,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static async void songChanges(object sender, CurrentMediaPlaybackItemChangedEventArgs e)
+        public static async void currentItemChanged(object sender, CurrentMediaPlaybackItemChangedEventArgs e)
         {
             currentlyPlayingItem = e.NewItem;
             if (e.NewItem != null)
@@ -158,7 +149,6 @@ namespace Boxify
                 {
                     if (!App.isInBackgroundMode)
                     {
-                        mainPage.setPlaybackMenu(false);
                         if (Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail != null)
                         {
                             IRandomAccessStreamWithContentType thumbnail = await Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail.OpenReadAsync();
@@ -167,10 +157,20 @@ namespace Boxify
                             mainPage.getPlaybackMenu().setTrackImage(bitmapImage);
                         }
                         mainPage.getPlaybackMenu().setTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
-                        mainPage.getPlaybackMenu().setAlbumName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.AlbumTitle);
+                        mainPage.getPlaybackMenu().setArtistName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Artist);
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// An item failed to open after download
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static void itemFailed(object sender, MediaPlaybackItemFailedEventArgs e)
+        {
+            currentSession.itemFailedToOpen(e.Item);
         }
 
         /// <summary>

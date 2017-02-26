@@ -133,6 +133,10 @@ namespace Boxify
                 {
                     MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 }
+
+                PlaybackMenu.setRepeat(Settings.repeatEnabled);
+                PlaybackMenu.setVolume(Settings.volume);
+
                 PlaybackMenu.Visibility = Visibility.Visible;
             });
         }
@@ -398,6 +402,11 @@ namespace Boxify
             {
                 MainContentFrame.Focus(FocusState.Programmatic);
             }
+            else if (e.Key == VirtualKey.Escape && ((Slider)e.OriginalSource).Name == "VolumeSlider")
+            {
+                PlaybackMenu.VolumeSlider_LostFocus(null, null);
+                PlaybackMenu.FocusOnVolume();
+            }
         }
 
         /// <summary>
@@ -428,6 +437,7 @@ namespace Boxify
             YouTubeMessage.Visibility = Visibility.Collapsed;
             SpotifyLogo.Visibility = Visibility.Visible;
             SpotifyLoading.Visibility = Visibility.Visible;
+            UserName.SetValue(RelativePanel.RightOfProperty, SpotifyLoading);
         }
 
         /// <summary>
@@ -501,6 +511,7 @@ namespace Boxify
                     YouTubeMessage.Visibility = Visibility.Visible;
                     YouTubeMessage.Text = "";
                 }
+                UserName.SetValue(RelativePanel.RightOfProperty, YouTubeLoading);
             }
         }
 

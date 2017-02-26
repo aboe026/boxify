@@ -37,7 +37,7 @@ namespace Boxify
         {
             MediaItemDisplayProperties displayProperties = PlaybackService.currentlyPlayingItem.GetDisplayProperties();
             TrackName.Text = displayProperties.MusicProperties.Title;
-            TrackAlbum.Text = displayProperties.MusicProperties.AlbumTitle;
+            TrackArtist.Text = displayProperties.MusicProperties.AlbumTitle;
             IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.SetSource(thumbnail);
@@ -76,9 +76,9 @@ namespace Boxify
         /// Set the currently playing track album name
         /// </summary>
         /// <param name="name">The name of the album of the currently playing song</param>
-        public void setAlbumName(String name)
+        public void setArtistName(String name)
         {
-            TrackAlbum.Text = name;
+            TrackArtist.Text = name;
         }
 
         /// <summary>
@@ -190,38 +190,6 @@ namespace Boxify
         }
 
         /// <summary>
-        /// User selects to toggle shuffling of the playback playlist
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Shuffle_Click(object sender, RoutedEventArgs e)
-        {
-            var shuffleOn = PlaybackService.toggleShuffle();
-            if (shuffleOn)
-            {
-                Shuffle.Visibility = Visibility.Collapsed;
-                ShuffleEnabled.Visibility = Visibility.Visible;
-                RelativePanel.SetAbove(Repeat, ShuffleEnabled);
-                RelativePanel.SetAbove(RepeatEnabled, ShuffleEnabled);
-                RelativePanel.SetLeftOf(Duration, ShuffleEnabled);
-                RelativePanel.SetLeftOf(TrackName, ShuffleEnabled);
-                RelativePanel.SetLeftOf(TrackAlbum, ShuffleEnabled);
-                ShuffleEnabled.Focus(FocusState.Programmatic);
-            }
-            else
-            {
-                Shuffle.Visibility = Visibility.Visible;
-                ShuffleEnabled.Visibility = Visibility.Collapsed;
-                RelativePanel.SetAbove(Repeat, Shuffle);
-                RelativePanel.SetAbove(RepeatEnabled, Shuffle);
-                RelativePanel.SetLeftOf(Duration, Shuffle);
-                RelativePanel.SetLeftOf(TrackName, Shuffle);
-                RelativePanel.SetLeftOf(TrackAlbum, Shuffle);
-                Shuffle.Focus(FocusState.Programmatic);
-            }
-        }
-
-        /// <summary>
         /// User selects to toggle repeating of the playlist
         /// </summary>
         /// <param name="sender"></param>
@@ -234,13 +202,164 @@ namespace Boxify
                 Repeat.Visibility = Visibility.Collapsed;
                 RepeatEnabled.Visibility = Visibility.Visible;
                 RepeatEnabled.Focus(FocusState.Programmatic);
+                Volume.SetValue(RelativePanel.AboveProperty, RepeatEnabled);
+                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
             }
             else
             {
                 Repeat.Visibility = Visibility.Visible;
                 RepeatEnabled.Visibility = Visibility.Collapsed;
                 Repeat.Focus(FocusState.Programmatic);
+                Volume.SetValue(RelativePanel.AboveProperty, Repeat);
+                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
+            Settings.repeatEnabled = repeatOn;
+            Settings.saveSettings();
+        }
+
+        /// <summary>
+        /// Sets whether or not the playlist automatically repeats
+        /// </summary>
+        /// <param name="enabled">True to make the playlist automatically repeat, false otherwise</param>
+        public void setRepeat(bool enabled)
+        {
+            if (enabled)
+            {
+                PlaybackService.queue.AutoRepeatEnabled = true;
+                Repeat.Visibility = Visibility.Collapsed;
+                RepeatEnabled.Visibility = Visibility.Visible;
+                RepeatEnabled.Focus(FocusState.Programmatic);
+                Volume.SetValue(RelativePanel.AboveProperty, RepeatEnabled);
+                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+            }
+            else
+            {
+                PlaybackService.queue.AutoRepeatEnabled = false;
+                Repeat.Visibility = Visibility.Visible;
+                RepeatEnabled.Visibility = Visibility.Collapsed;
+                Repeat.Focus(FocusState.Programmatic);
+                Volume.SetValue(RelativePanel.AboveProperty, Repeat);
+                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
+            }
+        }
+
+        /// <summary>
+        /// Sets the volume for playback
+        /// </summary>
+        /// <param name="volume">The volume, 0 to 100</param>
+        public void setVolume(double volume)
+        {
+            PlaybackService.Player.Volume = volume;
+            VolumeSlider.Value = volume;
+            if (VolumeSlider.Value == 0)
+            {
+                Volume.Content = "\uE74F";
+            }
+            else if (VolumeSlider.Value > 0 && VolumeSlider.Value <= 33)
+            {
+                Volume.Content = "\uE993";
+            }
+            else if (VolumeSlider.Value > 30 && VolumeSlider.Value <= 66)
+            {
+                Volume.Content = "\uE994";
+            }
+            else
+            {
+                Volume.Content = "\uE995";
+            }
+        }
+
+        /// <summary>
+        /// User selects to change volume
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Volume_Click(object sender, RoutedEventArgs e)
+        {
+            VolumeSlider.Value = PlaybackService.Player.Volume * 100;
+            Volume.Visibility = Visibility.Collapsed;
+            if (Settings.repeatEnabled)
+            {
+                RepeatEnabled.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Repeat.Visibility = Visibility.Collapsed;
+            }
+            VolumeSlider.Visibility = Visibility.Visible;
+            TrackName.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
+            TrackArtist.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
+            Duration.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
+            VolumeSlider.Focus(FocusState.Programmatic);
+        }
+
+        /// <summary>
+        /// User leaves the volume slider
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void VolumeSlider_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Volume.Visibility = Visibility.Visible;
+            VolumeSlider.Visibility = Visibility.Collapsed;
+            if (Settings.repeatEnabled)
+            {
+                RepeatEnabled.Visibility = Visibility.Visible;
+                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
+            }
+            else
+            {
+                Repeat.Visibility = Visibility.Visible;
+                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
+                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
+            }
+        }
+
+        /// <summary>
+        /// Set focus on the volume button
+        /// </summary>
+        public void FocusOnVolume()
+        {
+            Volume.Focus(FocusState.Programmatic);
+        }
+
+        /// <summary>
+        /// User changes the volume level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VolumeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            PlaybackService.Player.Volume = VolumeSlider.Value / 100;
+            if (VolumeSlider.Value == 0)
+            {
+                Volume.Content = "\uE74F";
+            }
+            else if (VolumeSlider.Value > 0 && VolumeSlider.Value <= 33)
+            {
+                Volume.Content = "\uE993";
+            }
+            else if (VolumeSlider.Value > 30 && VolumeSlider.Value <= 66)
+            {
+                Volume.Content = "\uE994";
+            }
+            else
+            {
+                Volume.Content = "\uE995";
+            }
+            Settings.volume = VolumeSlider.Value;
+            Settings.saveSettings();
         }
 
         /// <summary>
@@ -268,12 +387,12 @@ namespace Boxify
             if (active)
             {
                 uiUpdateTimer.Stop();
-                Next.IsEnabled = false;
-                Previous.IsEnabled = false;
-                Play.IsEnabled = false;
-                Pause.IsEnabled = false;
+                Next.Click -= Next_Click;
+                Previous.Click -= Previous_Click;
+                Play.Click -= PlayPause_Click;
+                Pause.Click -= PlayPause_Click;
                 TrackName.Text = "";
-                TrackAlbum.Text = "";
+                TrackArtist.Text = "";
                 Progress.Value = 0;
                 CurrentTime.Text = "00:00";
                 Duration.Text = "00:00";
@@ -282,10 +401,10 @@ namespace Boxify
             else
             {
                 uiUpdateTimer.Start();
-                Next.IsEnabled = true;
-                Previous.IsEnabled = true;
-                Play.IsEnabled = true;
-                Pause.IsEnabled = true;
+                Next.Click += Next_Click;
+                Previous.Click += Previous_Click;
+                Play.Click += PlayPause_Click;
+                Pause.Click += PlayPause_Click;
             }
         }
 
