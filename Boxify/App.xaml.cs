@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
@@ -36,7 +35,8 @@ namespace Boxify
             this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
 
             // Playback Service "Initialization" of static class
-            PlaybackService.queue.CurrentItemChanged += PlaybackService.songChanges;
+            PlaybackService.queue.CurrentItemChanged += PlaybackService.currentItemChanged;
+            PlaybackService.queue.ItemFailed += PlaybackService.itemFailed;
             PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
 
             // Subscribe to key lifecyle events to know when the app
@@ -141,6 +141,34 @@ namespace Boxify
                 else
                 {
                     Settings.playbackSource = Playbacksource.Spotify;
+                }
+
+                // repeat
+                if (composite["RepeatEnabled"] != null && composite["RepeatEnabled"].ToString() == "True")
+                {
+                    Settings.repeatEnabled = true;
+                }
+                else
+                {
+                    Settings.repeatEnabled = false;
+                }
+
+                // volume
+                if (composite["Volume"] != null)
+                {
+                    double value;
+                    if (Double.TryParse(composite["Volume"].ToString(), out value))
+                    {
+                        Settings.volume = value;
+                    }
+                    else
+                    {
+                        Settings.volume = 100;
+                    }
+                }
+                else
+                {
+                    Settings.volume = 100;
                 }
             }
             else

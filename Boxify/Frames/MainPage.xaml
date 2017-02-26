@@ -96,11 +96,12 @@
                        Canvas.ZIndex="1"/>
 
             <TextBlock Name="UserName"
-                       RelativePanel.LeftOf="UserPicContainer" 
+                       RelativePanel.LeftOf="UserPicContainer"
+                       RelativePanel.RightOf="SpotifyLoading"
                        Margin="0,25,10,0"
-                       Width="Auto"
                        Text="User Name"
                        Style="{StaticResource TitleTextBlockStyle}"
+                       TextAlignment="Right"
                        PointerReleased="userElement_PointerReleased"/>
 
             <Ellipse Name="UserPicContainer"

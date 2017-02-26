@@ -29,7 +29,7 @@
             <ProgressRing Name="LoadingTrack"
                           RelativePanel.AlignHorizontalCenterWithPanel="True"
                           RelativePanel.AlignTopWith="TrackName"
-                          RelativePanel.AlignBottomWith="TrackAlbum"
+                          RelativePanel.AlignBottomWith="TrackArtist"
                           Width="60"
                           Height="60"
                           Foreground="{ThemeResource SystemAccentColor}"
@@ -43,16 +43,16 @@
 
             <TextBlock Name="TrackName"
                        RelativePanel.RightOf="AlbumArt"
-                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.LeftOf="Repeat"
                        RelativePanel.AlignTopWithPanel="True"
                        HorizontalAlignment="Stretch"
                        Text=""
                        Style="{StaticResource SubheaderTextBlockStyle}"
                        TextAlignment="Center" />
 
-            <TextBlock Name="TrackAlbum"
+            <TextBlock Name="TrackArtist"
                        RelativePanel.AlignLeftWith="TrackName"
-                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.LeftOf="Repeat"
                        RelativePanel.Below="TrackName"
                        Text=""
                        Style="{StaticResource TitleTextBlockStyle}"
@@ -76,33 +76,15 @@
                          Background="{ThemeResource PlaybackProgressBackground}"/>
 
             <TextBlock Name="Duration"
-                       RelativePanel.LeftOf="Shuffle"
+                       RelativePanel.LeftOf="Repeat"
                        RelativePanel.AlignBottomWithPanel="True"
                        Margin="0,0,10,0"
                        Style="{StaticResource BodyTextBlockStyle}"
                        Text="00:00"/>
 
-            <Button Name="Shuffle"
-                    RelativePanel.LeftOf="Previous"
-                    RelativePanel.AlignBottomWithPanel="True"
-                    Margin="0,0,0,0"
-                    Style="{StaticResource PlaybackSmallButtonStyle}"
-                    Content="&#xE8B1;"
-                    Click="Shuffle_Click" />
-
-            <Button Name="ShuffleEnabled"
-                    RelativePanel.LeftOf="Previous"
-                    RelativePanel.AlignBottomWithPanel="True"
-                    Margin="0,0,0,0"
-                    Style="{StaticResource PlaybackSmallButtonStyle}"
-                    Foreground="Green"
-                    Visibility="Collapsed"
-                    Content="&#xE8B1;"
-                    Click="Shuffle_Click" />
-
             <Button Name="Repeat"
                     RelativePanel.LeftOf="Previous"
-                    RelativePanel.Above="Shuffle"
+                    RelativePanel.AlignBottomWithPanel="True"
                     Margin="0,0,0,0"
                     Style="{StaticResource PlaybackSmallButtonStyle}"
                     Content="&#xE8EE;"
@@ -110,13 +92,35 @@
 
             <Button Name="RepeatEnabled"
                     RelativePanel.LeftOf="Previous"
-                    RelativePanel.Above="Shuffle"
+                    RelativePanel.AlignBottomWithPanel="True"
                     Margin="0,0,0,0"
                     Style="{StaticResource PlaybackSmallButtonStyle}"
                     Foreground="Green"
                     Visibility="Collapsed"
                     Content="&#xE8EE;"
                     Click="Repeat_Click" />
+
+            <Button Name="Volume"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.Above="Repeat"
+                    Margin="0,0,0,0"
+                    Style="{StaticResource PlaybackSmallButtonStyle}"
+                    Content="&#xE767;"
+                    Click="Volume_Click"/>
+
+            <Slider Name="VolumeSlider"
+                    Visibility="Collapsed"
+                    RelativePanel.Above="Volume"
+                    RelativePanel.LeftOf="Previous"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    RelativePanel.AlignTopWithPanel="True"
+                    Margin="1,10,0,10"
+                    Orientation="Vertical"
+                    TickPlacement="None"
+                    SmallChange="10"
+                    LostFocus="VolumeSlider_LostFocus"
+                    ValueChanged="VolumeSlider_ValueChanged"/>
+
 
             <Button Name="Play"
                     RelativePanel.AlignRightWithPanel="True"

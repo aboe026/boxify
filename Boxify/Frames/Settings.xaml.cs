@@ -19,9 +19,12 @@ namespace Boxify
         public enum Playbacksource { Spotify, YouTube }
 
         private static MainPage mainPage;
+
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
         public static Playbacksource playbackSource = Playbacksource.Spotify;
+        public static bool repeatEnabled = false;
+        public static double volume = 100;
 
         /// <summary>
         /// Main constructor
@@ -153,14 +156,16 @@ namespace Boxify
         /// <summary>
         /// Set the roaming settings for the application
         /// </summary>
-        private void saveSettings()
+        public static void saveSettings()
         {
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
             ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
-            composite["TvSafeAreaOff"] = !TvSafeArea.IsOn;
+            composite["TvSafeAreaOff"] = !tvSafeArea;
             composite["Theme"] = theme.ToString();
             composite["PlaybackSource"] = playbackSource.ToString();
+            composite["RepeatEnabled"] = repeatEnabled.ToString();
+            composite["Volume"] = volume.ToString();
 
             roamingSettings.Values["UserSettings"] = composite;
         }

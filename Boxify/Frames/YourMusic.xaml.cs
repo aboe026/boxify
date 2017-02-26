@@ -66,6 +66,7 @@ namespace Boxify
                             mainPage.setSpotifyLoadingValue(playlistsSave.Count);
                             await Task.Delay(TimeSpan.FromMilliseconds(100));
                         }
+                        mainPage.setSpotifyLoadingValue(playlistsCount);
                     }
                     foreach (PlaylistList playlist in playlistsSave)
                     {
