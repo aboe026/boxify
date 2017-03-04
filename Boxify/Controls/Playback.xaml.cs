@@ -196,7 +196,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            var repeatOn = PlaybackService.toggleRepeat();
+            bool repeatOn = PlaybackService.toggleRepeat();
             if (repeatOn)
             {
                 Repeat.Visibility = Visibility.Collapsed;

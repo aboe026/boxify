@@ -65,7 +65,7 @@ namespace Boxify
                         httpResponse = await client.GetAsync(uri.Uri);
                         httpResponse.EnsureSuccessStatusCode();
                         IInputStream st = await client.GetInputStreamAsync(uri.Uri);
-                        var memoryStream = new MemoryStream();
+                        MemoryStream memoryStream = new MemoryStream();
                         await st.AsStreamForRead().CopyToAsync(memoryStream);
                         memoryStream.Position = 0;
                         await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());

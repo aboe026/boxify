@@ -1,5 +1,6 @@
 ﻿using Boxify.Frames;
 using System;
+using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
 using Windows.System;
@@ -23,6 +24,7 @@ namespace Boxify
     {
         public static ListViewItem currentNavSelection = new ListViewItem();
         public static bool returningFromMemoryReduction = false;
+        public static string errorMessage = "";
 
         /// <summary>
         /// The main page for the Boxify application
@@ -54,6 +56,17 @@ namespace Boxify
             else
             {
                 safeAreaOff();
+            }
+
+            CancelDialog.Visibility = Visibility.Collapsed;
+            if (errorMessage != "")
+            {
+                ErrorMessage.Visibility = Visibility.Visible;
+                ErrorMessage.Text = errorMessage;
+            }
+            else
+            {
+                ErrorMessage.Visibility = Visibility.Collapsed;
             }
 
             SpotifyLogo.Visibility = Visibility.Collapsed;
@@ -424,6 +437,66 @@ namespace Boxify
 
             MainContentFrame.Navigate(typeof(Settings), this);
             Title.Text = "Settings";
+        }
+
+
+        /// <summary>
+        /// Set the error message displayed to the user
+        /// </summary>
+        /// <param name="message">The error message to be displayed to the user</param>
+        public void setErrorMessage(string message)
+        {
+            ErrorMessage.Visibility = Visibility.Visible;
+            ErrorMessage.Text = message;
+        }
+
+        /// <summary>
+        /// Set the error message displayed to the user
+        /// </summary>
+        /// <param name="message">The error message to be displayed to the user</param>
+        /// <param name="localLock">The lock to ensure no stale updates</param>
+        public async void setErrorMessage(string message, long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    setErrorMessage(message);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Show the cancel dialog to let the user cancel the long download
+        /// </summary>
+        /// <param name="localLock">The lock to ensure no stale updates</param>
+        /// <param name="cancelToken">The download token to cancel</param>
+        public async void showCancelDialog(long localLock, CancellationTokenSource cancelToken, string trackName)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    CancelDialog.setCancelToken(cancelToken);
+                    CancelDialog.setTrackName(trackName);
+                    CancelDialog.Visibility = Visibility.Visible;
+                });
+            }
+        }
+
+        /// <summary>
+        /// Hide the cancel dialog
+        /// </summary>
+        /// <param name="localLock">The lock to ensure no stale updates</param>
+        public async void hideCancelDialog(long localLock)
+        {
+            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    CancelDialog.Visibility = Visibility.Collapsed;
+                });
+            }
         }
 
         /// <summary>

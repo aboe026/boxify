@@ -18,6 +18,8 @@ namespace Boxify
     /// </summary>
     static class RequestHandler
     {
+        // Client Credentials code flow is requires a Spotify clientID and clientSecret and gives public access to their Web API.
+        // Authorization Code code flow requires a user to sign in, and gives access to their private data.
         public enum SecurityFlow { AuthorizationCode, ClientCredentials };
 
         public static string callbackUrl = "https://example.com/callback/";
@@ -189,7 +191,7 @@ namespace Boxify
 
 
         /// <summary>
-        /// Retrieves the tokens used for subsequent rest authentication based on the Client Credentials security model
+        /// Retrieves the tokens used for subsequent authentication for public REST calls based on the Client Credentials security model
         /// </summary>
         /// <returns></returns>
         public async static Task getClientCredentialsTokens()
@@ -224,16 +226,22 @@ namespace Boxify
             }
             catch (Exception ex)
             {
+                string extraInfo = "";
+                if (ex.Message.StartsWith("Bad Request"))
+                {
+                    extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
+                }
+                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return;
             }
 
-            await setTokens(httpResponseBody, SecurityFlow.ClientCredentials);
+            await parseResponseToTokens(httpResponseBody, SecurityFlow.ClientCredentials);
             saveTokens();
         }
 
         /// <summary>
-        /// Retrieves the tokens used for subsequent rest authentication based on the Authorization Code Flow security model
+        /// Retrieves the tokens used for subsequent authentication for private user info based on the Authorization Code Flow security model
         /// </summary>
         /// <param name="code">The authorization code required to retrieve the tokens</param>
         /// <returns></returns>
@@ -273,11 +281,17 @@ namespace Boxify
             }
             catch (Exception ex)
             {
+                string extraInfo = "";
+                if (ex.Message.StartsWith("Bad Request"))
+                {
+                    extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
+                }
+                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return;
             }
 
-            await setTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
+            await parseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
         }
 
@@ -286,7 +300,7 @@ namespace Boxify
         /// </summary>
         /// <param name="tokensString">A JSON string with token data</param>
         /// <returns></returns>
-        public async static Task setTokens(string tokensString, SecurityFlow securityFlow)
+        public async static Task parseResponseToTokens(string tokensString, SecurityFlow securityFlow)
         {
             JsonObject tokensJson = new JsonObject();
             try
@@ -367,7 +381,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Sends a GET request to the Spotify API with the token aquired from the Authorization Code Flow security model
+        /// Sends a GET request to retrieve private user info in the Spotify API with the token aquired from the Authorization Code Flow security model
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The body of the response</returns>
@@ -377,7 +391,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Sends a GET request to the Spotify API with the token aquired from the Client Credentials Flow security model
+        /// Sends a GET request to retrieve public info int the Spotify API with the token aquired from the Client Credentials Flow security model
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The body of the response</returns>
@@ -388,7 +402,7 @@ namespace Boxify
 
 
         /// <summary>
-        /// Sends a GET request to the Spotify API with required authorization tokens
+        /// Sends a GET request to the Spotify API with required tokens
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The response body</returns>
@@ -428,6 +442,12 @@ namespace Boxify
             }
             catch (Exception ex)
             {
+                string extraInfo = "";
+                if (ex.Message.StartsWith("Bad Request"))
+                {
+                    extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
+                }
+                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
 
@@ -452,7 +472,7 @@ namespace Boxify
                 httpResponse = await client.GetAsync(uri.Uri);
                 httpResponse.EnsureSuccessStatusCode();
                 IInputStream st = await client.GetInputStreamAsync(uri.Uri);
-                var memoryStream = new MemoryStream();
+                MemoryStream memoryStream = new MemoryStream();
                 await st.AsStreamForRead().CopyToAsync(memoryStream);
                 memoryStream.Position = 0;
                 await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
@@ -487,7 +507,7 @@ namespace Boxify
                 Uri.EscapeDataString("refresh_token"),
                 Uri.EscapeDataString(refreshToken));
 
-            HttpStringContent body = new HttpStringContent(requestContent, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
+            HttpStringContent body = new HttpStringContent(requestContent, UnicodeEncoding.Utf8, "application/x-www-form-urlencoded");
 
             try
             {
@@ -505,7 +525,7 @@ namespace Boxify
                 return false;
             }
 
-            await setTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
+            await parseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
             return true;
         }

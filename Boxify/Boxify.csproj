@@ -106,6 +106,9 @@
     <Compile Include="Controls\AlbumList.xaml.cs">
       <DependentUpon>AlbumList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CancelDialog.xaml.cs">
+      <DependentUpon>CancelDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Frames\Browse.xaml.cs">
       <DependentUpon>Browse.xaml</DependentUpon>
     </Compile>
@@ -169,6 +172,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\AlbumList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CancelDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
