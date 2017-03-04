@@ -54,7 +54,7 @@
 
             <TextBlock Name="Title"
                        RelativePanel.RightOf="Back"
-                       Margin="20,0,0,0"
+                       Margin="10,0,0,0"
                        Text="Title"
                        Style="{StaticResource HeaderTextBlockStyle}"/>
 
@@ -200,8 +200,33 @@
             <SplitView.Content>
 
                 <RelativePanel HorizontalAlignment="Stretch">
-                    <Frame Name="MainContentFrame"
+                    <Grid  Name="ErrorMessageGrid"
                            RelativePanel.AlignTopWithPanel="True"
+                           RelativePanel.AlignLeftWithPanel="True"
+                           RelativePanel.AlignRightWithPanel="True"
+                           Background="{ThemeResource NavBarBackground}">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Name="ErrorMessage"
+                                   Grid.Row="0"
+                                   Margin="10,0,10,0"
+                                   Text="Generic Error Message"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"/>
+
+                        <local:CancelDialog x:Name="CancelDialog"
+                                            Grid.Row="1"
+                                            Margin="10,0,10,0"/>
+
+                    </Grid>
+
+                    <Frame Name="MainContentFrame"
+                           RelativePanel.Below="ErrorMessageGrid"
                            RelativePanel.AlignBottomWith="PlaybackMenu"
                            RelativePanel.AlignLeftWithPanel="True"
                            RelativePanel.AlignRightWithPanel="True"

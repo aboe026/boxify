@@ -73,7 +73,7 @@ namespace Boxify
             // Set the color of the Title Bar content PC
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
             {
-                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 titleBar.BackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
                 titleBar.InactiveBackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
                 titleBar.ButtonBackgroundColor = ((SolidColorBrush)Resources["AppTitleBarBackground"]).Color;
@@ -238,7 +238,7 @@ namespace Boxify
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
+            SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
@@ -326,7 +326,7 @@ namespace Boxify
         private void MemoryManager_AppMemoryUsageIncreased(object sender, object e)
         {
             // Obtain the current usage level
-            var level = MemoryManager.AppMemoryUsageLevel;
+            AppMemoryUsageLevel level = MemoryManager.AppMemoryUsageLevel;
 
             // Check the usage level to determine whether reducing memory is necessary.
             // Memory usage may have been fine when initially entering the background but

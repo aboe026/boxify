@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoLibrary;
 using Windows.ApplicationModel.Core;
@@ -192,7 +193,7 @@ namespace Boxify.Classes
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track]), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
                             }
                             catch (Exception)
                             {
@@ -344,7 +345,7 @@ namespace Boxify.Classes
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track]), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
                             }
                             catch (Exception)
                             {
@@ -603,7 +604,7 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="track">The track to search for a match in YouTube</param>
         /// <returns>The YouTube ID of the video</returns>
-        private static string searchForVideoId(Track track)
+        private string searchForVideoId(Track track)
         {
             YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
             {
@@ -628,7 +629,7 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="tracks">The list of tracks to search for a match in YouTube</param>
         /// <returns>A list of YouTube IDs of the videos</returns>
-        private async static Task<Dictionary<Track, string>> bulkSearchForVideoId(List<Track> tracks)
+        private async Task<Dictionary<Track, string>> bulkSearchForVideoId(List<Track> tracks)
         {
             YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
             {
@@ -648,6 +649,17 @@ namespace Boxify.Classes
                 listRequest.Fields = "items(id)";
                 batch.Queue<SearchListResponse>(listRequest, (content, error, i, message) =>
                 {
+                    if (error != null && error.Errors.Count > 0)
+                    {
+                        if (error.Errors[0].Reason == "keyInvalid")
+                        {
+                            PlaybackService.mainPage.setErrorMessage("Invalid YouTube Credentials. Ensure YouTube applicationName and apiKey are correct.", localLock);
+                        }
+                        else
+                        {
+                            PlaybackService.mainPage.setErrorMessage(String.Format("{0} ({1})", error.Errors[0].Message, error.Errors[0].Reason), localLock);
+                        }
+                    }
                     string videoId = "";
                     if (content != null && content.Items.Count > 0)
                     {
@@ -667,7 +679,7 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="videoId">The id of the video to get audio for</param>
         /// <returns>The audio of the track</returns>
-        private static async Task<MediaSource> GetAudioAsync(string videoId)
+        private async Task<MediaSource> GetAudioAsync(string videoId, string trackName)
         {
             IEnumerable<YouTubeVideo> videos = await YouTube.Default.GetAllVideosAsync(string.Format(_videoUrlFormat, videoId));
             YouTubeVideo maxAudioVideo = null;
@@ -710,12 +722,55 @@ namespace Boxify.Classes
             }
             else if (maxNonAudioVideo != null)
             {
-                var handler = new HttpClientHandler();
+                HttpClientHandler handler = new HttpClientHandler();
                 handler.AllowAutoRedirect = true;
                 HttpClient client = new HttpClient(handler);
-                HttpResponseMessage response = await client.GetAsync(new Uri(maxNonAudioVideo.GetUri()), HttpCompletionOption.ResponseContentRead);
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                return MediaSource.CreateFromStream(stream.AsRandomAccessStream(), "video/x-flv");
+
+                CancellationTokenSource cancelToken = new CancellationTokenSource();
+                cancelToken.Token.Register(() =>
+                {
+                    client.CancelPendingRequests();
+                    client.Dispose();
+                    PlaybackService.mainPage.hideCancelDialog(localLock);
+                });
+
+                try
+                {
+                    Task<HttpResponseMessage> clientTask = client.GetAsync(new Uri(maxNonAudioVideo.GetUri()), HttpCompletionOption.ResponseContentRead, cancelToken.Token);
+                    Task completedTask = await Task.WhenAny(clientTask, Task.Delay(5000));
+                    if (completedTask != clientTask)
+                    {
+                        if (App.isInBackgroundMode)
+                        {
+                            cancelToken.Cancel();
+                            return MediaSource.CreateFromUri(new Uri(""));
+                        }
+                        else
+                        {
+                            PlaybackService.mainPage.showCancelDialog(localLock, cancelToken, trackName);
+                            await Task.Run(() =>
+                            {
+                                while ((clientTask.Status == TaskStatus.WaitingForActivation ||
+                                        clientTask.Status == TaskStatus.WaitingForChildrenToComplete ||
+                                        clientTask.Status == TaskStatus.WaitingToRun ||
+                                        clientTask.Status == TaskStatus.Running) && !cancelToken.Token.IsCancellationRequested)
+                                { }
+                            });
+                            PlaybackService.mainPage.hideCancelDialog(localLock);
+                            if (cancelToken.Token.IsCancellationRequested)
+                            {
+                                return MediaSource.CreateFromUri(new Uri(""));
+                            }
+                        }
+                    }
+                    HttpResponseMessage response = clientTask.Result;
+                    Stream stream = await response.Content.ReadAsStreamAsync();
+                    return MediaSource.CreateFromStream(stream.AsRandomAccessStream(), "video/x-flv");
+                }
+                catch (OperationCanceledException)
+                {
+                    return MediaSource.CreateFromUri(new Uri(""));
+                }
             }
             return MediaSource.CreateFromUri(new Uri(""));
         }
