@@ -182,11 +182,11 @@ namespace Boxify
             {
                 await getClientCredentialsTokens();
             }
-            else
+            if (accessToken != "")
             {
                 string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
                 await UserProfile.updateInfo(userJson);
-            }
+            } 
         }
 
 
@@ -413,6 +413,7 @@ namespace Boxify
                 if (DateTime.Now.Ticks > expireTime.Ticks || accessToken == "")
                 {
                     await refreshTokens();
+                    token = accessToken;
                 }
             }
             else if (securityFlow == SecurityFlow.ClientCredentials)
@@ -420,6 +421,7 @@ namespace Boxify
                 if (DateTime.Now.Ticks > ccExpireTime.Ticks || ccAccessToken == "")
                 {
                     await getClientCredentialsTokens();
+                    token = ccAccessToken;
                 }
             }
 
