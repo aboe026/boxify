@@ -186,7 +186,7 @@ namespace Boxify
             {
                 string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
                 await UserProfile.updateInfo(userJson);
-            } 
+            }
         }
 
 
