@@ -487,7 +487,7 @@ namespace Boxify
         /// Requests new access token with refresh token
         /// </summary>
         /// <returns></returns>
-        private async static Task<bool> refreshTokens()
+        private async static Task refreshTokens()
         {
             // Create an HTTP client object
             HttpClient client = new HttpClient();
@@ -514,22 +514,16 @@ namespace Boxify
             try
             {
                 httpResponse = await client.PostAsync(authRequestUri.Uri, body);
-                if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    return false;
-                }
                 httpResponse.EnsureSuccessStatusCode();
                 httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
-                return false;
             }
 
             await parseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
             saveTokens();
-            return true;
         }
 
         /// <summary>
