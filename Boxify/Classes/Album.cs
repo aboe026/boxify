@@ -115,7 +115,7 @@ namespace Boxify
                     {
                         imageUrl = url;
                     }
-                    BitmapImage image = await RequestHandler.downloadImage(url);
+                    BitmapImage image = await RequestHandler.DownloadImage(url);
                     images.Add(image);
                 }
             }
@@ -128,7 +128,7 @@ namespace Boxify
         public async Task<List<Track>> getTracks()
         {
             List<Track> tracks = new List<Track>();
-            string tracksString = await RequestHandler.sendCliGetRequest(tracksHref.Replace("{id}", id));
+            string tracksString = await RequestHandler.SendCliGetRequest(tracksHref.Replace("{id}", id));
             JsonObject tracksJson = new JsonObject();
             try
             {

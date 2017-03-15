@@ -57,16 +57,16 @@ namespace Boxify
                     if (refreshing)
                     {
                         refresh.Visibility = Visibility.Collapsed;
-                        mainPage.setSpotifyLoadingMaximum(playlistsCount);
-                        mainPage.setSpotifyLoadingValue(0);
-                        mainPage.bringUpSpotify();
+                        mainPage.SetSpotifyLoadingMaximum(playlistsCount);
+                        mainPage.SetSpotifyLoadingValue(0);
+                        mainPage.BringUpSpotify();
                         while (refreshing)
                         {
-                            mainPage.setSpotifyLoadingMaximum(playlistsCount);
-                            mainPage.setSpotifyLoadingValue(playlistsSave.Count);
+                            mainPage.SetSpotifyLoadingMaximum(playlistsCount);
+                            mainPage.SetSpotifyLoadingValue(playlistsSave.Count);
                             await Task.Delay(TimeSpan.FromMilliseconds(100));
                         }
-                        mainPage.setSpotifyLoadingValue(playlistsCount);
+                        mainPage.SetSpotifyLoadingValue(playlistsCount);
                     }
                     foreach (PlaylistList playlist in playlistsSave)
                     {
@@ -129,15 +129,15 @@ namespace Boxify
         {
             More.IsEnabled = false;
             refresh.IsEnabled = false;
-            mainPage.setSpotifyLoadingValue(0);
-            mainPage.bringUpSpotify();
+            mainPage.SetSpotifyLoadingValue(0);
+            mainPage.BringUpSpotify();
 
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
             queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
-            playlistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
-            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsBuilder.Uri.ToString());
+            playlistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
+            string playlistsString = await RequestHandler.SendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
             try
             {
@@ -156,7 +156,7 @@ namespace Boxify
             if (playlistsJson.TryGetValue("items", out itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
+                mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                 if (playlistsSave == null)
                 {
                     playlistsSave = new List<PlaylistList>();
@@ -168,7 +168,7 @@ namespace Boxify
                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                     playlistsSave.Add(playlistList);
                     playlists.Items.Add(playlistList);
-                    mainPage.setSpotifyLoadingValue(playlistsSave.Count);
+                    mainPage.SetSpotifyLoadingValue(playlistsSave.Count);
                 }
             }
             refresh.IsEnabled = true;
@@ -194,8 +194,8 @@ namespace Boxify
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
             queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
-            playlistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
-            string playlistsString = await RequestHandler.sendAuthGetRequest(playlistsBuilder.Uri.ToString());
+            playlistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
+            string playlistsString = await RequestHandler.SendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
             try
             {
@@ -236,7 +236,7 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private void logIn_Click(object sender, RoutedEventArgs e)
         {
-            mainPage.selectHamburgerOption("ProfileItem");
+            mainPage.SelectHamburgerOption("ProfileItem");
         }
 
         /// <summary>

@@ -134,7 +134,7 @@ namespace Boxify
                 {
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
-                    BitmapImage image = await RequestHandler.downloadImage(url);
+                    BitmapImage image = await RequestHandler.DownloadImage(url);
                     images.Add(image);
                 }
                 if (images.Count > 0)
