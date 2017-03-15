@@ -85,10 +85,10 @@ namespace Boxify
             }
 
             // settings
-            loadSettings();
+            LoadSettings();
 
             // load tokens
-            await RequestHandler.initializeTokens();
+            await RequestHandler.InitializeTokens();
 
             // Create Frames
             CreateRootFrame(e.PreviousExecutionState, e.Arguments);
@@ -102,7 +102,7 @@ namespace Boxify
         /// <summary>
         /// Gets user settings to be applied to app
         /// </summary>
-        private void loadSettings()
+        private void LoadSettings()
         {
             // settings
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
@@ -156,14 +156,9 @@ namespace Boxify
                 // volume
                 if (composite["Volume"] != null)
                 {
-                    double value;
-                    if (Double.TryParse(composite["Volume"].ToString(), out value))
+                    if (Double.TryParse(composite["Volume"].ToString(), out double value))
                     {
                         Settings.volume = value;
-                    }
-                    else
-                    {
-                        Settings.volume = 100;
                     }
                 }
                 else
@@ -194,11 +189,12 @@ namespace Boxify
             if (rootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
+                rootFrame = new Frame()
+                {
 
-                // Set the default language
-                rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
-
+                    // Set the default language
+                    Language = Windows.Globalization.ApplicationLanguages.Languages[0]
+                };
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 if (previousExecutionState == ApplicationExecutionState.Terminated)

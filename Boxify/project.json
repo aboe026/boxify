@@ -2,7 +2,8 @@
   "dependencies": {
     "Google.Apis.YouTube.v3": "1.21.0.760",
     "Microsoft.Bcl.Async": "1.0.168",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.1"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.1",
+    "Zlib.Portable": "1.11.0"
   },
   "frameworks": {
     "uap10.0": {}

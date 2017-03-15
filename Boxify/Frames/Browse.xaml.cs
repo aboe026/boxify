@@ -98,14 +98,14 @@ namespace Boxify
         {
             More.IsEnabled = false;
             Refresh.IsEnabled = false;
-            mainPage.setSpotifyLoadingValue(0);
-            mainPage.bringUpSpotify();
+            mainPage.SetSpotifyLoadingValue(0);
+            mainPage.BringUpSpotify();
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
             queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
             queryParams.Add(new KeyValuePair<string, string>("offset", featuredPlaylistsOffset.ToString()));
-            featuredPlaylistsBuilder.Query = RequestHandler.convertToQueryString(queryParams);
-            string playlistsString = await RequestHandler.sendCliGetRequest(featuredPlaylistsBuilder.Uri.ToString());
+            featuredPlaylistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
+            string playlistsString = await RequestHandler.SendCliGetRequest(featuredPlaylistsBuilder.Uri.ToString());
             JsonObject featuredPlaylistsJson = new JsonObject();
             try
             {
@@ -134,7 +134,7 @@ namespace Boxify
                 if (playlists.TryGetValue("items", out itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
-                    mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
+                    mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                     if (featuredPlaylistsSave == null)
                     {
                         featuredPlaylistsSave = new List<PlaylistHero>();
@@ -143,13 +143,13 @@ namespace Boxify
                     {
                         IJsonValue fullHref;
                         if (playlistJson.GetObject().TryGetValue("href", out fullHref)) {
-                            string fullPlaylistString = await RequestHandler.sendCliGetRequest(fullHref.GetString());
+                            string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
                             await playlist.setInfo(fullPlaylistString);
                             PlaylistHero playlistHero = new PlaylistHero(playlist, mainPage);
                             FeaturedPlaylists.Items.Add(playlistHero);
                             featuredPlaylistsSave.Add(playlistHero);
-                            mainPage.setSpotifyLoadingValue(featuredPlaylistsSave.Count);
+                            mainPage.SetSpotifyLoadingValue(featuredPlaylistsSave.Count);
                         }
                     }
                 }

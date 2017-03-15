@@ -78,7 +78,7 @@ namespace Boxify.Classes
 
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                PlaybackService.mainPage.setYouTubeMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
+                PlaybackService.mainPage.SetYouTubeMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
             });
         }
 
@@ -127,15 +127,15 @@ namespace Boxify.Classes
 
             if (this.source == Playbacksource.Spotify)
             {
-                PlaybackService.mainPage.setSpotifyLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.setSpotifyLoadingValue(0, localLock);
-                PlaybackService.mainPage.bringUpSpotify(localLock);
+                PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
+                PlaybackService.mainPage.SetSpotifyLoadingValue(0, localLock);
+                PlaybackService.mainPage.BringUpSpotify(localLock);
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                PlaybackService.mainPage.setYouTubeLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.setYouTubeLoadingValue(0, localLock);
-                PlaybackService.mainPage.bringUpYouTube(localLock);
+                PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                PlaybackService.mainPage.SetYouTubeLoadingValue(0, localLock);
+                PlaybackService.mainPage.BringUpYouTube(localLock);
             }
 
             if (localLock != PlaybackService.globalLock) { return false; }
@@ -147,11 +147,11 @@ namespace Boxify.Classes
                 limit = totalTracks;
                 if (this.source == Playbacksource.Spotify)
                 {
-                    PlaybackService.mainPage.setSpotifyLoadingMaximum(limit, localLock);
+                    PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
                 }
                 else if (this.source == Playbacksource.YouTube)
                 {
-                    PlaybackService.mainPage.setYouTubeLoadingMaximum(limit, localLock);
+                    PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
                 }
             }
 
@@ -179,7 +179,7 @@ namespace Boxify.Classes
                                 updateFailuresCount(1);
                             }
                         }
-                        PlaybackService.mainPage.setSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
                 else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
@@ -199,7 +199,7 @@ namespace Boxify.Classes
                             {
                                 updateFailuresCount(1);
                             }
-                            PlaybackService.mainPage.setYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                            PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                         }
                     }
                 }
@@ -293,15 +293,15 @@ namespace Boxify.Classes
 
             if (this.source == Playbacksource.Spotify)
             {
-                PlaybackService.mainPage.setSpotifyLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.setSpotifyLoadingValue(0, localLock);
-                PlaybackService.mainPage.bringUpSpotify(localLock);
+                PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
+                PlaybackService.mainPage.SetSpotifyLoadingValue(0, localLock);
+                PlaybackService.mainPage.BringUpSpotify(localLock);
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                PlaybackService.mainPage.setYouTubeLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.setYouTubeLoadingValue(0, localLock);
-                PlaybackService.mainPage.bringUpYouTube(localLock);
+                PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                PlaybackService.mainPage.SetYouTubeLoadingValue(0, localLock);
+                PlaybackService.mainPage.BringUpYouTube(localLock);
             }
 
             if (localLock != PlaybackService.globalLock) { return false; }
@@ -331,7 +331,7 @@ namespace Boxify.Classes
                                 updateFailuresCount(1);
                             }
                         }
-                        PlaybackService.mainPage.setSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
                 else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
@@ -351,7 +351,7 @@ namespace Boxify.Classes
                             {
                                 updateFailuresCount(1);
                             }
-                            PlaybackService.mainPage.setYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                            PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                         }
                     }
                 }
@@ -537,11 +537,11 @@ namespace Boxify.Classes
                 List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
                 queryParams.Add(new KeyValuePair<string, string>("limit", limit.ToString()));
                 queryParams.Add(new KeyValuePair<string, string>("offset", start.ToString()));
-                tracksBuilder.Query = RequestHandler.convertToQueryString(queryParams);
+                tracksBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
                 trackUrl = tracksBuilder.Uri.ToString();
             }
 
-            string tracksString = await RequestHandler.sendCliGetRequest(trackUrl);
+            string tracksString = await RequestHandler.SendCliGetRequest(trackUrl);
 
             if (localLock != PlaybackService.globalLock) { return tracks; }
 
@@ -578,7 +578,7 @@ namespace Boxify.Classes
                                 IJsonValue hrefJson;
                                 if (trackJson.GetObject().TryGetValue("href", out hrefJson))
                                 {
-                                    string fullTrackString = await RequestHandler.sendCliGetRequest(hrefJson.GetString());
+                                    string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
                                     await track.setInfoDirect(fullTrackString);
                                 }
                             }
@@ -653,11 +653,11 @@ namespace Boxify.Classes
                     {
                         if (error.Errors[0].Reason == "keyInvalid")
                         {
-                            PlaybackService.mainPage.setErrorMessage("Invalid YouTube Credentials. Ensure YouTube applicationName and apiKey are correct.", localLock);
+                            PlaybackService.mainPage.SetErrorMessage("Invalid YouTube Credentials. Ensure YouTube applicationName and apiKey are correct.", localLock);
                         }
                         else
                         {
-                            PlaybackService.mainPage.setErrorMessage(String.Format("{0} ({1})", error.Errors[0].Message, error.Errors[0].Reason), localLock);
+                            PlaybackService.mainPage.SetErrorMessage(String.Format("{0} ({1})", error.Errors[0].Message, error.Errors[0].Reason), localLock);
                         }
                     }
                     string videoId = "";
@@ -731,7 +731,7 @@ namespace Boxify.Classes
                 {
                     client.CancelPendingRequests();
                     client.Dispose();
-                    PlaybackService.mainPage.hideCancelDialog(localLock);
+                    PlaybackService.mainPage.HideCancelDialog(localLock);
                 });
 
                 try
@@ -747,7 +747,7 @@ namespace Boxify.Classes
                         }
                         else
                         {
-                            PlaybackService.mainPage.showCancelDialog(localLock, cancelToken, trackName);
+                            PlaybackService.mainPage.ShowCancelDialog(localLock, cancelToken, trackName);
                             await Task.Run(() =>
                             {
                                 while ((clientTask.Status == TaskStatus.WaitingForActivation ||
@@ -756,7 +756,7 @@ namespace Boxify.Classes
                                         clientTask.Status == TaskStatus.Running) && !cancelToken.Token.IsCancellationRequested)
                                 { }
                             });
-                            PlaybackService.mainPage.hideCancelDialog(localLock);
+                            PlaybackService.mainPage.HideCancelDialog(localLock);
                             if (cancelToken.Token.IsCancellationRequested)
                             {
                                 return MediaSource.CreateFromUri(new Uri(""));

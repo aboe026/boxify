@@ -80,7 +80,7 @@ namespace Boxify
                     {
                         return;
                     }
-                    await RequestHandler.getAuthorizationCodeTokens(queryParams.GetFirstValueByName("code"));
+                    await RequestHandler.GetAuthorizationCodeTokens(queryParams.GetFirstValueByName("code"));
                 }
                 catch (ArgumentException) { return; }
 
@@ -93,11 +93,11 @@ namespace Boxify
                 login.Visibility = Visibility.Visible;
                 if (mainPage != null)
                 {
-                    mainPage.updateUserUI();
+                    mainPage.UpdateUserUI();
                 }
-                mainPage.selectHamburgerOption("ProfileItem");
+                mainPage.SelectHamburgerOption("ProfileItem");
                 YourMusic.playlistsSave = null;
-                mainPage.loadUserPlaylists();
+                mainPage.LoadUserPlaylists();
             }
         }
 
@@ -116,7 +116,7 @@ namespace Boxify
                 blankUser.Text = "";
                 webView.Visibility = Visibility.Visible;
                 webView.Focus(FocusState.Programmatic);
-                webView.Navigate(RequestHandler.getAuthorizationUri());
+                webView.Navigate(RequestHandler.GetAuthorizationUri());
             }
             else if (login.Content.ToString() == "Log Out")
             {
@@ -124,11 +124,11 @@ namespace Boxify
                 blankUser.Text = "\uE77B";
                 status.Text = loggedOutText;
                 login.Content = "Log In";
-                RequestHandler.clearTokens();
+                RequestHandler.ClearTokens();
             }
             if (mainPage != null)
             {
-                mainPage.updateUserUI();
+                mainPage.UpdateUserUI();
             }
         }
     }

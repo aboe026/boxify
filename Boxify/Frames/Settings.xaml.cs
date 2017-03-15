@@ -93,11 +93,11 @@ namespace Boxify
                 tvSafeArea = toggleSwitch.IsOn;
                 if (toggleSwitch.IsOn)
                 {
-                    mainPage.safeAreaOn();   
+                    mainPage.SafeAreaOn();   
                 }
                 else
                 {
-                    mainPage.safeAreaOff();
+                    mainPage.SafeAreaOff();
                 }
             }
             saveSettings();

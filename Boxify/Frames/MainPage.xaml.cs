@@ -51,11 +51,11 @@ namespace Boxify
             }
             if (Settings.tvSafeArea)
             {
-                safeAreaOn();
+                SafeAreaOn();
             }
             else
             {
-                safeAreaOff();
+                SafeAreaOff();
             }
 
             CancelDialog.Visibility = Visibility.Collapsed;
@@ -75,8 +75,8 @@ namespace Boxify
             YouTubeLoading.Visibility = Visibility.Collapsed;
             YouTubeMessage.Visibility = Visibility.Collapsed;
 
-            selectHamburgerOption(App.hamburgerOptionToLoadTo);
-            updateUserUI();
+            SelectHamburgerOption(App.hamburgerOptionToLoadTo);
+            UpdateUserUI();
 
             PlaybackService.mainPage = this;
             if (PlaybackService.showing)
@@ -95,7 +95,7 @@ namespace Boxify
                 PlaybackMenu.Visibility = Visibility.Collapsed;
             }
 
-            loadUserPlaylists();
+            LoadUserPlaylists();
 
             // Back button in title bar
             Frame rootFrame = Window.Current.Content as Frame;
@@ -121,7 +121,7 @@ namespace Boxify
         /// <summary>
         /// Begin loading the Users Playlists
         /// </summary>
-        public async void loadUserPlaylists()
+        public async void LoadUserPlaylists()
         {
             if (UserProfile.isLoggedIn() && YourMusic.playlistsSave == null)
             {
@@ -134,7 +134,7 @@ namespace Boxify
         /// <summary>
         /// Make the playback controls visible
         /// </summary>
-        public async void showPlaybackMenu()
+        public async void ShowPlaybackMenu()
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -158,7 +158,7 @@ namespace Boxify
         /// Set the visibility state of the PlaybackMenu progress ring
         /// </summary>
         /// <param name="visible"></param>
-        public async void setPlaybackMenu(bool active)
+        public async void SetPlaybackMenu(bool active)
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -170,7 +170,7 @@ namespace Boxify
         /// Return the PlaybackMenu control. Needed for static PlaybackService class.
         /// </summary>
         /// <returns>The PlaybackMenu control</returns>
-        public Playback getPlaybackMenu()
+        public Playback GetPlaybackMenu()
         {
             return PlaybackMenu;
         }
@@ -180,7 +180,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void hamburgerButton_Click(object sender, RoutedEventArgs e)
+        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
             MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
         }
@@ -190,7 +190,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void backButton_Click(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (MainContentFrame.CanGoBack)
             {
@@ -202,7 +202,7 @@ namespace Boxify
         /// Set the selected option of the hamburger navigation menu
         /// </summary>
         /// <param name="option"></param>
-        public void selectHamburgerOption(string option)
+        public void SelectHamburgerOption(string option)
         {
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
@@ -292,7 +292,7 @@ namespace Boxify
         /// <summary>
         /// Updates the UI of the user information
         /// </summary>
-        public void updateUserUI()
+        public void UpdateUserUI()
         {
             UserName.Text = UserProfile.displalyName;
             UserPic.ImageSource = UserProfile.userPic;
@@ -312,7 +312,7 @@ namespace Boxify
         /// <summary>
         /// Remove the extra margin so content touches display edge
         /// </summary>
-        public void safeAreaOff()
+        public void SafeAreaOff()
         {
             NavLeftBorder.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
@@ -333,7 +333,7 @@ namespace Boxify
         /// <summary>
         /// Add extra margin to ensure content inside of TV safe area
         /// </summary>
-        public void safeAreaOn()
+        public void SafeAreaOn()
         {
             NavLeftBorder.Visibility = Visibility.Visible;
             Header.Margin = new Thickness(48, 27, 48, 0);
@@ -356,9 +356,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The user element that was pressed</param>
         /// <param name="e">The pointer routed event arguments</param>
-        private void userElement_PointerReleased(object sender, PointerRoutedEventArgs e)
+        private void UserElement_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            selectHamburgerOption("ProfileItem");
+            SelectHamburgerOption("ProfileItem");
         }
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace Boxify
             }
             else if (e.Key == VirtualKey.GamepadY)
             {
-                selectHamburgerOption("SearchItem");
+                SelectHamburgerOption("SearchItem");
             }
             else if (e.Key == VirtualKey.GamepadX)
             {
@@ -433,7 +433,7 @@ namespace Boxify
             {
                 MainSplitView.IsPaneOpen = false;
             }
-            selectHamburgerOption("SettingsItem");
+            SelectHamburgerOption("SettingsItem");
 
             MainContentFrame.Navigate(typeof(Settings), this);
             Title.Text = "Settings";
@@ -444,7 +444,7 @@ namespace Boxify
         /// Set the error message displayed to the user
         /// </summary>
         /// <param name="message">The error message to be displayed to the user</param>
-        public void setErrorMessage(string message)
+        public void SetErrorMessage(string message)
         {
             ErrorMessage.Visibility = Visibility.Visible;
             ErrorMessage.Text = message;
@@ -455,13 +455,13 @@ namespace Boxify
         /// </summary>
         /// <param name="message">The error message to be displayed to the user</param>
         /// <param name="localLock">The lock to ensure no stale updates</param>
-        public async void setErrorMessage(string message, long localLock)
+        public async void SetErrorMessage(string message, long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    setErrorMessage(message);
+                    SetErrorMessage(message);
                 });
             }
         }
@@ -471,7 +471,7 @@ namespace Boxify
         /// </summary>
         /// <param name="localLock">The lock to ensure no stale updates</param>
         /// <param name="cancelToken">The download token to cancel</param>
-        public async void showCancelDialog(long localLock, CancellationTokenSource cancelToken, string trackName)
+        public async void ShowCancelDialog(long localLock, CancellationTokenSource cancelToken, string trackName)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
@@ -488,7 +488,7 @@ namespace Boxify
         /// Hide the cancel dialog
         /// </summary>
         /// <param name="localLock">The lock to ensure no stale updates</param>
-        public async void hideCancelDialog(long localLock)
+        public async void HideCancelDialog(long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
@@ -503,7 +503,7 @@ namespace Boxify
         /// Set whether or not the Spotify logo/loading are visible
         /// </summary>
         /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
-        public void bringUpSpotify()
+        public void BringUpSpotify()
         {
             YouTubeLogo.Visibility = Visibility.Collapsed;
             YouTubeLoading.Visibility = Visibility.Collapsed;
@@ -517,11 +517,11 @@ namespace Boxify
         /// Ensure playlist has permission to bring up Spotify info
         /// </summary>
         /// <param name="localLock"></param>
-        public void bringUpSpotify(long localLock)
+        public void BringUpSpotify(long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
-                bringUpSpotify();
+                BringUpSpotify();
             }
         }
 
@@ -529,7 +529,7 @@ namespace Boxify
         /// Set the current Spotify loading progress
         /// </summary>
         /// <param name="value">The amount of progress made</param>
-        public void setSpotifyLoadingValue(double value)
+        public void SetSpotifyLoadingValue(double value)
         {
             SpotifyLoading.Value = value;
         }
@@ -538,11 +538,11 @@ namespace Boxify
         /// Ensure playlist has permission before setting the current Spotify loading progress
         /// </summary>
         /// <param name="value">The amount of progress made</param>
-        public void setSpotifyLoadingValue(double value, long localLock)
+        public void SetSpotifyLoadingValue(double value, long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
-                setSpotifyLoadingValue(value);
+                SetSpotifyLoadingValue(value);
             }
         }
 
@@ -550,7 +550,7 @@ namespace Boxify
         /// Set the maximum Spotify loading value
         /// </summary>
         /// <param name="max">The limit of progress</param>
-        public void setSpotifyLoadingMaximum(double max)
+        public void SetSpotifyLoadingMaximum(double max)
         {
             SpotifyLoading.Maximum = max;
         }
@@ -559,11 +559,11 @@ namespace Boxify
         /// Ensure playlist has permission before setting the maximum Spotify loading value
         /// </summary>
         /// <param name="max">The limit of progress</param>
-        public void setSpotifyLoadingMaximum(double max, long localLock)
+        public void SetSpotifyLoadingMaximum(double max, long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
-                setSpotifyLoadingMaximum(max);
+                SetSpotifyLoadingMaximum(max);
             }
         }
 
@@ -571,7 +571,7 @@ namespace Boxify
         /// Set whether or not the YouTube log/loading are visible
         /// </summary>
         /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
-        public void bringUpYouTube()
+        public void BringUpYouTube()
         {
             if (SpotifyLogo != null && SpotifyLoading != null && YouTubeLogo != null && YouTubeLoading != null && YouTubeMessage != null)
             {
@@ -592,11 +592,11 @@ namespace Boxify
         /// Ensure playlist has permission to bring up YouTube info
         /// </summary>
         /// <param name="localLock"></param>
-        public void bringUpYouTube(long localLock)
+        public void BringUpYouTube(long localLock)
         {
             if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
-                bringUpYouTube();
+                BringUpYouTube();
             }
         }
 
@@ -604,7 +604,7 @@ namespace Boxify
         /// Set the current YouTube loading progress
         /// </summary>
         /// <param name="value">The amount of progress made</param>
-        public void setYouTubeLoadingValue(double value, long localLock)
+        public void SetYouTubeLoadingValue(double value, long localLock)
         {
             if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
@@ -616,7 +616,7 @@ namespace Boxify
         /// Set the maximum YouTube loading value
         /// </summary>
         /// <param name="max">The limit of progress</param>
-        public void setYouTubeLoadingMaximum(double max, long localLock)
+        public void SetYouTubeLoadingMaximum(double max, long localLock)
         {
             if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {
@@ -628,7 +628,7 @@ namespace Boxify
         /// Set the message displayed under the YouTube logo
         /// </summary>
         /// <param name="message"></param>
-        public void setYouTubeMessage(String message, long localLock)
+        public void SetYouTubeMessage(String message, long localLock)
         {
             if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
             {

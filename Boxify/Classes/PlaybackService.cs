@@ -39,9 +39,9 @@ namespace Boxify
             if (!showing)
             {
                 showing = true;
-                mainPage.showPlaybackMenu();
+                mainPage.ShowPlaybackMenu();
             }
-            mainPage.setPlaybackMenu(true);
+            mainPage.SetPlaybackMenu(true);
 
             if (currentSession != null)
             {
@@ -51,7 +51,7 @@ namespace Boxify
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.loadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
-            mainPage.setPlaybackMenu(false);
+            mainPage.SetPlaybackMenu(false);
         }
 
         /// <summary>
@@ -154,10 +154,10 @@ namespace Boxify
                             IRandomAccessStreamWithContentType thumbnail = await Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail.OpenReadAsync();
                             BitmapImage bitmapImage = new BitmapImage();
                             bitmapImage.SetSource(thumbnail);
-                            mainPage.getPlaybackMenu().setTrackImage(bitmapImage);
+                            mainPage.GetPlaybackMenu().setTrackImage(bitmapImage);
                         }
-                        mainPage.getPlaybackMenu().setTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
-                        mainPage.getPlaybackMenu().setArtistName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Artist);
+                        mainPage.GetPlaybackMenu().setTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
+                        mainPage.GetPlaybackMenu().setArtistName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Artist);
                     }
                 });
             }
@@ -182,7 +182,7 @@ namespace Boxify
         {
             if (!App.isInBackgroundMode)
             {
-                mainPage.getPlaybackMenu().setActionState(Player.PlaybackSession.PlaybackState);
+                mainPage.GetPlaybackMenu().setActionState(Player.PlaybackSession.PlaybackState);
             }
         }
     }

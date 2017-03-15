@@ -143,9 +143,9 @@ namespace Boxify.Frames
                 queryParams.Add(new KeyValuePair<string, string>("type", selectedString));
                 queryParams.Add(new KeyValuePair<string, string>("limit", "10"));
                 queryParams.Add(new KeyValuePair<string, string>("q", SearchBox.Text.Replace(" ", "+")));
-                string queryParamsString = RequestHandler.convertToQueryString(queryParams);
+                string queryParamsString = RequestHandler.ConvertToQueryString(queryParams);
                 searchUriBuilder.Query = queryParamsString;
-                string searchResultString = await RequestHandler.sendCliGetRequest(searchUriBuilder.Uri.ToString());
+                string searchResultString = await RequestHandler.SendCliGetRequest(searchUriBuilder.Uri.ToString());
                 JsonObject searchResultJson = new JsonObject();
                 try
                 {
@@ -179,9 +179,9 @@ namespace Boxify.Frames
                             else
                             {
                                 playlistResultsSave = new List<PlaylistList>();
-                                mainPage.setSpotifyLoadingMaximum(playlistsArray.Count);
-                                mainPage.setSpotifyLoadingValue(0);
-                                mainPage.bringUpSpotify();
+                                mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
+                                mainPage.SetSpotifyLoadingValue(0);
+                                mainPage.BringUpSpotify();
                                 foreach (JsonValue playlistJson in playlistsArray)
                                 {
 
@@ -194,7 +194,7 @@ namespace Boxify.Frames
                                     }
                                     catch (COMException) { }
                                     playlistResultsSave.Add(playlistList);
-                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
+                                    mainPage.SetSpotifyLoadingValue(Results.Items.Count);
                                 }
                             }
                         }
@@ -219,9 +219,9 @@ namespace Boxify.Frames
                             else
                             {
                                 trackResultsSave = new List<TrackList>();
-                                mainPage.setSpotifyLoadingMaximum(tracksArray.Count);
-                                mainPage.setSpotifyLoadingValue(0);
-                                mainPage.bringUpSpotify();
+                                mainPage.SetSpotifyLoadingMaximum(tracksArray.Count);
+                                mainPage.SetSpotifyLoadingValue(0);
+                                mainPage.BringUpSpotify();
                                 foreach (JsonValue trackJson in tracksArray)
                                 {
                                     Track track = new Track();
@@ -233,7 +233,7 @@ namespace Boxify.Frames
                                     }
                                     catch (COMException) { }
                                     trackResultsSave.Add(trackList);
-                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
+                                    mainPage.SetSpotifyLoadingValue(Results.Items.Count);
                                 }
                             }
                         }
@@ -258,9 +258,9 @@ namespace Boxify.Frames
                             else
                             {
                                 albumResultsSave = new List<AlbumList>();
-                                mainPage.setSpotifyLoadingMaximum(albumsArray.Count);
-                                mainPage.setSpotifyLoadingValue(0);
-                                mainPage.bringUpSpotify();
+                                mainPage.SetSpotifyLoadingMaximum(albumsArray.Count);
+                                mainPage.SetSpotifyLoadingValue(0);
+                                mainPage.BringUpSpotify();
                                 foreach (JsonValue albumJson in albumsArray)
                                 {
                                     Album album = new Album();
@@ -272,7 +272,7 @@ namespace Boxify.Frames
                                     }
                                     catch (COMException) { }
                                     albumResultsSave.Add(albumList);
-                                    mainPage.setSpotifyLoadingValue(Results.Items.Count);
+                                    mainPage.SetSpotifyLoadingValue(Results.Items.Count);
                                 }
                             }
                         }

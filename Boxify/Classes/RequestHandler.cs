@@ -43,20 +43,22 @@ namespace Boxify
         /// Builds the authorization uri with required query parameters
         /// </summary>
         /// <returns>The URI to access the authorization tokens</returns>
-        public static Uri getAuthorizationUri()
+        public static Uri GetAuthorizationUri()
         {
             UriBuilder authorizationBuilder = new UriBuilder(authorizationBase);
 
-            state = generateRandomString(new Random().Next(7, 23));
+            state = GenerateRandomString(new Random().Next(7, 23));
 
-            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-            queryParams.Add(new KeyValuePair<string, string>("client_id", clientId));
-            queryParams.Add(new KeyValuePair<string, string>("response_type", "code"));
-            queryParams.Add(new KeyValuePair<string, string>("redirect_uri", callbackUrl));
-            queryParams.Add(new KeyValuePair<string, string>("scope", scopes));
-            queryParams.Add(new KeyValuePair<string, string>("state", state));
-            queryParams.Add(new KeyValuePair<string, string>("show_dialog", "true"));
-            authorizationBuilder.Query = convertToQueryString(queryParams);
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("client_id", clientId),
+                new KeyValuePair<string, string>("response_type", "code"),
+                new KeyValuePair<string, string>("redirect_uri", callbackUrl),
+                new KeyValuePair<string, string>("scope", scopes),
+                new KeyValuePair<string, string>("state", state),
+                new KeyValuePair<string, string>("show_dialog", "true")
+            };
+            authorizationBuilder.Query = ConvertToQueryString(queryParams);
 
             return authorizationBuilder.Uri;
         }
@@ -66,7 +68,7 @@ namespace Boxify
         /// </summary>
         /// <param name="queryParams">A list of key-value pairs</param>
         /// <returns>A valid URL query parameter ("vame=value&name2=value2")</returns>
-        public static string convertToQueryString(List<KeyValuePair<string, string>> queryParams)
+        public static string ConvertToQueryString(List<KeyValuePair<string, string>> queryParams)
         {
             string queryString = "";
             foreach (KeyValuePair<string, string> param in queryParams)
@@ -86,7 +88,7 @@ namespace Boxify
         /// </summary>
         /// <param name="length">The number of random characters to generate</param>
         /// <returns>A string containing the randomly generated characters.</returns>
-        private static string generateRandomString(int length)
+        private static string GenerateRandomString(int length)
         {
             string random = "";
             while (random.Length < length)
@@ -99,7 +101,7 @@ namespace Boxify
         /// <summary>
         /// Reads the Spotify and YouTube credentials from file
         /// </summary>
-        public async static Task retrieveCredentials()
+        public async static Task RetrieveCredentials()
         {
             StorageFile credentialsFile;
             try
@@ -118,32 +120,26 @@ namespace Boxify
             {
 
             }
-            IJsonValue spotifyJson;
-            IJsonValue youtubeJson;
-            if (credentialsJson.TryGetValue("Spotify", out spotifyJson))
+            if (credentialsJson.TryGetValue("Spotify", out IJsonValue spotifyJson))
             {
                 JsonObject spotifyObject = spotifyJson.GetObject();
-                IJsonValue clientIdJson;
-                IJsonValue clientSecretJson;
-                if (spotifyObject.TryGetValue("clientId", out clientIdJson))
+                if (spotifyObject.TryGetValue("clientId", out IJsonValue clientIdJson))
                 {
                     clientId = clientIdJson.GetString();
                 }
-                if (spotifyObject.TryGetValue("clientSecret", out clientSecretJson))
+                if (spotifyObject.TryGetValue("clientSecret", out IJsonValue clientSecretJson))
                 {
                     clientSecret = clientSecretJson.GetString();
                 }
             }
-            if (credentialsJson.TryGetValue("YouTube", out youtubeJson))
+            if (credentialsJson.TryGetValue("YouTube", out IJsonValue youtubeJson))
             {
                 JsonObject youtubeObject = youtubeJson.GetObject();
-                IJsonValue applicationNameJson;
-                IJsonValue apiKeyJson;
-                if (youtubeObject.TryGetValue("applicationName", out applicationNameJson))
+                if (youtubeObject.TryGetValue("applicationName", out IJsonValue applicationNameJson))
                 {
                     PlaybackSession.youtubeApplicationName = applicationNameJson.GetString();
                 }
-                if (youtubeObject.TryGetValue("apiKey", out apiKeyJson))
+                if (youtubeObject.TryGetValue("apiKey", out IJsonValue apiKeyJson))
                 {
                     PlaybackSession.youtubeApiKey = apiKeyJson.GetString();
                 }
@@ -153,9 +149,9 @@ namespace Boxify
         /// <summary>
         /// Reads and sets the token values from file
         /// </summary>
-        public async static Task initializeTokens()
+        public async static Task InitializeTokens()
         {
-            await retrieveCredentials();
+            await RetrieveCredentials();
 
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
             ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values["Tokens"];
@@ -180,11 +176,11 @@ namespace Boxify
 
             if (ccAccessToken == "")
             {
-                await getClientCredentialsTokens();
+                await GetClientCredentialsTokens();
             }
             if (accessToken != "")
             {
-                string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
+                string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
                 await UserProfile.updateInfo(userJson);
             }
         }
@@ -194,7 +190,7 @@ namespace Boxify
         /// Retrieves the tokens used for subsequent authentication for public REST calls based on the Client Credentials security model
         /// </summary>
         /// <returns></returns>
-        public async static Task getClientCredentialsTokens()
+        public async static Task GetClientCredentialsTokens()
         {
             // Create an HTTP client object
             HttpClient client = new HttpClient();
@@ -236,8 +232,8 @@ namespace Boxify
                 return;
             }
 
-            await parseResponseToTokens(httpResponseBody, SecurityFlow.ClientCredentials);
-            saveTokens();
+            await ParseResponseToTokens(httpResponseBody, SecurityFlow.ClientCredentials);
+            SaveTokens();
         }
 
         /// <summary>
@@ -245,7 +241,7 @@ namespace Boxify
         /// </summary>
         /// <param name="code">The authorization code required to retrieve the tokens</param>
         /// <returns></returns>
-        public async static Task getAuthorizationCodeTokens(string code)
+        public async static Task GetAuthorizationCodeTokens(string code)
         {
             authorizationCode = code;
 
@@ -291,8 +287,8 @@ namespace Boxify
                 return;
             }
 
-            await parseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
-            saveTokens();
+            await ParseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
+            SaveTokens();
         }
 
         /// <summary>
@@ -300,7 +296,7 @@ namespace Boxify
         /// </summary>
         /// <param name="tokensString">A JSON string with token data</param>
         /// <returns></returns>
-        public async static Task parseResponseToTokens(string tokensString, SecurityFlow securityFlow)
+        public async static Task ParseResponseToTokens(string tokensString, SecurityFlow securityFlow)
         {
             JsonObject tokensJson = new JsonObject();
             try
@@ -309,13 +305,7 @@ namespace Boxify
             }
             catch (COMException) { }
 
-            IJsonValue accessTokenJson;
-            IJsonValue expiresInJson;
-            IJsonValue refreshTokenJson;
-            IJsonValue expireTimeJson;
-            IJsonValue ccAccessTokenJson;
-            IJsonValue ccExpireTimeJson;
-            if (tokensJson.TryGetValue("access_token", out accessTokenJson))
+            if (tokensJson.TryGetValue("access_token", out IJsonValue accessTokenJson))
             {
                 if (securityFlow == SecurityFlow.AuthorizationCode)
                 {
@@ -326,7 +316,7 @@ namespace Boxify
                     ccAccessToken = accessTokenJson.GetString();
                 }
             }
-            if (tokensJson.TryGetValue("expires_in", out expiresInJson))
+            if (tokensJson.TryGetValue("expires_in", out IJsonValue expiresInJson))
             {
                 double expiresIn = expiresInJson.GetNumber();
                 DateTime currentTime = DateTime.Now;
@@ -339,26 +329,26 @@ namespace Boxify
                     ccExpireTime = currentTime.AddSeconds(expiresIn);
                 }
             }
-            if (tokensJson.TryGetValue("refresh_token", out refreshTokenJson))
+            if (tokensJson.TryGetValue("refresh_token", out IJsonValue refreshTokenJson))
             {
                 refreshToken = refreshTokenJson.GetString();
             }
-            if (tokensJson.TryGetValue("expire_time", out expireTimeJson))
+            if (tokensJson.TryGetValue("expire_time", out IJsonValue expireTimeJson))
             {
                 expireTime = new DateTime(Convert.ToInt64(expireTimeJson.GetString()));
             }
-            if (tokensJson.TryGetValue("ccAccess_token", out ccAccessTokenJson))
+            if (tokensJson.TryGetValue("ccAccess_token", out IJsonValue ccAccessTokenJson))
             {
                 ccAccessToken = ccAccessTokenJson.GetString();
             }
-            if (tokensJson.TryGetValue("ccExpire_time", out ccExpireTimeJson))
+            if (tokensJson.TryGetValue("ccExpire_time", out IJsonValue ccExpireTimeJson))
             {
                 ccExpireTime = new DateTime(Convert.ToInt64(ccExpireTimeJson.GetString()));
             }
 
             if (securityFlow == SecurityFlow.AuthorizationCode)
             {
-                string userJson = await sendAuthGetRequest("https://api.spotify.com/v1/me");
+                string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
                 await UserProfile.updateInfo(userJson);
             }
         }
@@ -366,17 +356,17 @@ namespace Boxify
         /// <summary>
         /// Writes the tokens to file as JSON
         /// </summary>
-        private static void saveTokens()
+        private static void SaveTokens()
         {
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
-
-            composite["refresh_token"] = refreshToken;
-            composite["access_token"] = accessToken;
-            composite["expire_time"] = expireTime.Ticks.ToString();
-            composite["ccAccess_token"] = ccAccessToken;
-            composite["ccExpire_time"] = ccExpireTime.Ticks.ToString();
-
+            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue
+            {
+                ["refresh_token"] = refreshToken,
+                ["access_token"] = accessToken,
+                ["expire_time"] = expireTime.Ticks.ToString(),
+                ["ccAccess_token"] = ccAccessToken,
+                ["ccExpire_time"] = ccExpireTime.Ticks.ToString()
+            };
             roamingSettings.Values["Tokens"] = composite;
         }
 
@@ -385,9 +375,9 @@ namespace Boxify
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The body of the response</returns>
-        public async static Task<string> sendAuthGetRequest(string uriString)
+        public async static Task<string> SendAuthGetRequest(string uriString)
         {
-            return await sendGetRequest(uriString, accessToken, SecurityFlow.AuthorizationCode);
+            return await SendGetRequest(uriString, accessToken, SecurityFlow.AuthorizationCode);
         }
 
         /// <summary>
@@ -395,9 +385,9 @@ namespace Boxify
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The body of the response</returns>
-        public async static Task<string> sendCliGetRequest(string uriString)
+        public async static Task<string> SendCliGetRequest(string uriString)
         {
-            return await sendGetRequest(uriString, ccAccessToken, SecurityFlow.ClientCredentials);
+            return await SendGetRequest(uriString, ccAccessToken, SecurityFlow.ClientCredentials);
         }
 
 
@@ -406,13 +396,13 @@ namespace Boxify
         /// </summary>
         /// <param name="uriString">The Spotify REST endpoint to hit</param>
         /// <returns>The response body</returns>
-        public async static Task<string> sendGetRequest(string uriString, string token, SecurityFlow securityFlow)
+        public async static Task<string> SendGetRequest(string uriString, string token, SecurityFlow securityFlow)
         {
             if (securityFlow == SecurityFlow.AuthorizationCode)
             {
                 if (DateTime.Now.Ticks > expireTime.Ticks || accessToken == "")
                 {
-                    await refreshTokens();
+                    await RefreshTokens();
                     token = accessToken;
                 }
             }
@@ -420,7 +410,7 @@ namespace Boxify
             {
                 if (DateTime.Now.Ticks > ccExpireTime.Ticks || ccAccessToken == "")
                 {
-                    await getClientCredentialsTokens();
+                    await GetClientCredentialsTokens();
                     token = ccAccessToken;
                 }
             }
@@ -461,7 +451,7 @@ namespace Boxify
         /// </summary>
         /// <param name="url">The URL of the image to download</param>
         /// <returns>The downloaded image</returns>
-        public static async Task<BitmapImage> downloadImage(string url)
+        public static async Task<BitmapImage> DownloadImage(string url)
         {
             UriBuilder uri = new UriBuilder(url);
 
@@ -487,7 +477,7 @@ namespace Boxify
         /// Requests new access token with refresh token
         /// </summary>
         /// <returns></returns>
-        private async static Task refreshTokens()
+        private async static Task RefreshTokens()
         {
             // Create an HTTP client object
             HttpClient client = new HttpClient();
@@ -522,15 +512,15 @@ namespace Boxify
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
 
-            await parseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
-            saveTokens();
+            await ParseResponseToTokens(httpResponseBody, SecurityFlow.AuthorizationCode);
+            SaveTokens();
         }
 
         /// <summary>
         /// Clears the tokens (unauthorizes the user)
         /// </summary>
         /// <returns></returns>
-        public static void clearTokens()
+        public static void ClearTokens()
         {
             authorizationCode = "";
             accessToken = "";
