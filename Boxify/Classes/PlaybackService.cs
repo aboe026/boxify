@@ -50,7 +50,7 @@ namespace Boxify
             currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, href);
             queue.Items.Clear();
             Player.Source = queue;
-            await currentSession.loadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
+            await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
             mainPage.SetPlaybackMenu(false);
         }
 
@@ -143,7 +143,7 @@ namespace Boxify
             currentlyPlayingItem = e.NewItem;
             if (e.NewItem != null)
             {
-                currentSession.songChanged(e.NewItem);
+                currentSession.SongChanged(e.NewItem);
                 
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
@@ -170,7 +170,7 @@ namespace Boxify
         /// <param name="e"></param>
         public static void itemFailed(object sender, MediaPlaybackItemFailedEventArgs e)
         {
-            currentSession.itemFailedToOpen(e.Item);
+            currentSession.ItemFailedToOpen(e.Item);
         }
 
         /// <summary>

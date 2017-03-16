@@ -58,7 +58,7 @@
                                       Grid.Column="2"
                                       VerticalAlignment="Center"
                                       Style="{StaticResource ToggleButtonStyle}"
-                                      Toggled="tvSafe_Toggled"/>
+                                      Toggled="TvSafe_Toggled"/>
 
                         <TextBlock Name="TvSafeAreaDesc"
                                    Grid.Row="1"
@@ -249,7 +249,7 @@
                                     RelativePanel.AlignLeftWithPanel="True"
                                     Content="Got to Store"
                                     Style="{StaticResource ButtonStyle}"
-                                    Click="rate_Click"/>
+                                    Click="Rate_Click"/>
 
                         </RelativePanel>
 

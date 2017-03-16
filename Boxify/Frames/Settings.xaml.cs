@@ -85,22 +85,21 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tvSafe_Toggled(object sender, RoutedEventArgs e)
+        private void TvSafe_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
-            if (toggleSwitch != null)
+            if (sender is ToggleSwitch toggleSwitch)
             {
                 tvSafeArea = toggleSwitch.IsOn;
                 if (toggleSwitch.IsOn)
                 {
-                    mainPage.SafeAreaOn();   
+                    mainPage.SafeAreaOn();
                 }
                 else
                 {
                     mainPage.SafeAreaOff();
                 }
             }
-            saveSettings();
+            SaveSettings();
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace Boxify
                 theme = Theme.Dark;
                 mainPage.RequestedTheme = ElementTheme.Dark;
             }
-            saveSettings();
+            SaveSettings();
         }
 
         /// <summary>
@@ -150,23 +149,24 @@ namespace Boxify
             {
                 playbackSource = Playbacksource.YouTube;
             }
-            saveSettings();
+            SaveSettings();
         }
 
         /// <summary>
         /// Set the roaming settings for the application
         /// </summary>
-        public static void saveSettings()
+        public static void SaveSettings()
         {
             ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
-            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue();
-            composite["TvSafeAreaOff"] = !tvSafeArea;
-            composite["Theme"] = theme.ToString();
-            composite["PlaybackSource"] = playbackSource.ToString();
-            composite["RepeatEnabled"] = repeatEnabled.ToString();
-            composite["Volume"] = volume.ToString();
-
+            ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue
+            {
+                ["TvSafeAreaOff"] = !tvSafeArea,
+                ["Theme"] = theme.ToString(),
+                ["PlaybackSource"] = playbackSource.ToString(),
+                ["RepeatEnabled"] = repeatEnabled.ToString(),
+                ["Volume"] = volume.ToString()
+            };
             roamingSettings.Values["UserSettings"] = composite;
         }
 
@@ -195,7 +195,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void rate_Click(object sender, RoutedEventArgs e)
+        private async void Rate_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Package.Current.Id.FamilyName)));
         }

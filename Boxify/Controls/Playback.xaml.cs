@@ -218,7 +218,7 @@ namespace Boxify
                 Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
             Settings.repeatEnabled = repeatOn;
-            Settings.saveSettings();
+            Settings.SaveSettings();
         }
 
         /// <summary>
@@ -359,7 +359,7 @@ namespace Boxify
                 Volume.Content = "\uE995";
             }
             Settings.volume = VolumeSlider.Value;
-            Settings.saveSettings();
+            Settings.SaveSettings();
         }
 
         /// <summary>
