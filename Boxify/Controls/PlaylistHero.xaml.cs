@@ -8,7 +8,7 @@ namespace Boxify
     public sealed partial class PlaylistHero : UserControl
     {
         public MainPage mainPage;
-        public Playlist playlist { get; set; }
+        public Playlist Playlist { get; set; }
 
         /// <summary>
         /// The main constructor
@@ -26,9 +26,9 @@ namespace Boxify
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public PlaylistHero(Playlist playlist, MainPage mainPage) : this()
         {
-            this.playlist = playlist;
+            this.Playlist = playlist;
             this.mainPage = mainPage;
-            DataContext = this.playlist;
+            DataContext = this.Playlist;
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The actionButton that was clicked</param>
         /// <param name="e">The routed event arguments</param>
-        private void action_Click(object sender, RoutedEventArgs e)
+        private void Action_Click(object sender, RoutedEventArgs e)
         {
-            playlist.playTracks();
+            Playlist.PlayTracks();
         }
     }
 }

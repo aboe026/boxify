@@ -22,14 +22,14 @@
         <RelativePanel>
             
             <Image Name="displayImage"
-                   Source="{x:Bind playlist.image, Mode=OneWay}"
+                   Source="{x:Bind Playlist.image, Mode=OneWay}"
                    RelativePanel.AlignLeftWithPanel="True"
                    RelativePanel.AlignVerticalCenterWithPanel="True"
                    Width="30"
                    Height="30" />
 
             <TextBlock Name="displayName"
-                       Text="{x:Bind playlist.Name, Mode=OneWay}"
+                       Text="{x:Bind Playlist.Name, Mode=OneWay}"
                        RelativePanel.RightOf="displayImage"
                        RelativePanel.LeftOf="displayTracksNumberLabel"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
@@ -45,7 +45,7 @@
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
             
             <TextBlock Name="displayTracksNumber"
-                       Text="{x:Bind playlist.TracksCount, Mode=OneWay}"
+                       Text="{x:Bind Playlist.TracksCount, Mode=OneWay}"
                        RelativePanel.LeftOf="action"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Width="Auto"

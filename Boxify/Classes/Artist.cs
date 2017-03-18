@@ -8,21 +8,21 @@ namespace Boxify
     /// </summary>
     public class Artist
     {
-        public string name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The main constructor to create an empty instance
         /// </summary>
         public Artist()
         {
-            name = "";
+            Name = "";
         }
 
         /// <summary>
         /// Populate the artist information from the JSON object
         /// </summary>
         /// <param name="artistString">The string representation of the artist JSON object</param>
-        public void setInfo(string artistString)
+        public void SetInfo(string artistString)
         {
             JsonObject trackJson = new JsonObject();
             try
@@ -33,10 +33,9 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue nameJson;
-            if (trackJson.TryGetValue("name", out nameJson))
+            if (trackJson.TryGetValue("name", out IJsonValue nameJson))
             {
-                name = nameJson.GetString();
+                Name = nameJson.GetString();
             }
         }
     }

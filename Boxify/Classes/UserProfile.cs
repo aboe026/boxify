@@ -12,7 +12,7 @@ namespace Boxify
 {
     public static class UserProfile
     {
-        public static string displalyName { get; set; } = "";
+        public static string DisplalyName { get; set; } = "";
         public static string userId = "";
         public static BitmapImage userPic = new BitmapImage();
 
@@ -21,7 +21,7 @@ namespace Boxify
         /// </summary>
         /// <param name="jsonString">The JSON containing the users information</param>
         /// <returns></returns>
-        public async static Task updateInfo(string jsonString)
+        public async static Task UpdateInfo(string jsonString)
         {
             // parse data
             JsonObject userJson = new JsonObject();
@@ -33,20 +33,17 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue displayNameJson;
-            IJsonValue userIdJson;
-            if (userJson.TryGetValue("display_name", out displayNameJson))
+            if (userJson.TryGetValue("display_name", out IJsonValue displayNameJson))
             {
-                displalyName = displayNameJson.GetString();
+                DisplalyName = displayNameJson.GetString();
             }
-            if (userJson.TryGetValue("id", out userIdJson))
+            if (userJson.TryGetValue("id", out IJsonValue userIdJson))
             {
                 userId = userIdJson.GetString();
             }
 
             // picture
-            IJsonValue imagesJson;
-            if (userJson.TryGetValue("images", out imagesJson))
+            if (userJson.TryGetValue("images", out IJsonValue imagesJson))
             {
                 JsonArray imageArray = imagesJson.GetArray();
                 if (imageArray.Count > 0)
@@ -70,7 +67,7 @@ namespace Boxify
                         memoryStream.Position = 0;
                         await bitmapImage.SetSourceAsync(memoryStream.AsRandomAccessStream());
                         userPic = bitmapImage;
-                        saveProfileData();
+                        SaveProfileData();
                     }
                     catch (Exception) { }
                 }
@@ -80,7 +77,7 @@ namespace Boxify
         /// <summary>
         /// Save the users information to disk
         /// </summary>
-        private static void saveProfileData()
+        private static void SaveProfileData()
         {
             //TODO: save user information (name, picture) to disk to limit REST calls
         }
@@ -89,7 +86,7 @@ namespace Boxify
         /// Checks whether the user has logged into a Spotify account
         /// </summary>
         /// <returns>True if the user has logged into Spotify, false otherwise</returns>
-        public static bool isLoggedIn()
+        public static bool IsLoggedIn()
         {
             if (userId == "")
             {

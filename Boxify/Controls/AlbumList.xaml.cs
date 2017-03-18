@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+﻿using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -23,7 +10,7 @@ namespace Boxify.Frames
     public sealed partial class AlbumList : UserControl
     {
         public MainPage mainPage;
-        public Album album { get; set; }
+        public Album Album { get; set; }
 
         /// <summary>
         /// The main constructor
@@ -41,9 +28,9 @@ namespace Boxify.Frames
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public AlbumList(Album album, MainPage mainPage) : this()
         {
-            this.album = album;
+            this.Album = album;
             this.mainPage = mainPage;
-            DataContext = this.album;
+            DataContext = this.Album;
         }
     }
 }

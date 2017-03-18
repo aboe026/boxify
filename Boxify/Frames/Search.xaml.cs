@@ -139,10 +139,12 @@ namespace Boxify.Frames
                 ComboBoxItem selected = SearchType.SelectedValue as ComboBoxItem;
                 String selectedString = selected.Content.ToString().ToLower();
                 UriBuilder searchUriBuilder = new UriBuilder(searchUri);
-                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-                queryParams.Add(new KeyValuePair<string, string>("type", selectedString));
-                queryParams.Add(new KeyValuePair<string, string>("limit", "10"));
-                queryParams.Add(new KeyValuePair<string, string>("q", SearchBox.Text.Replace(" ", "+")));
+                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("type", selectedString),
+                    new KeyValuePair<string, string>("limit", "10"),
+                    new KeyValuePair<string, string>("q", SearchBox.Text.Replace(" ", "+"))
+                };
                 string queryParamsString = RequestHandler.ConvertToQueryString(queryParams);
                 searchUriBuilder.Query = queryParamsString;
                 string searchResultString = await RequestHandler.SendCliGetRequest(searchUriBuilder.Uri.ToString());
@@ -164,12 +166,10 @@ namespace Boxify.Frames
                 // playlists
                 if (selectedString == "playlist")
                 {
-                    IJsonValue playlistsJson;
-                    IJsonValue itemsJson;
-                    if (searchResultJson.TryGetValue("playlists", out playlistsJson))
+                    if (searchResultJson.TryGetValue("playlists", out IJsonValue playlistsJson))
                     {
                         JsonObject playlists = playlistsJson.GetObject();
-                        if (playlists.TryGetValue("items", out itemsJson))
+                        if (playlists.TryGetValue("items", out IJsonValue itemsJson))
                         {
                             JsonArray playlistsArray = itemsJson.GetArray();
                             if (playlistsArray.Count == 0)
@@ -186,7 +186,7 @@ namespace Boxify.Frames
                                 {
 
                                     Playlist playlist = new Playlist();
-                                    await playlist.setInfo(playlistJson.Stringify());
+                                    await playlist.SetInfo(playlistJson.Stringify());
                                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                                     try
                                     {
@@ -204,12 +204,10 @@ namespace Boxify.Frames
                 // track
                 else if (selectedString == "track")
                 {
-                    IJsonValue tracksJson;
-                    IJsonValue itemsJson;
-                    if (searchResultJson.TryGetValue("tracks", out tracksJson))
+                    if (searchResultJson.TryGetValue("tracks", out IJsonValue tracksJson))
                     {
                         JsonObject tracks = tracksJson.GetObject();
-                        if (tracks.TryGetValue("items", out itemsJson))
+                        if (tracks.TryGetValue("items", out IJsonValue itemsJson))
                         {
                             JsonArray tracksArray = itemsJson.GetArray();
                             if (tracksArray.Count == 0)
@@ -225,7 +223,7 @@ namespace Boxify.Frames
                                 foreach (JsonValue trackJson in tracksArray)
                                 {
                                     Track track = new Track();
-                                    await track.setInfoDirect(trackJson.Stringify());
+                                    await track.SetInfoDirect(trackJson.Stringify());
                                     TrackList trackList = new TrackList(track, mainPage);
                                     try
                                     {
@@ -243,12 +241,10 @@ namespace Boxify.Frames
                 // album
                 else if (selectedString == "album")
                 {
-                    IJsonValue albumsJson;
-                    IJsonValue itemsJson;
-                    if (searchResultJson.TryGetValue("albums", out albumsJson))
+                    if (searchResultJson.TryGetValue("albums", out IJsonValue albumsJson))
                     {
                         JsonObject albums = albumsJson.GetObject();
-                        if (albums.TryGetValue("items", out itemsJson))
+                        if (albums.TryGetValue("items", out IJsonValue itemsJson))
                         {
                             JsonArray albumsArray = itemsJson.GetArray();
                             if (albumsArray.Count == 0)
@@ -264,7 +260,7 @@ namespace Boxify.Frames
                                 foreach (JsonValue albumJson in albumsArray)
                                 {
                                     Album album = new Album();
-                                    await album.setInfo(albumJson.Stringify());
+                                    await album.SetInfo(albumJson.Stringify());
                                     AlbumList albumList = new AlbumList(album, mainPage);
                                     try
                                     {
@@ -299,14 +295,14 @@ namespace Boxify.Frames
         {
             if (e.ClickedItem is TrackList)
             {
-                (e.ClickedItem as TrackList).track.playTrack();
+                (e.ClickedItem as TrackList).Track.PlayTrack();
             }
             else if (e.ClickedItem is PlaylistList)
             {
-                (e.ClickedItem as PlaylistList).playlist.playTracks();
+                (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
             }
             else if (e.ClickedItem is AlbumList) {
-                (e.ClickedItem as AlbumList).album.playTracks();
+                (e.ClickedItem as AlbumList).Album.PlayTracks();
             }
         }
 

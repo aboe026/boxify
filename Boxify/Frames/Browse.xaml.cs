@@ -101,9 +101,11 @@ namespace Boxify
             mainPage.SetSpotifyLoadingValue(0);
             mainPage.BringUpSpotify();
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
-            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-            queryParams.Add(new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()));
-            queryParams.Add(new KeyValuePair<string, string>("offset", featuredPlaylistsOffset.ToString()));
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("limit", featuredPlaylistLimit.ToString()),
+                new KeyValuePair<string, string>("offset", featuredPlaylistsOffset.ToString())
+            };
             featuredPlaylistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
             string playlistsString = await RequestHandler.SendCliGetRequest(featuredPlaylistsBuilder.Uri.ToString());
             JsonObject featuredPlaylistsJson = new JsonObject();
@@ -115,23 +117,19 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue messageJson;
-            IJsonValue totalJson;
-            IJsonValue playlistsJson;
-            IJsonValue itemsJson;
-            if (featuredPlaylistsJson.TryGetValue("message", out messageJson))
+            if (featuredPlaylistsJson.TryGetValue("message", out IJsonValue messageJson))
             {
                 FeaturedPlaylistMessage.Text = messageJson.GetString();
                 featuredPlaylistsMessageSave = FeaturedPlaylistMessage.Text;
             }
-            if (featuredPlaylistsJson.TryGetValue("playlists", out playlistsJson))
+            if (featuredPlaylistsJson.TryGetValue("playlists", out IJsonValue playlistsJson))
             {
                 JsonObject playlists = playlistsJson.GetObject();
-                if (playlists.TryGetValue("total", out totalJson))
+                if (playlists.TryGetValue("total", out IJsonValue totalJson))
                 {
                     featuredPlaylistsTotal = Convert.ToInt32(totalJson.GetNumber());
                 }
-                if (playlists.TryGetValue("items", out itemsJson))
+                if (playlists.TryGetValue("items", out IJsonValue itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
                     mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
@@ -141,11 +139,11 @@ namespace Boxify
                     }
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
-                        IJsonValue fullHref;
-                        if (playlistJson.GetObject().TryGetValue("href", out fullHref)) {
+                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                        {
                             string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
-                            await playlist.setInfo(fullPlaylistString);
+                            await playlist.SetInfo(fullPlaylistString);
                             PlaylistHero playlistHero = new PlaylistHero(playlist, mainPage);
                             FeaturedPlaylists.Items.Add(playlistHero);
                             featuredPlaylistsSave.Add(playlistHero);
@@ -172,7 +170,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The refresh button</param>
         /// <param name="e">The routed event arguments</param>
-        private async void refresh_Click(object sender, RoutedEventArgs e)
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             featuredPlaylistsOffset = 0;
             featuredPlaylistsSave = new List<PlaylistHero>();
@@ -187,7 +185,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistHero).playlist.playTracks();
+            (e.ClickedItem as PlaylistHero).Playlist.PlayTracks();
         }
 
         /// <summary>

@@ -39,7 +39,7 @@
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="46"
                     BorderBrush="{ThemeResource AppButtonBorder}"
-                    Click="hamburgerButton_Click"
+                    Click="HamburgerButton_Click"
                     XYFocusDown="{x:Bind BrowseItem}"/>
 
             <Button Name="Back"
@@ -50,7 +50,7 @@
                     FontSize="36"
                     Content="&#xE0C4;"
                     Background="{x:Null}"
-                    Click="backButton_Click"/>
+                    Click="BackButton_Click"/>
 
             <TextBlock Name="Title"
                        RelativePanel.RightOf="Back"
@@ -102,7 +102,7 @@
                        Text="User Name"
                        Style="{StaticResource TitleTextBlockStyle}"
                        TextAlignment="Right"
-                       PointerReleased="userElement_PointerReleased"/>
+                       PointerReleased="UserElement_PointerReleased"/>
 
             <Ellipse Name="UserPicContainer"
                      RelativePanel.AlignRightWithPanel="True"
@@ -111,7 +111,7 @@
                      Width="50"
                      Stroke="{ThemeResource AppButtonBorder}"
                      StrokeThickness="0.5"
-                     PointerReleased="userElement_PointerReleased">
+                     PointerReleased="UserElement_PointerReleased">
 
                 <Ellipse.Fill>
                     <ImageBrush x:Name="UserPic"
@@ -126,7 +126,7 @@
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="24"
                        Text="&#xE77B;"
-                       PointerReleased="userElement_PointerReleased" />
+                       PointerReleased="UserElement_PointerReleased" />
 
         </RelativePanel>
 

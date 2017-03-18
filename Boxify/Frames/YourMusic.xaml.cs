@@ -43,7 +43,7 @@ namespace Boxify
             {
                 mainPage = (MainPage)e.Parameter;
             }
-            if (UserProfile.isLoggedIn())
+            if (UserProfile.IsLoggedIn())
             {
                 More.IsEnabled = false;
                 warning.Visibility = Visibility.Collapsed;
@@ -133,9 +133,11 @@ namespace Boxify
             mainPage.BringUpSpotify();
 
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
-            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-            queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
-            queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("limit", playlistLimit.ToString()),
+                new KeyValuePair<string, string>("offset", playlistsOffset.ToString())
+            };
             playlistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
             string playlistsString = await RequestHandler.SendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
@@ -147,13 +149,11 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue itemsJson;
-            IJsonValue totalJson;
-            if (playlistsJson.TryGetValue("total", out totalJson))
+            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson))
             {
                 playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
             }
-            if (playlistsJson.TryGetValue("items", out itemsJson))
+            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
@@ -164,7 +164,7 @@ namespace Boxify
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
-                    await playlist.setInfo(playlistJson.Stringify());
+                    await playlist.SetInfo(playlistJson.Stringify());
                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                     playlistsSave.Add(playlistList);
                     playlists.Items.Add(playlistList);
@@ -188,12 +188,14 @@ namespace Boxify
         /// Sets the playlists without updating the UI
         /// </summary>
         /// <returns></returns>
-        public static async Task setPlaylists()
+        public static async Task SetPlaylists()
         {
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
-            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-            queryParams.Add(new KeyValuePair<string, string>("limit", playlistLimit.ToString()));
-            queryParams.Add(new KeyValuePair<string, string>("offset", playlistsOffset.ToString()));
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("limit", playlistLimit.ToString()),
+                new KeyValuePair<string, string>("offset", playlistsOffset.ToString())
+            };
             playlistsBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
             string playlistsString = await RequestHandler.SendAuthGetRequest(playlistsBuilder.Uri.ToString());
             JsonObject playlistsJson = new JsonObject();
@@ -205,13 +207,11 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue itemsJson;
-            IJsonValue totalJson;
-            if (playlistsJson.TryGetValue("total", out totalJson))
+            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson))
             {
                 playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
             }
-            if (playlistsJson.TryGetValue("items", out itemsJson))
+            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 playlistsCount = playlistsArray.Count;
@@ -222,7 +222,7 @@ namespace Boxify
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
-                    await playlist.setInfo(playlistJson.Stringify());
+                    await playlist.SetInfo(playlistJson.Stringify());
                     PlaylistList playlistList = new PlaylistList(playlist, mainPage);
                     playlistsSave.Add(playlistList);
                 }
@@ -234,7 +234,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The object that was clicked</param>
         /// <param name="e">The routed event arguments</param>
-        private void logIn_Click(object sender, RoutedEventArgs e)
+        private void LogIn_Click(object sender, RoutedEventArgs e)
         {
             mainPage.SelectHamburgerOption("ProfileItem");
         }
@@ -244,7 +244,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The refresh button</param>
         /// <param name="e">The routed event arguments</param>
-        private async void refresh_Click(object sender, RoutedEventArgs e)
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             playlistsOffset = 0;
             playlistsSave = new List<PlaylistList>();
@@ -257,9 +257,9 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void playlists_ItemClick(object sender, ItemClickEventArgs e)
+        private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistList).playlist.playTracks();
+            (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
         }
 
         /// <summary>

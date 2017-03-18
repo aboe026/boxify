@@ -2,7 +2,6 @@
     x:Class="Boxify.YourMusic"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Boxify"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -35,7 +34,7 @@
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     Margin="0,10,0,0"
                     Style="{StaticResource ButtonStyle}"
-                    Click="logIn_Click" />
+                    Click="LogIn_Click" />
             
             <TextBlock Name="playlistsLabel"
                        Text="Your Playlists"
@@ -52,7 +51,7 @@
                     FontSize="24" 
                     Content="&#xE72C;"
                     Background="{x:Null}"
-                    Click="refresh_Click"
+                    Click="Refresh_Click"
                     XYFocusRight="{x:Bind More}"/>
 
             <Button Name="More"
@@ -68,7 +67,7 @@
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.Below="playlistsLabel"
                       IsItemClickEnabled="True"
-                      ItemClick="playlists_ItemClick"
+                      ItemClick="Playlists_ItemClick"
                       XYFocusUp="{x:Bind refresh}">
 
                 <ListView.ItemContainerStyle>

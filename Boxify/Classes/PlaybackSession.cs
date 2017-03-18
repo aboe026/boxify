@@ -1,8 +1,4 @@
-﻿using Google.Apis.Requests;
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,9 +22,7 @@ namespace Boxify.Classes
     {
         public enum LoadDirection { Up, Down };
         public enum PlaybackType { Single, Album, Playlist };
-
-        public static string youtubeApplicationName = "";
-        public static string youtubeApiKey = "";
+        
         private const string _videoUrlFormat = "http://www.youtube.com/watch?v={0}";
 
         public long localLock;
@@ -37,7 +31,7 @@ namespace Boxify.Classes
         private string tracksHref;
         private List<int> nextRemoteAttempts = new List<int>();
         private List<int> prevRemoteAttempts = new List<int>();
-        private List<KeyValuePair<string, int>> playlistMediaIds = new List<KeyValuePair<string, int>>();
+        private List<string> playlistMediaIds = new List<string>();
         private string currentlyPlaying = "";
         private int totalTracks;
         private bool firstSongChange = true;  // the first song change is from playing the first track. Its not an actual "change"
@@ -72,7 +66,7 @@ namespace Boxify.Classes
         /// Update the UI with the current number of tracks that have failed
         /// </summary>
         /// <param name="increment"></param>
-        private async void updateFailuresCount(int increment)
+        private async void UpdateFailuresCount(int increment)
         {
             failuresCount += increment;
 
@@ -88,9 +82,9 @@ namespace Boxify.Classes
         /// <param name="start">The first track to load from remote</param>
         /// <param name="end">The last track to load from remote</param>
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
-        public async Task<bool> loadTracks(int start, int end)
+        public async Task<bool> LoadTracks(int start, int end)
         {
-            return await loadTracks(start, end, false);
+            return await LoadTracks(start, end, false);
         }
 
         /// <summary>
@@ -100,7 +94,7 @@ namespace Boxify.Classes
         /// <param name="end">The last track to load from remote</param>
         /// <param name="lockOverride">Whether or not to ignore if the lock is set (Used when recursing into itself)</param>
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
-        public async Task<bool> loadTracks(int start, int end, bool lockOverride)
+        public async Task<bool> LoadTracks(int start, int end, bool lockOverride)
         {
             if (loadLock && !lockOverride)
             {
@@ -138,9 +132,9 @@ namespace Boxify.Classes
                 PlaybackService.mainPage.BringUpYouTube(localLock);
             }
 
-            if (localLock != PlaybackService.globalLock) { return false; }
+            if (localLock != PlaybackService.GlobalLock) { return false; }
 
-            List<Track> tracks = await getTracks(start, limit);
+            List<Track> tracks = await GetTracks(start, limit);
 
             if (tracks.Count == totalTracks)
             {
@@ -157,7 +151,7 @@ namespace Boxify.Classes
 
             if (tracks.Count != limit)
             {
-                updateFailuresCount(limit - tracks.Count);
+                UpdateFailuresCount(limit - tracks.Count);
             }
             else
             {
@@ -168,36 +162,41 @@ namespace Boxify.Classes
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.globalLock)
+                        if (localLock == PlaybackService.GlobalLock)
                         {
-                            if (track.previewUrl != "")
+                            if (track.PreviewUrl != "")
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.PreviewUrl)), track));
                             }
                             else
                             {
-                                updateFailuresCount(1);
+                                UpdateFailuresCount(1);
                             }
                         }
                         PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
-                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
+                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.GlobalLock)
                 {
-                    Dictionary<Track, string> videoIds = await bulkSearchForVideoId(tracks);
-
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.globalLock)
+
+                        string videoId = "";
+                        if (localLock == PlaybackService.GlobalLock)
+                        {
+                            videoId = await SearchForVideoId(track);
+                        }
+
+                        if (localLock == PlaybackService.GlobalLock && videoId != "")
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
                             }
                             catch (Exception)
                             {
-                                updateFailuresCount(1);
+                                UpdateFailuresCount(1);
                             }
                             PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                         }
@@ -209,7 +208,7 @@ namespace Boxify.Classes
                 for (int i = 0; i < sources.Count; i++)
                 {
                     KeyValuePair<MediaSource, Track> pair = sources[i];
-                    if (localLock == PlaybackService.globalLock)
+                    if (localLock == PlaybackService.GlobalLock)
                     {
                         MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
                         MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
@@ -217,39 +216,38 @@ namespace Boxify.Classes
                         displayProperties.MusicProperties.Title = pair.Value.name;
                         displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
                         displayProperties.MusicProperties.Artist = pair.Value.ArtistName;
-                        if (pair.Value.album.images.Count > 0 && pair.Value.album.images.ElementAt(0) != null)
+                        if (pair.Value.album.Images.Count > 0 && pair.Value.album.Images.ElementAt(0) != null)
                         {
-                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.ImageUrl));
                         }
                         playbackItem.ApplyDisplayProperties(displayProperties);
-                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
+                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.Id;
 
-                        string id = getMediaItemId(playbackItem);
-                        List<string> keys = (from kvp in playlistMediaIds select kvp.Key).ToList();
-                        if (!keys.Contains(id))
+                        string id = GetMediaItemId(playbackItem);
+                        if (!playlistMediaIds.Contains(id))
                         {
-                            PlaybackService.addToQueue(playbackItem, localLock);
-                            playlistMediaIds.Add(new KeyValuePair<string, int>(getMediaItemId(playbackItem), start + i));
+                            PlaybackService.AddToQueue(playbackItem, localLock);
+                            playlistMediaIds.Add(id);
                             successes++;
                         }
 
                         if (currentlyPlaying == "")
                         {
                             firstPlay = true;
-                            currentlyPlaying = getMediaItemId(playbackItem);
+                            currentlyPlaying = GetMediaItemId(playbackItem);
                         }
                     }
                 }
 
                 if (firstPlay)
                 {
-                    PlaybackService.playFromBeginning(localLock);
+                    PlaybackService.PlayFromBeginning(localLock);
                 }
             }
 
             if (successes != limit && end < totalTracks)
             {
-                return await loadTracks(start + limit, start + limit + (limit - tracks.Count), true);
+                return await LoadTracks(start + limit, start + limit + (limit - tracks.Count), true);
             }
             loadLock = false;
             return tracks.Count == limit;
@@ -261,9 +259,9 @@ namespace Boxify.Classes
         /// <param name="start">The start position on remote to download to local, the last position added to the queue</param>
         /// <param name="end">The end position on remote to download to local, the first position added to the queue</param>
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
-        public async Task<bool> loadTracksReverse(int start, int end)
+        public async Task<bool> LoadTracksReverse(int start, int end)
         {
-            return await loadTracksReverse(start, end, false);
+            return await LoadTracksReverse(start, end, false);
         }
 
         /// <summary>
@@ -273,7 +271,7 @@ namespace Boxify.Classes
         /// <param name="end">The end position on remote to download to local, the first position added to the queue</param>
         /// <param name="lockOverride">Whether or not to ignore if the lock is set (Used when recursing into itself)</param>
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
-        public async Task<bool> loadTracksReverse(int start, int end, bool lockOverride)
+        public async Task<bool> LoadTracksReverse(int start, int end, bool lockOverride)
         {
             if (loadLock && !lockOverride)
             {
@@ -304,12 +302,12 @@ namespace Boxify.Classes
                 PlaybackService.mainPage.BringUpYouTube(localLock);
             }
 
-            if (localLock != PlaybackService.globalLock) { return false; }
+            if (localLock != PlaybackService.GlobalLock) { return false; }
 
-            List<Track> tracks = await getTracks(start, limit);
+            List<Track> tracks = await GetTracks(start, limit);
             if (tracks.Count != limit)
             {
-                updateFailuresCount(limit - tracks.Count);
+                UpdateFailuresCount(limit - tracks.Count);
             }
             else
             {
@@ -320,36 +318,41 @@ namespace Boxify.Classes
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.globalLock)
+                        if (localLock == PlaybackService.GlobalLock)
                         {
-                            if (track.previewUrl != "")
+                            if (track.PreviewUrl != "")
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.PreviewUrl)), track));
                             }
                             else
                             {
-                                updateFailuresCount(1);
+                                UpdateFailuresCount(1);
                             }
                         }
                         PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
-                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
+                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.GlobalLock)
                 {
-                    Dictionary<Track, string> videoIds = await bulkSearchForVideoId(tracks);
-
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.globalLock)
+
+                        string videoId = "";
+                        if (localLock == PlaybackService.GlobalLock)
+                        {
+                            videoId = await SearchForVideoId(track);
+                        }
+
+                        if (localLock == PlaybackService.GlobalLock && videoId != "")
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
                             }
                             catch (Exception)
                             {
-                                updateFailuresCount(1);
+                                UpdateFailuresCount(1);
                             }
                             PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                         }
@@ -359,7 +362,7 @@ namespace Boxify.Classes
                 for (int i = sources.Count - 1; i >= 0; i--)
                 {
                     KeyValuePair<MediaSource, Track> pair = sources[i];
-                    if (localLock == PlaybackService.globalLock)
+                    if (localLock == PlaybackService.GlobalLock)
                     {
                         MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
                         MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
@@ -367,19 +370,18 @@ namespace Boxify.Classes
                         displayProperties.MusicProperties.Title = pair.Value.name;
                         displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
                         displayProperties.MusicProperties.Artist = pair.Value.ArtistName;
-                        if (pair.Value.album.images.Count > 0 && pair.Value.album.images.ElementAt(0) != null)
+                        if (pair.Value.album.Images.Count > 0 && pair.Value.album.Images.ElementAt(0) != null)
                         {
-                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.ImageUrl));
                         }
                         playbackItem.ApplyDisplayProperties(displayProperties);
-                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
+                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.Id;
 
-                        string id = getMediaItemId(playbackItem);
-                        List<string> keys = (from kvp in playlistMediaIds select kvp.Key).ToList();
-                        if (!keys.Contains(id))
+                        string id = GetMediaItemId(playbackItem);
+                        if (!playlistMediaIds.Contains(id))
                         {
-                            PlaybackService.addToBeginningOfQueue(playbackItem, localLock);
-                            playlistMediaIds.Insert(0, new KeyValuePair<string, int>(id, start + i));
+                            PlaybackService.AddToBeginningOfQueue(playbackItem, localLock);
+                            playlistMediaIds.Insert(0, id);
                             successes++;
                         }
                     }
@@ -388,7 +390,7 @@ namespace Boxify.Classes
 
             if (successes != limit && start > 0)
             {
-                return await loadTracks(start - limit - (limit - tracks.Count), start + limit, true);
+                return await LoadTracks(start - limit - (limit - tracks.Count), start + limit, true);
             }
             loadLock = false;
             return tracks.Count == limit;
@@ -398,7 +400,7 @@ namespace Boxify.Classes
         /// When the queue moves to another song
         /// </summary>
         /// <param name="newItem">The new song being played</param>
-        public async void songChanged(MediaPlaybackItem newItem)
+        public async void SongChanged(MediaPlaybackItem newItem)
         {
             if (firstSongChange)
             {
@@ -407,9 +409,10 @@ namespace Boxify.Classes
             }
             else if (totalTracks >= INITIAL_TRACKS_REQUEST + 1)
             {
-                string newId = getMediaItemId(newItem);
+                string newId = GetMediaItemId(newItem);
+                int index = playlistMediaIds.IndexOf(newId);
 
-                if (indexInLocalList(newId) == -1)
+                if (index == -1)
                 {
                     return;
                 }
@@ -420,18 +423,18 @@ namespace Boxify.Classes
                 int indexToLoadPrev = prevRemoteAttempts[0];
 
                 // towards end of local tracks and more to load remote
-                if (indexInLocalList(newId) >= playlistMediaIds.Count - BUFFER_FROM_LOAD && indexToLoadNext < totalTracks - 1)
+                if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && indexToLoadNext < totalTracks - 1)
                 {
                     await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        bool success = await loadTracks(indexToLoadNext + 1, indexToLoadNext + TRACKS_PER_REQUEST);
-                        if (success && indexInLocalList(newId) > BUFFER_FROM_LOAD)
+                        bool success = await LoadTracks(indexToLoadNext + 1, indexToLoadNext + TRACKS_PER_REQUEST);
+                        if (success && index > BUFFER_FROM_LOAD)
                         {
                             prevRemoteAttempts.RemoveAt(0);
-                            int deleteUpTo = indexInLocalList(newId) - BUFFER_FROM_LOAD;
+                            int deleteUpTo = index - BUFFER_FROM_LOAD;
                             for (int i = 0; i < deleteUpTo; i++)
                             {
-                                PlaybackService.removeFromQueue(playlistMediaIds[0].Key, localLock);
+                                PlaybackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
                                 playlistMediaIds.RemoveAt(0);
                             }
                         }
@@ -439,18 +442,18 @@ namespace Boxify.Classes
                     );
                 }
                 // toward end of local tracks and no more ahead on remote, go back to beginning
-                else if (indexInLocalList(newId) >= playlistMediaIds.Count - BUFFER_FROM_LOAD && PlaybackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
+                else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && PlaybackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
                 {
                     await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        bool success = await loadTracks(0, TRACKS_PER_REQUEST - 1);
-                        if (success && indexInLocalList(newId) > BUFFER_FROM_LOAD)
+                        bool success = await LoadTracks(0, TRACKS_PER_REQUEST - 1);
+                        if (success && index > BUFFER_FROM_LOAD)
                         {
                             prevRemoteAttempts.RemoveAt(0);
-                            int deleteUpTo = indexInLocalList(newId) - BUFFER_FROM_LOAD;
+                            int deleteUpTo = index - BUFFER_FROM_LOAD;
                             for (int i = 0; i < deleteUpTo; i++)
                             {
-                                PlaybackService.removeFromQueue(playlistMediaIds[0].Key, localLock);
+                                PlaybackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
                                 playlistMediaIds.RemoveAt(0);
                             }
                         }
@@ -458,18 +461,18 @@ namespace Boxify.Classes
                     );
                 }
                 // towards beginning of local tracks and more to load remote
-                else if (indexInLocalList(newId) < BUFFER_FROM_LOAD && indexToLoadPrev != 0)
+                else if (index < BUFFER_FROM_LOAD && indexToLoadPrev != 0)
                 {
                     await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
-                        bool success = await loadTracksReverse(indexToLoadPrev - TRACKS_PER_REQUEST, indexToLoadPrev - 1);
-                        if (success && indexInLocalList(newId) < BUFFER_FROM_LOAD)
+                        bool success = await LoadTracksReverse(indexToLoadPrev - TRACKS_PER_REQUEST, indexToLoadPrev - 1);
+                        if (success && index < BUFFER_FROM_LOAD)
                         {
                             nextRemoteAttempts.RemoveAt(0);
                             int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
                             for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
                             {
-                                PlaybackService.removeFromQueue(playlistMediaIds.Last().Key, localLock);
+                                PlaybackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
                                 playlistMediaIds.RemoveAt(playlistMediaIds.Count - 1);
                             }
                         }
@@ -483,11 +486,11 @@ namespace Boxify.Classes
         /// An item failed to open
         /// </summary>
         /// <param name="item">The item that failed to open</param>
-        public void itemFailedToOpen(MediaPlaybackItem item)
+        public void ItemFailedToOpen(MediaPlaybackItem item)
         {
-            PlaybackService.removeFromQueue(getMediaItemId(item), localLock);
-            playlistMediaIds.RemoveAt(indexInLocalList(getMediaItemId(item)));
-            updateFailuresCount(1);
+            PlaybackService.RemoveFromQueue(GetMediaItemId(item), localLock);
+            playlistMediaIds.RemoveAt(playlistMediaIds.IndexOf(GetMediaItemId(item)));
+            UpdateFailuresCount(1);
         }
 
         /// <summary>
@@ -495,25 +498,13 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="item">The playback item to get the id of</param>
         /// <returns>The mediaItemId of the playback item</returns>
-        private string getMediaItemId(MediaPlaybackItem item)
+        private string GetMediaItemId(MediaPlaybackItem item)
         {
-            object id = "";
-            if (item.Source.CustomProperties.TryGetValue("mediaItemId", out id))
+            if (item.Source.CustomProperties.TryGetValue("mediaItemId", out object id))
             {
                 return id.ToString();
             }
-            return id.ToString();
-        }
-
-        /// <summary>
-        /// Get the current postition of the mediaItem in the local list
-        /// </summary>
-        /// <param name="id">The mediaItemId of the playback item</param>
-        /// <returns>The position of the item in the playback list</returns>
-        private int indexInLocalList(string id)
-        {
-            List<string> keys = (from kvp in playlistMediaIds select kvp.Key).ToList();
-            return keys.IndexOf(id);
+            return "";
         }
 
         /// <summary>
@@ -522,7 +513,7 @@ namespace Boxify.Classes
         /// <param name="start">The first track to get in the remote playlist</param>
         /// <param name="limit">The number of tracks to get after the first track in the remote playlist</param>
         /// <returns>The tracks in the specified range from the remote playlist</returns>
-        private async Task<List<Track>> getTracks(int start, int limit)
+        private async Task<List<Track>> GetTracks(int start, int limit)
         {
             List<Track> tracks = new List<Track>();
 
@@ -534,16 +525,18 @@ namespace Boxify.Classes
             else
             {
                 UriBuilder tracksBuilder = new UriBuilder(tracksHref);
-                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>();
-                queryParams.Add(new KeyValuePair<string, string>("limit", limit.ToString()));
-                queryParams.Add(new KeyValuePair<string, string>("offset", start.ToString()));
+                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("limit", limit.ToString()),
+                    new KeyValuePair<string, string>("offset", start.ToString())
+                };
                 tracksBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
                 trackUrl = tracksBuilder.Uri.ToString();
             }
 
             string tracksString = await RequestHandler.SendCliGetRequest(trackUrl);
 
-            if (localLock != PlaybackService.globalLock) { return tracks; }
+            if (localLock != PlaybackService.GlobalLock) { return tracks; }
 
             JsonObject tracksJson = new JsonObject();
             try
@@ -552,20 +545,18 @@ namespace Boxify.Classes
             }
             catch (COMException) { return tracks; }
 
-            if (localLock != PlaybackService.globalLock) { return tracks; }
+            if (localLock != PlaybackService.GlobalLock) { return tracks; }
 
             if (type == PlaybackType.Single)
             {
                 Track track = new Track();
-                await track.setInfoDirect(tracksJson.Stringify());
+                await track.SetInfoDirect(tracksJson.Stringify());
                 tracks.Add(track);
                 totalTracks = 1;
             }
             else
             {
-                IJsonValue itemsJson;
-                IJsonValue totalJson;
-                if (tracksJson.TryGetValue("items", out itemsJson))
+                if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
                 {
                     JsonArray tracksArray = itemsJson.GetArray();
                     if (tracksArray.Count > 0)
@@ -575,22 +566,21 @@ namespace Boxify.Classes
                             Track track = new Track();
                             if (type == PlaybackType.Album)
                             {
-                                IJsonValue hrefJson;
-                                if (trackJson.GetObject().TryGetValue("href", out hrefJson))
+                                if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
                                 {
                                     string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
-                                    await track.setInfoDirect(fullTrackString);
+                                    await track.SetInfoDirect(fullTrackString);
                                 }
                             }
                             else
                             {
-                                await track.setInfo(trackJson.GetObject().Stringify());
+                                await track.SetInfo(trackJson.GetObject().Stringify());
                             }
                             tracks.Add(track);
                         }
                     }
                 }
-                if (tracksJson.TryGetValue("total", out totalJson))
+                if (tracksJson.TryGetValue("total", out IJsonValue totalJson))
                 {
                     totalTracks = Convert.ToInt32(totalJson.GetNumber());
                 }
@@ -604,74 +594,9 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="track">The track to search for a match in YouTube</param>
         /// <returns>The YouTube ID of the video</returns>
-        private string searchForVideoId(Track track)
+        private async Task<string> SearchForVideoId(Track track)
         {
-            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApplicationName = youtubeApplicationName,
-                ApiKey = youtubeApiKey,
-            });
-            SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
-            listRequest.Fields = "items(id)";
-            listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
-            listRequest.MaxResults = 1;
-            listRequest.Type = "video";
-            SearchListResponse resp = listRequest.Execute();
-            if (resp.Items.Count == 1)
-            {
-                return resp.Items[0].Id.VideoId;
-            }
-            return "";
-        }
-
-        /// <summary>
-        /// Get video ids for multiple songs in YouTube
-        /// </summary>
-        /// <param name="tracks">The list of tracks to search for a match in YouTube</param>
-        /// <returns>A list of YouTube IDs of the videos</returns>
-        private async Task<Dictionary<Track, string>> bulkSearchForVideoId(List<Track> tracks)
-        {
-            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApplicationName = youtubeApplicationName,
-                ApiKey = youtubeApiKey,
-            });
-            BatchRequest batch = new BatchRequest(youtube);
-
-            Dictionary<Track, string> returnIds = new Dictionary<Track, string>();
-
-            foreach (Track track in tracks)
-            {
-                SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
-                listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
-                listRequest.MaxResults = 1;
-                listRequest.Type = "video";
-                listRequest.Fields = "items(id)";
-                batch.Queue<SearchListResponse>(listRequest, (content, error, i, message) =>
-                {
-                    if (error != null && error.Errors.Count > 0)
-                    {
-                        if (error.Errors[0].Reason == "keyInvalid")
-                        {
-                            PlaybackService.mainPage.SetErrorMessage("Invalid YouTube Credentials. Ensure YouTube applicationName and apiKey are correct.", localLock);
-                        }
-                        else
-                        {
-                            PlaybackService.mainPage.SetErrorMessage(String.Format("{0} ({1})", error.Errors[0].Message, error.Errors[0].Reason), localLock);
-                        }
-                    }
-                    string videoId = "";
-                    if (content != null && content.Items.Count > 0)
-                    {
-                        videoId = content.Items[0].Id.VideoId;
-                    }
-                    returnIds.Add(track, videoId);
-                });
-            }
-
-            await batch.ExecuteAsync();
-
-            return returnIds;
+            return await RequestHandler.SearchYoutube(track.name + " " + track.Artists[0].Name + " " + track.album.name);
         }
 
         /// <summary>
@@ -722,8 +647,10 @@ namespace Boxify.Classes
             }
             else if (maxNonAudioVideo != null)
             {
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.AllowAutoRedirect = true;
+                HttpClientHandler handler = new HttpClientHandler()
+                {
+                    AllowAutoRedirect = true
+                };
                 HttpClient client = new HttpClient(handler);
 
                 CancellationTokenSource cancelToken = new CancellationTokenSource();

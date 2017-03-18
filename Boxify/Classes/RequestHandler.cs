@@ -38,6 +38,9 @@ namespace Boxify
         private static string clientCredentialsGrantType = "client_credentials";
         private static string ccAccessToken = "";
         private static DateTime ccExpireTime = new DateTime(DateTime.MinValue.Ticks);
+        public static string youtubeApplicationName = "";
+        public static string youtubeApiKey = "";
+        private static string youtubeSearchUrl = "https://www.googleapis.com/youtube/v3/search";
 
         /// <summary>
         /// Builds the authorization uri with required query parameters
@@ -137,11 +140,11 @@ namespace Boxify
                 JsonObject youtubeObject = youtubeJson.GetObject();
                 if (youtubeObject.TryGetValue("applicationName", out IJsonValue applicationNameJson))
                 {
-                    PlaybackSession.youtubeApplicationName = applicationNameJson.GetString();
+                    youtubeApplicationName = applicationNameJson.GetString();
                 }
                 if (youtubeObject.TryGetValue("apiKey", out IJsonValue apiKeyJson))
                 {
-                    PlaybackSession.youtubeApiKey = apiKeyJson.GetString();
+                    youtubeApiKey = apiKeyJson.GetString();
                 }
             }
         }
@@ -181,7 +184,7 @@ namespace Boxify
             if (accessToken != "")
             {
                 string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
-                await UserProfile.updateInfo(userJson);
+                await UserProfile.UpdateInfo(userJson);
             }
         }
 
@@ -349,7 +352,7 @@ namespace Boxify
             if (securityFlow == SecurityFlow.AuthorizationCode)
             {
                 string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
-                await UserProfile.updateInfo(userJson);
+                await UserProfile.UpdateInfo(userJson);
             }
         }
 
@@ -533,8 +536,75 @@ namespace Boxify
             roamingSettings.Values["Tokens"] = null;
 
             UserProfile.userId = "";
-            UserProfile.displalyName = "";
+            UserProfile.DisplalyName = "";
             UserProfile.userPic = new BitmapImage();
+        }
+
+        /// <summary>
+        /// Get Youtube Video Id of searched video
+        /// </summary>
+        /// <param name="searchTerm">What video to search for</param>
+        /// <returns></returns>
+        public static async Task<string> SearchYoutube(string searchTerm)
+        {
+            UriBuilder youtubeUriBuilder = new UriBuilder(youtubeSearchUrl);
+
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("key", youtubeApiKey),
+                new KeyValuePair<string, string>("q", searchTerm),
+                new KeyValuePair<string, string>("part", "snippet"),
+                new KeyValuePair<string, string>("type", "video"),
+                new KeyValuePair<string, string>("safeSearch", "none"),
+                new KeyValuePair<string, string>("fields", "items(id)"),
+                new KeyValuePair<string, string>("maxResults", "1")
+            };
+            youtubeUriBuilder.Query = ConvertToQueryString(queryParams);
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage httpResponse = new HttpResponseMessage();
+            string httpResponseBody = "";
+
+            try
+            {
+                httpResponse = await client.GetAsync(youtubeUriBuilder.Uri);
+                httpResponse.EnsureSuccessStatusCode();
+                httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                string extraInfo = "";
+                if (ex.Message.StartsWith("Bad Request"))
+                {
+                    extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
+                }
+                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
+                return "";
+            }
+
+            JsonObject searchJson = new JsonObject();
+            try
+            {
+                searchJson = JsonObject.Parse(await httpResponse.Content.ReadAsStringAsync());
+            }
+            catch (COMException)
+            {
+                return "";
+            }
+
+            if (searchJson.TryGetValue("items", out IJsonValue itemsJson))
+            {
+                if (itemsJson.GetArray().GetObjectAt(0).TryGetValue("id", out IJsonValue idJson))
+                {
+                    if (idJson.GetObject().TryGetValue("videoId", out IJsonValue videoIdJson))
+                    {
+                        return videoIdJson.GetString();
+                    }
+                }
+            }
+
+            return "";
         }
     }
 }
