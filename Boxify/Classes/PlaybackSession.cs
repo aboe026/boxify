@@ -1,8 +1,4 @@
-﻿using Google.Apis.Requests;
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,9 +22,7 @@ namespace Boxify.Classes
     {
         public enum LoadDirection { Up, Down };
         public enum PlaybackType { Single, Album, Playlist };
-
-        public static string youtubeApplicationName = "";
-        public static string youtubeApiKey = "";
+        
         private const string _videoUrlFormat = "http://www.youtube.com/watch?v={0}";
 
         public long localLock;
@@ -184,16 +178,21 @@ namespace Boxify.Classes
                 }
                 else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
                 {
-                    Dictionary<Track, string> videoIds = await BulkSearchForVideoId(tracks);
-
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
+
+                        string videoId = "";
                         if (localLock == PlaybackService.globalLock)
+                        {
+                            videoId = await SearchForVideoId(track);
+                        }
+
+                        if (localLock == PlaybackService.globalLock && videoId != "")
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
                             }
                             catch (Exception)
                             {
@@ -335,16 +334,21 @@ namespace Boxify.Classes
                 }
                 else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.globalLock)
                 {
-                    Dictionary<Track, string> videoIds = await BulkSearchForVideoId(tracks);
-
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
+
+                        string videoId = "";
                         if (localLock == PlaybackService.globalLock)
+                        {
+                            videoId = await SearchForVideoId(track);
+                        }
+
+                        if (localLock == PlaybackService.globalLock && videoId != "")
                         {
                             try
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoIds[track], track.Name), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
                             }
                             catch (Exception)
                             {
@@ -590,74 +594,9 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="track">The track to search for a match in YouTube</param>
         /// <returns>The YouTube ID of the video</returns>
-        private string SearchForVideoId(Track track)
+        private async Task<string> SearchForVideoId(Track track)
         {
-            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApplicationName = youtubeApplicationName,
-                ApiKey = youtubeApiKey,
-            });
-            SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
-            listRequest.Fields = "items(id)";
-            listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
-            listRequest.MaxResults = 1;
-            listRequest.Type = "video";
-            SearchListResponse resp = listRequest.Execute();
-            if (resp.Items.Count == 1)
-            {
-                return resp.Items[0].Id.VideoId;
-            }
-            return "";
-        }
-
-        /// <summary>
-        /// Get video ids for multiple songs in YouTube
-        /// </summary>
-        /// <param name="tracks">The list of tracks to search for a match in YouTube</param>
-        /// <returns>A list of YouTube IDs of the videos</returns>
-        private async Task<Dictionary<Track, string>> BulkSearchForVideoId(List<Track> tracks)
-        {
-            YouTubeService youtube = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApplicationName = youtubeApplicationName,
-                ApiKey = youtubeApiKey,
-            });
-            BatchRequest batch = new BatchRequest(youtube);
-
-            Dictionary<Track, string> returnIds = new Dictionary<Track, string>();
-
-            foreach (Track track in tracks)
-            {
-                SearchResource.ListRequest listRequest = youtube.Search.List("snippet");
-                listRequest.Q = track.name + " " + track.artists[0].name + " " + track.album.name;
-                listRequest.MaxResults = 1;
-                listRequest.Type = "video";
-                listRequest.Fields = "items(id)";
-                batch.Queue<SearchListResponse>(listRequest, (content, error, i, message) =>
-                {
-                    if (error != null && error.Errors.Count > 0)
-                    {
-                        if (error.Errors[0].Reason == "keyInvalid")
-                        {
-                            PlaybackService.mainPage.SetErrorMessage("Invalid YouTube Credentials. Ensure YouTube applicationName and apiKey are correct.", localLock);
-                        }
-                        else
-                        {
-                            PlaybackService.mainPage.SetErrorMessage(String.Format("{0} ({1})", error.Errors[0].Message, error.Errors[0].Reason), localLock);
-                        }
-                    }
-                    string videoId = "";
-                    if (content != null && content.Items.Count > 0)
-                    {
-                        videoId = content.Items[0].Id.VideoId;
-                    }
-                    returnIds.Add(track, videoId);
-                });
-            }
-
-            await batch.ExecuteAsync();
-
-            return returnIds;
+            return await RequestHandler.searchYoutube(track.name + " " + track.artists[0].name + " " + track.album.name);
         }
 
         /// <summary>
