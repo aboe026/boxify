@@ -25,15 +25,17 @@ namespace Boxify
         public Playback()
         {
             this.InitializeComponent();
-            uiUpdateTimer = new DispatcherTimer();
-            uiUpdateTimer.Interval = TimeSpan.FromMilliseconds(100); 
-            uiUpdateTimer.Tick += uiUpdateTimer_Tick;
+            uiUpdateTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            uiUpdateTimer.Tick += UiUpdateTimer_Tick;
         }
 
         /// <summary>
         /// Updates the UI with the information of the currently playing track
         /// </summary>
-        public async Task updateUI()
+        public async Task UpdateUI()
         {
             MediaItemDisplayProperties displayProperties = PlaybackService.currentlyPlayingItem.GetDisplayProperties();
             TrackName.Text = displayProperties.MusicProperties.Title;
@@ -58,7 +60,7 @@ namespace Boxify
         /// Set the currently playing track image
         /// </summary>
         /// <param name="image">The image of the currently playing song</param>
-        public void setTrackImage(BitmapImage image)
+        public void SetTrackImage(BitmapImage image)
         {
             AlbumArt.Source = image;
         }
@@ -67,7 +69,7 @@ namespace Boxify
         /// Set the currently playing track name
         /// </summary>
         /// <param name="name">The name of the currently playing song</param>
-        public void setTrackName(String name)
+        public void SetTrackName(String name)
         {
             TrackName.Text = name;
         }
@@ -76,7 +78,7 @@ namespace Boxify
         /// Set the currently playing track album name
         /// </summary>
         /// <param name="name">The name of the album of the currently playing song</param>
-        public void setArtistName(String name)
+        public void SetArtistName(String name)
         {
             TrackArtist.Text = name;
         }
@@ -85,7 +87,7 @@ namespace Boxify
         /// Adjust the UI according to play/pause state
         /// </summary>
         /// <param name="state">The current playing state</param>
-        public async void setActionState(MediaPlaybackState state)
+        public async void SetActionState(MediaPlaybackState state)
         {
             if (state == MediaPlaybackState.Playing)
             {
@@ -120,7 +122,7 @@ namespace Boxify
         /// <summary>
         /// Remove the extra margin so content touches display edge
         /// </summary>
-        public void safeAreaOff()
+        public void SafeAreaOff()
         {
             MainPanel.Margin = new Thickness(0, 0, 0, 0);
             MainGrid.Height = 100;
@@ -129,7 +131,7 @@ namespace Boxify
         /// <summary>
         /// Add extra margin to ensure content inside of TV safe area
         /// </summary>
-        public void safeAreaOn()
+        public void SafeAreaOn()
         {
             MainPanel.Margin = new Thickness(0, 0, 0, 48);
             MainGrid.Height = 148;
@@ -140,7 +142,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void uiUpdateTimer_Tick(object sender, object e)
+        public void UiUpdateTimer_Tick(object sender, object e)
         {
             if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
             {
@@ -176,7 +178,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Previous_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackService.previousTrack();
+            PlaybackService.PreviousTrack();
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackService.nextTrack();
+            PlaybackService.NextTrack();
         }
 
         /// <summary>
@@ -196,7 +198,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            bool repeatOn = PlaybackService.toggleRepeat();
+            bool repeatOn = PlaybackService.ToggleRepeat();
             if (repeatOn)
             {
                 Repeat.Visibility = Visibility.Collapsed;
@@ -225,7 +227,7 @@ namespace Boxify
         /// Sets whether or not the playlist automatically repeats
         /// </summary>
         /// <param name="enabled">True to make the playlist automatically repeat, false otherwise</param>
-        public void setRepeat(bool enabled)
+        public void SetRepeat(bool enabled)
         {
             if (enabled)
             {
@@ -255,7 +257,7 @@ namespace Boxify
         /// Sets the volume for playback
         /// </summary>
         /// <param name="volume">The volume, 0 to 100</param>
-        public void setVolume(double volume)
+        public void SetVolume(double volume)
         {
             PlaybackService.Player.Volume = volume;
             VolumeSlider.Value = volume;
@@ -365,7 +367,7 @@ namespace Boxify
         /// <summary>
         /// Move UI focus to the Play/Pause button
         /// </summary>
-        public void focusPlayPause()
+        public void FocusPlayPause()
         {
             if (Play.Visibility == Visibility.Visible)
             {
@@ -381,7 +383,7 @@ namespace Boxify
         /// Set the visibility of the loading progress ring
         /// </summary>
         /// <param name="visible"></param>
-        public void setLoadingActive(bool active)
+        public void SetLoadingActive(bool active)
         {
             LoadingTrack.IsActive = active;
             if (active)
@@ -417,7 +419,7 @@ namespace Boxify
         {
             if (App.isInBackgroundMode)
             {
-                this.uiUpdateTimer.Tick -= uiUpdateTimer_Tick;
+                this.uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
             }
         }
     }

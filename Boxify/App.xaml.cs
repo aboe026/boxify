@@ -35,9 +35,9 @@ namespace Boxify
             this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
 
             // Playback Service "Initialization" of static class
-            PlaybackService.queue.CurrentItemChanged += PlaybackService.currentItemChanged;
-            PlaybackService.queue.ItemFailed += PlaybackService.itemFailed;
-            PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
+            PlaybackService.queue.CurrentItemChanged += PlaybackService.CurrentItemChanged;
+            PlaybackService.queue.ItemFailed += PlaybackService.ItemFailed;
+            PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.PlayStateChanges;
 
             // Subscribe to key lifecyle events to know when the app
             // transitions to and from foreground and background.
@@ -248,7 +248,7 @@ namespace Boxify
         {
             isInBackgroundMode = true;
 
-            PlaybackService.Player.PlaybackSession.PlaybackStateChanged -= PlaybackService.playStateChanges;
+            PlaybackService.Player.PlaybackSession.PlaybackStateChanged -= PlaybackService.PlayStateChanges;
 
             if (PlaybackService.showing)
             {
@@ -272,7 +272,7 @@ namespace Boxify
                 MainPage.returningFromMemoryReduction = true;
                 CreateRootFrame(ApplicationExecutionState.Running, string.Empty);
                 
-                PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.playStateChanges;
+                PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.PlayStateChanges;
             }
         }
 

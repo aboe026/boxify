@@ -14,14 +14,14 @@ namespace Boxify
     /// </summary>
     public class Playlist : BindableBase
     {
-        public string id { get; set; }
-        public string href { get; set; }
+        public string Id { get; set; }
+        public string Href { get; set; }
         public string name;
         public string description;
-        public string tracksHref { get; set; }
+        public string TracksHref { get; set; }
         private const int maxTracksPerRequest = 100;
         public int tracksCount;
-        public List<BitmapImage> images { get; set; }
+        public List<BitmapImage> Images { get; set; }
         public BitmapImage image;
 
         /// <summary>
@@ -29,12 +29,12 @@ namespace Boxify
         /// </summary>
         public Playlist()
         {
-            id = "";
-            href = "";
+            Id = "";
+            Href = "";
             name = "";
-            tracksHref = "";
+            TracksHref = "";
             tracksCount = 0;
-            images = new List<BitmapImage>();
+            Images = new List<BitmapImage>();
             image = new BitmapImage();
         }
 
@@ -79,7 +79,7 @@ namespace Boxify
         /// </summary>
         /// <param name="jsonString">The string representation of the playlist JSON object</param>
         /// <returns></returns>
-        public async Task setInfo(string jsonString)
+        public async Task SetInfo(string jsonString)
         {
             JsonObject playlistJson = new JsonObject();
             try
@@ -90,44 +90,36 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue idJson;
-            IJsonValue hrefJson;
-            IJsonValue nameJson;
-            IJsonValue descriptionJson;
-            IJsonValue tracksJson;
-            IJsonValue imagesJson;
-            if (playlistJson.TryGetValue("id", out idJson))
+            if (playlistJson.TryGetValue("id", out IJsonValue idJson))
             {
-                id = idJson.GetString();
+                Id = idJson.GetString();
             }
-            if (playlistJson.TryGetValue("href", out hrefJson))
+            if (playlistJson.TryGetValue("href", out IJsonValue hrefJson))
             {
-                href = hrefJson.GetString();
+                Href = hrefJson.GetString();
             }
-            if (playlistJson.TryGetValue("name", out nameJson))
+            if (playlistJson.TryGetValue("name", out IJsonValue nameJson))
             {
                 name = nameJson.GetString();
             }
-            if (playlistJson.TryGetValue("description", out descriptionJson))
+            if (playlistJson.TryGetValue("description", out IJsonValue descriptionJson))
             {
                 description = Regex.Replace(descriptionJson.GetString(), "<.+?>", string.Empty);
             }
 
-            if (playlistJson.TryGetValue("tracks", out tracksJson))
+            if (playlistJson.TryGetValue("tracks", out IJsonValue tracksJson))
             {
                 JsonObject trackJson = tracksJson.GetObject();
-                IJsonValue trackHrefJson;
-                IJsonValue trackNumberJson;
-                if (trackJson.TryGetValue("href", out trackHrefJson))
+                if (trackJson.TryGetValue("href", out IJsonValue trackHrefJson))
                 {
-                    tracksHref = trackHrefJson.GetString();
+                    TracksHref = trackHrefJson.GetString();
                 }
-                if (trackJson.TryGetValue("total", out trackNumberJson))
+                if (trackJson.TryGetValue("total", out IJsonValue trackNumberJson))
                 {
                     tracksCount = Convert.ToInt32(trackNumberJson.GetNumber());
                 }
             }
-            if (playlistJson.TryGetValue("images", out imagesJson))
+            if (playlistJson.TryGetValue("images", out IJsonValue imagesJson))
             {
                 JsonArray imagesArray = imagesJson.GetArray();
                 foreach (JsonValue imageObject in imagesArray)
@@ -135,11 +127,11 @@ namespace Boxify
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
                     BitmapImage image = await RequestHandler.DownloadImage(url);
-                    images.Add(image);
+                    Images.Add(image);
                 }
-                if (images.Count > 0)
+                if (Images.Count > 0)
                 {
-                    image = images.ElementAt(0);
+                    image = Images.ElementAt(0);
                 }
             }
         }
@@ -148,9 +140,9 @@ namespace Boxify
         /// Play the tracks in the playlist
         /// </summary>
         /// <returns></returns>
-        public void playTracks()
+        public void PlayTracks()
         {
-            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Playlist, tracksHref); 
+            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, TracksHref); 
         }
     }
 }

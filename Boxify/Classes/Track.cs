@@ -13,14 +13,14 @@ namespace Boxify
     /// </summary>
     public class Track : BindableBase
     {
-        public string href { get; set; }
-        public string id { get; set; }
+        public string Href { get; set; }
+        public string Id { get; set; }
         public string name;
-        public string albumString { get; set; }
+        public string AlbumString { get; set; }
         public Album album;
-        public List<Artist> artists { get; set; }
-        public string previewUrl { get; set; }
-        public int duration { get; set; }
+        public List<Artist> Artists { get; set; }
+        public string PreviewUrl { get; set; }
+        public int Duration { get; set; }
 
         /// <summary>
         /// The main constructor to create an empty instance
@@ -28,11 +28,11 @@ namespace Boxify
         public Track()
         {
             name = "";
-            albumString = "";
+            AlbumString = "";
             album = new Album();
-            artists = new List<Artist>();
-            previewUrl = "";
-            duration = 0;
+            Artists = new List<Artist>();
+            PreviewUrl = "";
+            Duration = 0;
         }
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace Boxify
         {
             get
             {
-                if (this.album.images.Count > 0)
+                if (this.album.Images.Count > 0)
                 {
-                    return this.album.images.ElementAt(0);
+                    return this.album.Images.ElementAt(0);
                 }
                 return new BitmapImage();
             }
@@ -66,9 +66,9 @@ namespace Boxify
         {
             get
             {
-                if (this.artists.Count > 0)
+                if (this.Artists.Count > 0)
                 {
-                    return this.artists.ElementAt(0).name;
+                    return this.Artists.ElementAt(0).Name;
                 }
                 return "";
             }
@@ -79,7 +79,7 @@ namespace Boxify
         /// </summary>
         /// <param name="artistString">The string representation of the track JSON object</param>
         /// <returns></returns>
-        public async Task setInfo(string trackString)
+        public async Task SetInfo(string trackString)
         {
             JsonObject trackJson = new JsonObject();
             try
@@ -90,11 +90,10 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue trackObject;
-            if (trackJson.TryGetValue("track", out trackObject))
+            if (trackJson.TryGetValue("track", out IJsonValue trackObject))
             {
                 JsonObject trackObjectJson = trackObject.GetObject();
-                await setInfoDirect(trackObjectJson.Stringify());
+                await SetInfoDirect(trackObjectJson.Stringify());
             }
         }
 
@@ -103,7 +102,7 @@ namespace Boxify
         /// </summary>
         /// <param name="trackString">The string representation of the track JSON objects elements</param>
         /// <returns></returns>
-        public async Task setInfoDirect(string trackString)
+        public async Task SetInfoDirect(string trackString)
         {
             JsonObject trackObjectJson = new JsonObject();
             try
@@ -114,48 +113,41 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue trackHref;
-            IJsonValue trackId;
-            IJsonValue trackName;
-            IJsonValue trackPreview;
-            IJsonValue trackDuration;
-            IJsonValue trackAlbum;
-            IJsonValue trackArtists;
-            if (trackObjectJson.TryGetValue("href", out trackHref))
+            if (trackObjectJson.TryGetValue("href", out IJsonValue trackHref))
             {
-                href = trackHref.GetString();
+                Href = trackHref.GetString();
             }
-            if (trackObjectJson.TryGetValue("id", out trackId))
+            if (trackObjectJson.TryGetValue("id", out IJsonValue trackId))
             {
-                id = trackId.GetString();
+                Id = trackId.GetString();
             }
-            if (trackObjectJson.TryGetValue("name", out trackName))
+            if (trackObjectJson.TryGetValue("name", out IJsonValue trackName))
             {
                 name = trackName.GetString();
             }
-            if (trackObjectJson.TryGetValue("preview_url", out trackPreview))
+            if (trackObjectJson.TryGetValue("preview_url", out IJsonValue trackPreview))
             {
                 if (trackPreview.ToString() != "null")
                 {
-                    previewUrl = trackPreview.GetString();
+                    PreviewUrl = trackPreview.GetString();
                 }
             }
-            if (trackObjectJson.TryGetValue("duration_ms", out trackDuration))
+            if (trackObjectJson.TryGetValue("duration_ms", out IJsonValue trackDuration))
             {
-                duration = Convert.ToInt32(trackDuration.GetNumber());
+                Duration = Convert.ToInt32(trackDuration.GetNumber());
             }
-            if (trackObjectJson.TryGetValue("album", out trackAlbum))
+            if (trackObjectJson.TryGetValue("album", out IJsonValue trackAlbum))
             {
-                await album.setInfo(trackAlbum.Stringify());
+                await album.SetInfo(trackAlbum.Stringify());
             }
-            if (trackObjectJson.TryGetValue("artists", out trackArtists))
+            if (trackObjectJson.TryGetValue("artists", out IJsonValue trackArtists))
             {
                 JsonArray artistsArray = trackArtists.GetArray();
                 foreach (JsonValue artistObject in artistsArray)
                 {
                     Artist artist = new Artist();
-                    artist.setInfo(artistObject.Stringify());
-                    artists.Add(artist);
+                    artist.SetInfo(artistObject.Stringify());
+                    Artists.Add(artist);
                 }
             }
         }
@@ -163,9 +155,9 @@ namespace Boxify
         /// <summary>
         /// Play the track
         /// </summary>
-        public void playTrack()
+        public void PlayTrack()
         {
-            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Single, href);
+            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, Href);
         }
     }
 }

@@ -33,15 +33,15 @@ namespace Boxify
             {
                 mainPage = (MainPage)e.Parameter;
             }
-            updateUI();
+            UpdateUI();
         }
 
         /// <summary>
         /// Updates the UI of the frame
         /// </summary>
-        private void updateUI()
+        private void UpdateUI()
         {
-            if (UserProfile.displalyName == "")
+            if (UserProfile.DisplalyName == "")
             {
                 webView.Visibility = Visibility.Collapsed;
                 blankUser.Text = "\uE77B";
@@ -53,7 +53,7 @@ namespace Boxify
             else
             {
                 webView.Visibility = Visibility.Collapsed;
-                status.Text = loggedInText + UserProfile.displalyName;
+                status.Text = loggedInText + UserProfile.DisplalyName;
                 userPic.ImageSource = UserProfile.userPic;
                 blankUser.Text = "";
                 status.Visibility = Visibility.Visible;
@@ -85,7 +85,7 @@ namespace Boxify
                 catch (ArgumentException) { return; }
 
                 webView.Visibility = Visibility.Collapsed;
-                status.Text = loggedInText + UserProfile.displalyName;
+                status.Text = loggedInText + UserProfile.DisplalyName;
                 status.Visibility = Visibility.Visible;
                 userPic.ImageSource = UserProfile.userPic;
                 userPicContainer.Visibility = Visibility.Visible;
@@ -106,7 +106,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender">The actionButton that was clicked</param>
         /// <param name="e">The routed event arguments</param>
-        private void login_Click(object sender, RoutedEventArgs e)
+        private void Login_Click(object sender, RoutedEventArgs e)
         {
             if (login.Content.ToString() == "Log In")
             {

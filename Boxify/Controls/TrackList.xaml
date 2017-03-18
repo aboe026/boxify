@@ -21,14 +21,14 @@
 
         <RelativePanel>
             <Image Name="displayImage"
-                   Source="{x:Bind track.Image, Mode=OneWay}"
+                   Source="{x:Bind Track.Image, Mode=OneWay}"
                    RelativePanel.AlignLeftWithPanel="True"
                    RelativePanel.AlignVerticalCenterWithPanel="True"
                    Width="30"
                    Height="30"/>
 
             <TextBlock Name="displayName"
-                       Text="{x:Bind track.Name, Mode=OneWay}"
+                       Text="{x:Bind Track.Name, Mode=OneWay}"
                        RelativePanel.RightOf="displayImage"
                        RelativePanel.LeftOf="displayArtistLabel"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
@@ -44,7 +44,7 @@
                        Style="{StaticResource SubtitleTextBlockStyle}"/>
 
             <TextBlock Name="displayArtist"
-                       Text="{x:Bind track.ArtistName, Mode=OneWay}"
+                       Text="{x:Bind Track.ArtistName, Mode=OneWay}"
                        RelativePanel.LeftOf="action"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,20,0"

@@ -14,9 +14,9 @@ namespace Boxify
     {
         private string id;
         public string name;
-        public List<Artist> artists { get; set; }
-        public List<BitmapImage> images { get; set; }
-        public string imageUrl { get; set; }
+        public List<Artist> Artists { get; set; }
+        public List<BitmapImage> Images { get; set; }
+        public string ImageUrl { get; set; }
         private static string tracksHref = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
@@ -25,8 +25,8 @@ namespace Boxify
         public Album()
         {
             name = "";
-            artists = new List<Artist>();
-            images = new List<BitmapImage>();
+            Artists = new List<Artist>();
+            Images = new List<BitmapImage>();
         }
 
         /// <summary>
@@ -45,9 +45,9 @@ namespace Boxify
         {
             get
             {
-                if (this.images.Count > 0)
+                if (this.Images.Count > 0)
                 {
-                    return this.images.ElementAt(0);
+                    return this.Images.ElementAt(0);
                 }
                 return new BitmapImage();
             }
@@ -60,9 +60,9 @@ namespace Boxify
         {
             get
             {
-                if (this.artists.Count > 0)
+                if (this.Artists.Count > 0)
                 {
-                    return this.artists.ElementAt(0).name;
+                    return this.Artists.ElementAt(0).Name;
                 }
                 return "";
             }
@@ -73,7 +73,7 @@ namespace Boxify
         /// </summary>
         /// <param name="artistString">The string representation of the album JSON object</param>
         /// <returns></returns>
-        public async Task setInfo(string albumString)
+        public async Task SetInfo(string albumString)
         {
             JsonObject albumJson = new JsonObject();
             try
@@ -84,39 +84,35 @@ namespace Boxify
             {
                 return;
             }
-            IJsonValue idJson;
-            IJsonValue nameJson;
-            IJsonValue artistsJson;
-            IJsonValue imagesJson;
-            if (albumJson.TryGetValue("id", out idJson))
+            if (albumJson.TryGetValue("id", out IJsonValue idJson))
             {
                 id = idJson.GetString();
             }
-            if (albumJson.TryGetValue("name", out nameJson))
+            if (albumJson.TryGetValue("name", out IJsonValue nameJson))
             {
                 name = nameJson.GetString();
             }
-            if (albumJson.TryGetValue("artists", out artistsJson)) {
+            if (albumJson.TryGetValue("artists", out IJsonValue artistsJson)) {
                 JsonArray artistsArray = artistsJson.GetArray();
                 foreach (JsonValue artistObject in artistsArray)
                 {
                     Artist artist = new Artist();
-                    artist.setInfo(artistObject.Stringify());
-                    artists.Add(artist);
+                    artist.SetInfo(artistObject.Stringify());
+                    Artists.Add(artist);
                 }
             }
-            if (albumJson.TryGetValue("images", out imagesJson)) {
+            if (albumJson.TryGetValue("images", out IJsonValue imagesJson)) {
                 JsonArray imagesArray = imagesJson.GetArray();
                 foreach (JsonValue imageObject in imagesArray)
                 {
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
-                    if (imageUrl == null)
+                    if (ImageUrl == null)
                     {
-                        imageUrl = url;
+                        ImageUrl = url;
                     }
                     BitmapImage image = await RequestHandler.DownloadImage(url);
-                    images.Add(image);
+                    Images.Add(image);
                 }
             }
         }
@@ -125,7 +121,7 @@ namespace Boxify
         /// Get all the tracks in the album
         /// </summary>
         /// <returns>A list of tracks in the album</returns>
-        public async Task<List<Track>> getTracks()
+        public async Task<List<Track>> GetTracks()
         {
             List<Track> tracks = new List<Track>();
             string tracksString = await RequestHandler.SendCliGetRequest(tracksHref.Replace("{id}", id));
@@ -138,14 +134,13 @@ namespace Boxify
             {
                 return tracks;
             }
-            IJsonValue itemsJson;
-            if (tracksJson.TryGetValue("items", out itemsJson))
+            if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray itemsArray = itemsJson.GetArray();
                 foreach (JsonValue trackJson in itemsArray)
                 {
                     Track track = new Track();
-                    await track.setInfoDirect(trackJson.Stringify());
+                    await track.SetInfoDirect(trackJson.Stringify());
                     track.album = this;
                     tracks.Add(track);
                 }
@@ -157,9 +152,9 @@ namespace Boxify
         /// Play all tracks in Album
         /// </summary>
         /// <returns></returns>
-        public void playTracks()
+        public void PlayTracks()
         {
-            PlaybackService.startNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
+            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
         }
     }
 }

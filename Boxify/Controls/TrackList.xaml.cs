@@ -12,7 +12,7 @@ namespace Boxify.Frames
     public sealed partial class TrackList : UserControl
     {
         public MainPage mainPage;
-        public Track track { get; set; }
+        public Track Track { get; set; }
 
         /// <summary>
         /// The main constructor
@@ -30,9 +30,9 @@ namespace Boxify.Frames
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public TrackList(Track track, MainPage mainPage) : this()
         {
-            this.track = track;
+            this.Track = track;
             this.mainPage = mainPage;
-            DataContext = this.track;
+            DataContext = this.Track;
         }
     }
 }

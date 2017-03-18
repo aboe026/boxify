@@ -19,7 +19,7 @@ namespace Boxify
         /// Set the track name of the track to cancel download of
         /// </summary>
         /// <param name="trackName">The name of the track to cancel download of</param>
-        public void setTrackName(string trackName)
+        public void SetTrackName(string trackName)
         {
             CancelText.Text = String.Format("Looks like the download of \"{0}\" is taking awhile...", trackName);
         }
@@ -28,7 +28,7 @@ namespace Boxify
         /// Set the token to call cancellation of
         /// </summary>
         /// <param name="cancelToken">The token to cancel if the user decides to cancel</param>
-        public void setCancelToken(CancellationTokenSource cancelToken)
+        public void SetCancelToken(CancellationTokenSource cancelToken)
         {
             this.cancelToken = cancelToken;
         }

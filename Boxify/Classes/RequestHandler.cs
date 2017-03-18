@@ -184,7 +184,7 @@ namespace Boxify
             if (accessToken != "")
             {
                 string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
-                await UserProfile.updateInfo(userJson);
+                await UserProfile.UpdateInfo(userJson);
             }
         }
 
@@ -352,7 +352,7 @@ namespace Boxify
             if (securityFlow == SecurityFlow.AuthorizationCode)
             {
                 string userJson = await SendAuthGetRequest("https://api.spotify.com/v1/me");
-                await UserProfile.updateInfo(userJson);
+                await UserProfile.UpdateInfo(userJson);
             }
         }
 
@@ -536,7 +536,7 @@ namespace Boxify
             roamingSettings.Values["Tokens"] = null;
 
             UserProfile.userId = "";
-            UserProfile.displalyName = "";
+            UserProfile.DisplalyName = "";
             UserProfile.userPic = new BitmapImage();
         }
 
@@ -545,7 +545,7 @@ namespace Boxify
         /// </summary>
         /// <param name="searchTerm">What video to search for</param>
         /// <returns></returns>
-        public static async Task<string> searchYoutube(string searchTerm)
+        public static async Task<string> SearchYoutube(string searchTerm)
         {
             UriBuilder youtubeUriBuilder = new UriBuilder(youtubeSearchUrl);
 

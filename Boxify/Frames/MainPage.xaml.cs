@@ -85,7 +85,7 @@ namespace Boxify
                 PlaybackMenu.Visibility = Visibility.Visible;
                 if (returningFromMemoryReduction)
                 {
-                    await PlaybackMenu.updateUI();
+                    await PlaybackMenu.UpdateUI();
                     returningFromMemoryReduction = false;
                 }
             }
@@ -123,10 +123,10 @@ namespace Boxify
         /// </summary>
         public async void LoadUserPlaylists()
         {
-            if (UserProfile.isLoggedIn() && YourMusic.playlistsSave == null)
+            if (UserProfile.IsLoggedIn() && YourMusic.playlistsSave == null)
             {
                 YourMusic.refreshing = true;
-                await YourMusic.setPlaylists();
+                await YourMusic.SetPlaylists();
                 YourMusic.refreshing = false;
             }
         }
@@ -147,8 +147,8 @@ namespace Boxify
                     MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 }
 
-                PlaybackMenu.setRepeat(Settings.repeatEnabled);
-                PlaybackMenu.setVolume(Settings.volume);
+                PlaybackMenu.SetRepeat(Settings.repeatEnabled);
+                PlaybackMenu.SetVolume(Settings.volume);
 
                 PlaybackMenu.Visibility = Visibility.Visible;
             });
@@ -162,7 +162,7 @@ namespace Boxify
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                PlaybackMenu.setLoadingActive(active);
+                PlaybackMenu.SetLoadingActive(active);
             });
         }
 
@@ -294,9 +294,9 @@ namespace Boxify
         /// </summary>
         public void UpdateUserUI()
         {
-            UserName.Text = UserProfile.displalyName;
+            UserName.Text = UserProfile.DisplalyName;
             UserPic.ImageSource = UserProfile.userPic;
-            if (UserProfile.displalyName == "")
+            if (UserProfile.DisplalyName == "")
             {
                 BlankUser.Text = "\uE77B";
                 UserPicContainer.StrokeThickness = 2;
@@ -327,7 +327,7 @@ namespace Boxify
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
             }
-            PlaybackMenu.safeAreaOff();
+            PlaybackMenu.SafeAreaOff();
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace Boxify
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
             }
-            PlaybackMenu.safeAreaOn();
+            PlaybackMenu.SafeAreaOn();
         }
 
         /// <summary>
@@ -380,7 +380,7 @@ namespace Boxify
             {
                 if (PlaybackService.showing)
                 {
-                    PlaybackMenu.focusPlayPause();
+                    PlaybackMenu.FocusPlayPause();
                 }
             }
             else if (e.Key == VirtualKey.GamepadRightThumbstickButton)
@@ -401,14 +401,14 @@ namespace Boxify
             {
                 if (PlaybackService.showing)
                 {
-                    PlaybackService.nextTrack();
+                    PlaybackService.NextTrack();
                 }
             }
             else if (e.Key == VirtualKey.GamepadLeftShoulder)
             {
                 if (PlaybackService.showing)
                 {
-                    PlaybackService.previousTrack();
+                    PlaybackService.PreviousTrack();
                 }
             }
             else if (e.Key == VirtualKey.Down && e.OriginalSource is Button && ((Button)e.OriginalSource).Name == "Back")
@@ -457,7 +457,7 @@ namespace Boxify
         /// <param name="localLock">The lock to ensure no stale updates</param>
         public async void SetErrorMessage(string message, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -473,12 +473,12 @@ namespace Boxify
         /// <param name="cancelToken">The download token to cancel</param>
         public async void ShowCancelDialog(long localLock, CancellationTokenSource cancelToken, string trackName)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    CancelDialog.setCancelToken(cancelToken);
-                    CancelDialog.setTrackName(trackName);
+                    CancelDialog.SetCancelToken(cancelToken);
+                    CancelDialog.SetTrackName(trackName);
                     CancelDialog.Visibility = Visibility.Visible;
                 });
             }
@@ -490,7 +490,7 @@ namespace Boxify
         /// <param name="localLock">The lock to ensure no stale updates</param>
         public async void HideCancelDialog(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -519,7 +519,7 @@ namespace Boxify
         /// <param name="localLock"></param>
         public void BringUpSpotify(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 BringUpSpotify();
             }
@@ -540,7 +540,7 @@ namespace Boxify
         /// <param name="value">The amount of progress made</param>
         public void SetSpotifyLoadingValue(double value, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 SetSpotifyLoadingValue(value);
             }
@@ -561,7 +561,7 @@ namespace Boxify
         /// <param name="max">The limit of progress</param>
         public void SetSpotifyLoadingMaximum(double max, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 SetSpotifyLoadingMaximum(max);
             }
@@ -594,7 +594,7 @@ namespace Boxify
         /// <param name="localLock"></param>
         public void BringUpYouTube(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 BringUpYouTube();
             }
@@ -606,7 +606,7 @@ namespace Boxify
         /// <param name="value">The amount of progress made</param>
         public void SetYouTubeLoadingValue(double value, long localLock)
         {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 YouTubeLoading.Value = value;
             }
@@ -618,7 +618,7 @@ namespace Boxify
         /// <param name="max">The limit of progress</param>
         public void SetYouTubeLoadingMaximum(double max, long localLock)
         {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 YouTubeLoading.Maximum = max;
             }
@@ -630,7 +630,7 @@ namespace Boxify
         /// <param name="message"></param>
         public void SetYouTubeMessage(String message, long localLock)
         {
-            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == PlaybackService.globalLock)
+            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
             {
                 YouTubeMessage.Text = message;
             }
