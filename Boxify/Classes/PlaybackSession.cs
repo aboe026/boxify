@@ -206,18 +206,25 @@ namespace Boxify.Classes
                             videoId = await SearchForVideoId(track);
                         }
 
-                        if (localLock == PlaybackService.GlobalLock && videoId != "")
+                        if (localLock == PlaybackService.GlobalLock)
                         {
-                            try
-                            {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
-                            }
-                            catch (Exception)
+                            if (videoId == "")
                             {
                                 UpdateFailuresCount(1);
                             }
-                            PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                            else
+                            {
+                                try
+                                {
+                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
+                                }
+                                catch (Exception)
+                                {
+                                    UpdateFailuresCount(1);
+                                }
+                            }
                         }
+                        PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
 
@@ -362,18 +369,25 @@ namespace Boxify.Classes
                             videoId = await SearchForVideoId(track);
                         }
 
-                        if (localLock == PlaybackService.GlobalLock && videoId != "")
+                        if (localLock == PlaybackService.GlobalLock)
                         {
-                            try
-                            {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
-                            }
-                            catch (Exception)
+                            if (videoId == "")
                             {
                                 UpdateFailuresCount(1);
                             }
-                            PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                            else
+                            {
+                                try
+                                {
+                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
+                                }
+                                catch (Exception)
+                                {
+                                    UpdateFailuresCount(1);
+                                }
+                            }
                         }
+                        PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
 
