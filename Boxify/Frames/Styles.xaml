@@ -276,6 +276,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <SolidColorBrush x:Key="AppTitleBarForeground" Color="White"/>
             <BitmapImage x:Key="SpotifyLogo" UriSource="ms-appx:///Assets/Spotify_Logo_RGB_Green.png"></BitmapImage>
             <BitmapImage x:Key="YouTubeLogo" UriSource="ms-appx:///Assets/YouTube-logo-light.png"></BitmapImage>
+            <Style x:Key="BoxifyLogoSource" TargetType="Image">
+                <Setter Property="Source" Value="ms-appx:///Assets/BoxifyLogo-Light.png"/>
+            </Style>
             <SolidColorBrush x:Key="PlaybackBackground" Color="{ThemeResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="PlaybackText" Color="White"/>
             <SolidColorBrush x:Key="PlaybackButtonForeground" Color="White"/>
@@ -292,6 +295,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <SolidColorBrush x:Key="AppTitleBarForeground" Color="Black"/>
             <BitmapImage x:Key="SpotifyLogo" UriSource="ms-appx:///Assets/Spotify_Logo_RGB_Black.png"></BitmapImage>
             <BitmapImage x:Key="YouTubeLogo" UriSource="ms-appx:///Assets/YouTube-logo-full_color.png"></BitmapImage>
+            <Style x:Key="BoxifyLogoSource" TargetType="Image">
+                <Setter Property="Source" Value="ms-appx:///Assets/BoxifyLogo-Dark.png"/>
+            </Style>
             <SolidColorBrush x:Key="PlaybackBackground" Color="{ThemeResource SystemAccentColorLight1}"/>
             <SolidColorBrush x:Key="PlaybackText" Color="Black"/>
             <SolidColorBrush x:Key="PlaybackButtonForeground" Color="Black"/>
