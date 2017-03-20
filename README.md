@@ -1,5 +1,5 @@
-# boxify
-![Boxify Picture](DemoPicture.PNG?raw=true "Boxify")
+# boxify ![Boxify Logo](Boxify/Assets/BoxifyLogo-Dark.png?raw=true "Boxify Logo")
+![Boxify Screenshot](DemoPicture.PNG?raw=true "Boxify Screenshot")
 
 A Spotify client for the Xbox One featuring background music support. This project is GPL 3.0 licensed.
 
