@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls.Announcements;
 using System;
+using System.Collections.Generic;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.System;
@@ -36,13 +38,14 @@ namespace Boxify
         public enum Theme { System, Light, Dark }
         public enum Playbacksource { Spotify, YouTube }
 
-        private static MainPage mainPage;
+        public static MainPage mainPage;
 
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
         public static Playbacksource playbackSource = Playbacksource.Spotify;
         public static bool repeatEnabled = false;
         public static double volume = 100;
+        public static string version = "";
 
         /// <summary>
         /// Main constructor
@@ -91,11 +94,7 @@ namespace Boxify
             }
 
             // version
-            Version.Text = string.Format("{0}.{1}.{2}.{3}",
-                                         Package.Current.Id.Version.Major,
-                                         Package.Current.Id.Version.Minor,
-                                         Package.Current.Id.Version.Build,
-                                         Package.Current.Id.Version.Revision);
+            Version.Text = version;
         }
 
         /// <summary>
@@ -121,13 +120,48 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Change the TV Safe Area setting and update the UI
+        /// </summary>
+        /// <param name="enabled">True to enable the TV Safe Area, false to disable it</param>
+        public void SetTvSafeUI(bool enabled)
+        {
+            tvSafeArea = enabled;
+            TvSafeArea.IsOn = enabled;
+            if (enabled)
+            {
+                if (mainPage != null)
+                {
+                    mainPage.SafeAreaOn();
+                }
+            }
+            else
+            {
+                if (mainPage != null)
+                {
+                    mainPage.SafeAreaOff();
+                }
+            }
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Change the Tv Safe Area setting
+        /// </summary>
+        /// <param name="enabled"></param>
+        public static void SetTvSafe(bool enabled)
+        {
+            tvSafeArea = enabled;
+            SaveSettings();
+        }
+
+        /// <summary>
         /// User selects a theme color
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ThemeColor_Click(object sender, RoutedEventArgs e)
         {
-            if (((RadioButton)sender).Name == "System")
+            if ((sender as RadioButton).Name == "System")
             {
                 theme = Theme.System;
                 if (Application.Current.RequestedTheme == ApplicationTheme.Light)
@@ -139,16 +173,58 @@ namespace Boxify
                     mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
-            else if (((RadioButton)sender).Name == "Light")
+            else if ((sender as RadioButton).Name == "Light")
             {
                 theme = Theme.Light;
                 mainPage.RequestedTheme = ElementTheme.Light;
             }
-            else if (((RadioButton)sender).Name == "Dark")
+            else if ((sender as RadioButton).Name == "Dark")
             {
                 theme = Theme.Dark;
                 mainPage.RequestedTheme = ElementTheme.Dark;
             }
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Change the theme setting and adjust the UI
+        /// </summary>
+        /// <param name="newTheme">The theme to set the UI to</param>
+        public void SetThemeUI(Theme newTheme)
+        {
+            theme = newTheme;
+            if (theme == Theme.System && mainPage != null)
+            {
+                System.IsChecked = true;
+                if (Application.Current.RequestedTheme == ApplicationTheme.Light)
+                {
+                    mainPage.RequestedTheme = ElementTheme.Light;
+                }
+                else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
+                {
+                    mainPage.RequestedTheme = ElementTheme.Dark;
+                }
+            }
+            else if (theme == Theme.Light && mainPage != null)
+            {
+                Light.IsChecked = true;
+                mainPage.RequestedTheme = ElementTheme.Light;
+            }
+            else if (theme == Theme.Dark && mainPage != null)
+            {
+                Dark.IsChecked = true;
+                mainPage.RequestedTheme = ElementTheme.Dark;
+            }
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Change the theme setting
+        /// </summary>
+        /// <param name="newTheme"></param>
+        public static void SetTheme(Theme newTheme)
+        {
+            theme = newTheme;
             SaveSettings();
         }
 
@@ -167,6 +243,34 @@ namespace Boxify
             {
                 playbackSource = Playbacksource.YouTube;
             }
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Change the playback type and update the UI
+        /// </summary>
+        /// <param name="source">The source to get tracks from</param>
+        public void SetPlaybackSourceUI(Playbacksource source)
+        {
+            playbackSource = source;
+            if (source == Playbacksource.Spotify)
+            {
+                Spotify.IsChecked = true;
+            }
+            else if (source == Playbacksource.YouTube)
+            {
+                YouTube.IsChecked = true;
+            }
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Change the playback type
+        /// </summary>
+        /// <param name="source"></param>
+        public static void SetPlaybackSource(Playbacksource source)
+        {
+            playbackSource = source;
             SaveSettings();
         }
 
@@ -216,6 +320,23 @@ namespace Boxify
         private async void Rate_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Package.Current.Id.FamilyName)));
+        }
+
+        /// <summary>
+        /// Show announcements for the 1.0.0.0 version
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Announcement1000_Click(object sender, RoutedEventArgs e)
+        {
+            List<UserControl> announcements = new List<UserControl>
+            {
+                new Welcome(),
+                new TvMode(tvSafeArea),
+                new ThemeMode(theme),
+                new PlaybackMode(playbackSource)
+            };
+            mainPage.ShowAnnouncements(announcements, this);
         }
     }
 }

@@ -18,6 +18,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using Boxify.Frames;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
@@ -43,6 +44,8 @@ namespace Boxify
         public static ListViewItem currentNavSelection = new ListViewItem();
         public static bool returningFromMemoryReduction = false;
         public static string errorMessage = "";
+        public static List<UserControl> announcementItems = new List<UserControl>();
+        public Settings settingsPage;
 
         /// <summary>
         /// The main page for the Boxify application
@@ -58,6 +61,17 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            // announcements
+            if (announcementItems.Count > 0)
+            {
+                Settings.mainPage = this;
+                ShowAnnouncements(announcementItems);
+            }
+            else
+            {
+                AnnouncementsContainer.Visibility = Visibility.Collapsed;
+            }
+
             // settings
             if (Settings.theme == Theme.Light)
             {
@@ -134,6 +148,38 @@ namespace Boxify
                 // Remove the UI from the title bar if in-app back stack is empty.
                 SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             }
+        }
+
+        /// <summary>
+        /// Show the user a list of announcements
+        /// </summary>
+        /// <param name="announcements"></param>
+        public void ShowAnnouncements(List<UserControl> announcements)
+        {
+            announcementItems = announcements;
+            Announcements.Content = announcementItems[0];
+            LeftAnnouncement.Visibility = Visibility.Collapsed;
+            if (announcementItems.Count == 1)
+            {
+                RightAnnouncement.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                RightAnnouncement.Visibility = Visibility.Visible;
+            }
+            AnnouncementsContainer.Visibility = Visibility.Visible;
+            Announcements.Focus(FocusState.Programmatic);
+        }
+
+        /// <summary>
+        /// Present the user with an announcement popup
+        /// </summary>
+        /// <param name="announcements"></param>
+        /// <param name="settingsPage"></param>
+        public void ShowAnnouncements(List<UserControl> announcements, Settings settingsPage)
+        {
+            this.settingsPage = settingsPage;
+            ShowAnnouncements(announcements);
         }
 
         /// <summary>
@@ -384,7 +430,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
+        private void Page_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.GamepadView)
             {
@@ -415,14 +461,14 @@ namespace Boxify
                     }
                 }
             }
-            else if (e.Key == VirtualKey.GamepadRightShoulder)
+            else if (e.Key == VirtualKey.GamepadRightThumbstickRight)
             {
                 if (PlaybackService.showing)
                 {
                     PlaybackService.NextTrack();
                 }
             }
-            else if (e.Key == VirtualKey.GamepadLeftShoulder)
+            else if (e.Key == VirtualKey.GamepadRightThumbstickLeft)
             {
                 if (PlaybackService.showing)
                 {
@@ -433,7 +479,7 @@ namespace Boxify
             {
                 MainContentFrame.Focus(FocusState.Programmatic);
             }
-            else if (e.Key == VirtualKey.Escape && ((Slider)e.OriginalSource).Name == "VolumeSlider")
+            else if (e.Key == VirtualKey.Escape && e.OriginalSource is Slider && ((Slider)e.OriginalSource).Name == "VolumeSlider")
             {
                 PlaybackMenu.VolumeSlider_LostFocus(null, null);
                 PlaybackMenu.FocusOnVolume();
@@ -663,8 +709,77 @@ namespace Boxify
         {
             if (App.isInBackgroundMode)
             {
-                this.KeyDown -= Page_KeyDown;
+                this.KeyDown -= Page_KeyUp;
                 currentNavSelection = null;
+            }
+        }
+
+        /// <summary>
+        /// User wishes to close Announcements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
+        {
+            AnnouncementsContainer.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// User moves to the next announcement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void RightAnnouncement_Click(object sender, RoutedEventArgs e)
+        {
+            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
+            if (currentIndex < announcementItems.Count - 1)
+            {
+                Announcements.Content = announcementItems[currentIndex + 1];
+                LeftAnnouncement.Visibility = Visibility.Visible;
+                if (currentIndex + 1 == announcementItems.Count - 1)
+                {
+                    RightAnnouncement.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// User moves to previous announcement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void LeftAnnouncement_Click(object sender, RoutedEventArgs e)
+        {
+            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
+            if (currentIndex > 0)
+            {
+                Announcements.Content = announcementItems[currentIndex - 1];
+                RightAnnouncement.Visibility = Visibility.Visible;
+                if (currentIndex - 1 == 0)
+                {
+                    LeftAnnouncement.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// User clicks button in announcement popup
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AnnouncementsContainer_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Escape)
+            {
+                CloseAnnouncements_Click(null, null);
+            }
+            if (e.Key == VirtualKey.GamepadRightShoulder)
+            {
+                RightAnnouncement_Click(null, null);
+            }
+            else if (e.Key == VirtualKey.GamepadLeftShoulder)
+            {
+                LeftAnnouncement_Click(null, null);
             }
         }
     }

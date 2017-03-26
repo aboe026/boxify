@@ -118,6 +118,18 @@
     <Compile Include="Controls\AlbumList.xaml.cs">
       <DependentUpon>AlbumList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Announcements\PlaybackMode.xaml.cs">
+      <DependentUpon>PlaybackMode.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Announcements\ThemeMode.xaml.cs">
+      <DependentUpon>ThemeMode.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Announcements\TvMode.xaml.cs">
+      <DependentUpon>TvMode.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Announcements\Welcome.xaml.cs">
+      <DependentUpon>Welcome.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CancelDialog.xaml.cs">
       <DependentUpon>CancelDialog.xaml</DependentUpon>
     </Compile>
@@ -219,6 +231,22 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\AlbumList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\PlaybackMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\ThemeMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\TvMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\Welcome.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

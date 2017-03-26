@@ -33,7 +33,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     <Control.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Frames/Styles.xaml"/>
+                <ResourceDictionary Source="/Frames/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Control.Resources>

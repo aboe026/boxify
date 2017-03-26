@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls.Announcements;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -36,6 +37,7 @@ namespace Boxify
     /// </summary>
     sealed partial class App : Application
     {
+        public static int currentVersion;
         public static bool isInBackgroundMode = false;
         private static bool finishedInitialization = false;
         public static string hamburgerOptionToLoadTo = "BrowseItem";
@@ -190,6 +192,26 @@ namespace Boxify
                 Settings.tvSafeArea = true;
                 Settings.theme = Theme.System;
                 Settings.playbackSource = Playbacksource.Spotify;
+            }
+
+            // Announcements
+            Object announcements = roamingSettings.Values["Announcements"];
+            Settings.version = string.Format("{0}.{1}.{2}.{3}",
+                                             Package.Current.Id.Version.Major,
+                                             Package.Current.Id.Version.Minor,
+                                             Package.Current.Id.Version.Build,
+                                             Package.Current.Id.Version.Revision);
+            string previousVersion = announcements != null ? announcements.ToString() : "0.0.0.0";
+            if (VersionGreaterThan(previousVersion, Settings.version))
+            {
+                MainPage.announcementItems.Add(new Welcome());
+                MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
+                MainPage.announcementItems.Add(new ThemeMode(Settings.theme));
+                MainPage.announcementItems.Add(new PlaybackMode(Settings.playbackSource));
+            }
+            if (announcements == null)
+            {
+                roamingSettings.Values["Announcements"] = Settings.version.ToString();
             }
         }
 
@@ -389,6 +411,36 @@ namespace Boxify
 
             // Run the GC to collect released resources.
             GC.Collect();
+        }
+
+        /// <summary>
+        /// Checks major, minor, build and revision number to see which version is greater
+        /// </summary>
+        /// <param name="first">The first version to compare against</param>
+        /// <param name="second">The second version to check if its greater than the first</param>
+        /// <returns>True if the second version is greater than the first, fals otherwise</returns>
+        private bool VersionGreaterThan(string first, string second)
+        {
+            char [] separator = new char[] { Convert.ToChar(".") };
+            String[] firstArray = first.Split(separator);
+            String[] secondArray = second.Split(separator);
+            if (Convert.ToInt32(firstArray[0]) < Convert.ToInt32(secondArray[0]))
+            {
+                return true;
+            }
+            else if (Convert.ToInt32(firstArray[1]) < Convert.ToInt32(secondArray[1]))
+            {
+                return true;
+            }
+            else if (Convert.ToInt32(firstArray[2]) < Convert.ToInt32(secondArray[2]))
+            {
+                return true;
+            }
+            else if (Convert.ToInt32(firstArray[3]) < Convert.ToInt32(secondArray[3]))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
