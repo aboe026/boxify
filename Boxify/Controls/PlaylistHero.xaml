@@ -28,6 +28,14 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     Height="100"
     Width="250">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Frames/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid>
 
         <RelativePanel>

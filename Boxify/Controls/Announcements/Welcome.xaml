@@ -1,0 +1,66 @@
+﻿<UserControl
+    x:Class="Boxify.Controls.Announcements.Welcome"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Width="500"
+    Height="300">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Frames/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <RelativePanel>
+        <RelativePanel Name="CenteredPanel"
+                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       RelativePanel.AlignVerticalCenterWithPanel="True">
+
+            <TextBlock Name="Header"
+                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       Text="Welcome!"
+                       Style="{StaticResource HeaderTextBlockStyle}"/>
+
+            <TextBlock Name="Message"
+                       RelativePanel.AlignHorizontalCenterWithPanel="True"
+                       RelativePanel.Below="Header"
+                       Margin="0,10,0,30"
+                       Text="Thank you for trying Boxify. Prepare to hear your favorite music from Spotify on Xbox. Enjoy :)"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       TextWrapping="WrapWholeWords"
+                       TextAlignment="Center"/>
+
+            <Grid RelativePanel.Below="Message"
+                  RelativePanel.AlignLeftWithPanel="True"
+                  RelativePanel.AlignRightWithPanel="True"
+                  Margin="0,20,0,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Name="Close"
+                        Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        Content="Dive in"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="Close_Click"/>
+
+                <Button Name="Settings"
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        Content="Configure"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="Settings_Click"/>
+
+            </Grid>
+
+        </RelativePanel>
+    </RelativePanel>
+</UserControl>

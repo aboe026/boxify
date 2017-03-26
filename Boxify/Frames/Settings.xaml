@@ -31,7 +31,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles.xaml"/>
+                <ResourceDictionary Source="/Frames/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -107,7 +107,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
-                                       Text="Theme Color"
+                                       Text="Theme Mode"
                                        Style="{StaticResource TitleTextBlockStyle}"/>
 
                             <RelativePanel Grid.Row="3"
@@ -152,6 +152,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
                                 <RadioButton Name="Spotify"
                                              RelativePanel.AlignLeftWithPanel="True"
+                                             Width="150"
+                                             Height="50"
                                              Content=""
                                              Template="{StaticResource RadioButtonControlTemplate}"
                                              Style="{StaticResource RadioButtonStyle}"
@@ -182,6 +184,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
                                 <RadioButton Name="YouTube"
                                              RelativePanel.Below="Spotify"
+                                             Width="150"
+                                             Height="50"
                                              Content=""
                                              Template="{StaticResource RadioButtonControlTemplate}"
                                              Style="{StaticResource RadioButtonStyle}"
@@ -241,6 +245,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="20"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -265,15 +271,32 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Text="x.y.z.w"
                                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-                            <TextBlock Name="RateLabel"
+                            <TextBlock Name="AnnouncementsLabel"
                                        Grid.Row="3"
+                                       Grid.Column="0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Text="Announcements"
+                                       Style="{StaticResource TitleTextBlockStyle}"/>
+
+                            <Button Name="Announcement1000"
+                                    Grid.Row="3"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Content="Welcome and Configuration"
+                                    Style="{StaticResource ButtonStyle}"
+                                    Click="Announcement1000_Click"/>
+
+                            <TextBlock Name="RateLabel"
+                                       Grid.Row="5"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
                                        Text="Rate"
                                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-                            <RelativePanel Grid.Row="3"
+                            <RelativePanel Grid.Row="5"
                                            Grid.Column="2">
 
                                 <TextBlock Name="RateMessage"
@@ -294,7 +317,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                             </RelativePanel>
 
                             <TextBlock Name="ContactLabel"
-                                       Grid.Row="5"
+                                       Grid.Row="7"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
@@ -302,7 +325,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Style="{StaticResource TitleTextBlockStyle}"
                                        TextWrapping="WrapWholeWords"/>
 
-                            <RelativePanel Grid.Row="5"
+                            <RelativePanel Grid.Row="7"
                                            Grid.Column="2">
 
                                 <TextBlock Name="ContactMessage"
@@ -325,7 +348,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                             </RelativePanel>
 
                             <TextBlock Name="SpotifyExplanationLabel"
-                                       Grid.Row="7"
+                                       Grid.Row="9"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
@@ -333,7 +356,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Style="{StaticResource TitleTextBlockStyle}"
                                        TextWrapping="WrapWholeWords"/>
 
-                            <RelativePanel Grid.Row="7"
+                            <RelativePanel Grid.Row="9"
                                            Grid.Column="2">
 
                                 <TextBlock Name="SpotifyExplanationMessage"

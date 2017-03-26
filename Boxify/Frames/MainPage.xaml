@@ -28,13 +28,13 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="960"
     d:DesignHeight="540"
-    KeyDown="Page_KeyDown"
+    KeyUp="Page_KeyUp"
     Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles.xaml"/>
+                <ResourceDictionary Source="/Frames/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -46,6 +46,61 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <RelativePanel Name="AnnouncementsContainer"
+                       Grid.Row="0"
+                       Grid.RowSpan="3"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Canvas.ZIndex="3"
+                       Background="Transparent" KeyUp="AnnouncementsContainer_KeyUp">
+
+            <Border Name="AnnouncementsBackground"
+                    RelativePanel.AlignHorizontalCenterWithPanel="True"
+                    RelativePanel.AlignVerticalCenterWithPanel="True"
+                    Background="{ThemeResource NavBarBackground}"
+                    Width="580"
+                    Height="320"
+                    Padding="40,10,40,10">
+
+                <ContentControl Name="Announcements"/>
+
+            </Border>
+
+            <Button Name="LeftAnnouncement"
+                    RelativePanel.AlignLeftWith="AnnouncementsBackground"
+                    RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
+                    Width="30"
+                    Height="40"
+                    Padding="-10,0,-10,0"
+                    Content="&#xE76B;"
+                    FontFamily="Segoe MDl2 Assets" 
+                    FontSize="24"
+                    Background="{x:Null}" Click="LeftAnnouncement_Click"/>
+
+            <Button Name="RightAnnouncement"
+                    RelativePanel.AlignRightWith="AnnouncementsBackground"
+                    RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
+                    Width="30"
+                    Height="40"
+                    Padding="-10,0,-10,0"
+                    Content="&#xE76C;"
+                    FontFamily="Segoe MDl2 Assets" 
+                    FontSize="24"
+                    Background="{x:Null}"
+                    Click="RightAnnouncement_Click"/>
+
+            <Button Name="CloseAnnouncements"
+                    RelativePanel.AlignTopWith="AnnouncementsBackground"
+                    RelativePanel.AlignRightWith="AnnouncementsBackground"
+                    Margin="10"
+                    Content="&#xE894;"
+                    FontFamily="Segoe MDl2 Assets" 
+                    FontSize="24"
+                    Background="{x:Null}"
+                    Click="CloseAnnouncements_Click"/>
+
+
+        </RelativePanel>
 
         <RelativePanel Name="Header"
                        Grid.Row="0"
