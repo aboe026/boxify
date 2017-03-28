@@ -194,9 +194,24 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Previous_Click(object sender, RoutedEventArgs e)
+        private async void Previous_Click(object sender, RoutedEventArgs e)
         {
             PlaybackService.PreviousTrack();
+            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    MediaPlaybackItem newTrack = null;
+                    while (newTrack == null)
+                    {
+                        newTrack = PlaybackService.queue.CurrentItem;
+                    }
+                    Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
+                    Progress.Value = 0;
+                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
+                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+                });
+            }
         }
 
         /// <summary>
@@ -204,9 +219,24 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Next_Click(object sender, RoutedEventArgs e)
+        private async void Next_Click(object sender, RoutedEventArgs e)
         {
             PlaybackService.NextTrack();
+            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    MediaPlaybackItem newTrack = null;
+                    while (newTrack == null)
+                    {
+                        newTrack = PlaybackService.queue.CurrentItem;
+                    }
+                    Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
+                    Progress.Value = 0;
+                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
+                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+                });
+            }
         }
 
         /// <summary>
