@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="25ef9dce-afc8-4c53-8b22-2fe35e1f3473" Publisher="CN=Adam Boe" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="25ef9dce-afc8-4c53-8b22-2fe35e1f3473" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="59608AdamBoe.Boxify" Publisher="CN=8D06F663-BC29-4EB6-8132-EDD6F1F21B53" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="7526d7f4-79a5-47c6-a8c5-84bff1e76ca5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Boxify</DisplayName>
-    <PublisherDisplayName>adamb</PublisherDisplayName>
+    <PublisherDisplayName>Adam Boe</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Boxify.App">
-      <uap:VisualElements DisplayName="Boxify" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Boxify" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Boxify" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="A Spotify client for the Xbox One featuring background music support." BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\BoxifySmallTile.png" Square310x310Logo="Assets\Square310x310Logo.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square310x310Logo" />
