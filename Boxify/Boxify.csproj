@@ -16,8 +16,11 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Boxify_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>19D7E0786D0A919988BF7D7B5F3F48D2A817355E</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Boxify_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>C731CE63575870FAFF433FE37B900D5E099E92CF</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -105,6 +108,7 @@
     <Content Include="Credentials.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Boxify_StoreKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +221,7 @@
     <Content Include="Assets\YouTube-logo-full_color.png" />
     <Content Include="Assets\YouTube-logo-light.png" />
     <Content Include="LICENSE.txt" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -303,7 +308,8 @@
   <ItemGroup>
     <Reference Include="libvideo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\libvideo\src\libvideo\bin\Release\libvideo.dll</HintPath>
+      <HintPath>..\..\libvideo\src\libvideo.compat\bin\Debug\libvideo.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
