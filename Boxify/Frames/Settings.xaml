@@ -247,6 +247,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="20"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
@@ -288,15 +290,42 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                     Style="{StaticResource ButtonStyle}"
                                     Click="Announcement1000_Click"/>
 
-                            <TextBlock Name="RateLabel"
+                            <TextBlock Name="PrivacyLabel"
                                        Grid.Row="5"
+                                       Grid.Column="0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Text="Privacy Policy"
+                                       Style="{StaticResource TitleTextBlockStyle}"/>
+
+                            <RelativePanel Grid.Row="5"
+                                           Grid.Column="2">
+
+                                <TextBlock Name="PrivacyMessage"
+                                           RelativePanel.AlignLeftWithPanel="True"
+                                           RelativePanel.AlignHorizontalCenterWithPanel="True"
+                                           Text="For our full privacy policy, please visit the following: https://github.com/aboe026/boxify/Boxify/PRIVACY.md"
+                                           Style="{StaticResource TitleTextBlockStyle}"
+                                           TextWrapping="WrapWholeWords"
+                                           Margin="0,0,0,10"/>
+
+                                <Button Name="PrivacyButton"
+                                        RelativePanel.Below="PrivacyMessage"
+                                        RelativePanel.AlignLeftWithPanel="True"
+                                        Content="View in Browser"
+                                        Style="{StaticResource ButtonStyle}" Click="PrivacyButton_Click"/>
+
+                            </RelativePanel>
+
+                            <TextBlock Name="RateLabel"
+                                       Grid.Row="7"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
                                        Text="Rate"
                                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-                            <RelativePanel Grid.Row="5"
+                            <RelativePanel Grid.Row="7"
                                            Grid.Column="2">
 
                                 <TextBlock Name="RateMessage"
@@ -317,7 +346,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                             </RelativePanel>
 
                             <TextBlock Name="ContactLabel"
-                                       Grid.Row="7"
+                                       Grid.Row="9"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
@@ -325,7 +354,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Style="{StaticResource TitleTextBlockStyle}"
                                        TextWrapping="WrapWholeWords"/>
 
-                            <RelativePanel Grid.Row="7"
+                            <RelativePanel Grid.Row="9"
                                            Grid.Column="2">
 
                                 <TextBlock Name="ContactMessage"
@@ -348,7 +377,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                             </RelativePanel>
 
                             <TextBlock Name="SpotifyExplanationLabel"
-                                       Grid.Row="9"
+                                       Grid.Row="11"
                                        Grid.Column="0"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
@@ -356,7 +385,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Style="{StaticResource TitleTextBlockStyle}"
                                        TextWrapping="WrapWholeWords"/>
 
-                            <RelativePanel Grid.Row="9"
+                            <RelativePanel Grid.Row="11"
                                            Grid.Column="2">
 
                                 <TextBlock Name="SpotifyExplanationMessage"
