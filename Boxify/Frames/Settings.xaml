@@ -304,7 +304,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                 <TextBlock Name="PrivacyMessage"
                                            RelativePanel.AlignLeftWithPanel="True"
                                            RelativePanel.AlignHorizontalCenterWithPanel="True"
-                                           Text="For our full privacy policy, please visit the following: https://github.com/aboe026/boxify/Boxify/PRIVACY.md"
+                                           Text="For our full privacy policy, please visit the following: https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY.md"
                                            Style="{StaticResource TitleTextBlockStyle}"
                                            TextWrapping="WrapWholeWords"
                                            Margin="0,0,0,10"/>
