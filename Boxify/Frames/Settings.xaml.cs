@@ -338,5 +338,15 @@ namespace Boxify
             };
             mainPage.ShowAnnouncements(announcements, this);
         }
+
+        /// <summary>
+        /// User selects to view privacy policy in browser
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void PrivacyButton_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify/Boxify/PRIVACY.md"));
+        }
     }
 }
