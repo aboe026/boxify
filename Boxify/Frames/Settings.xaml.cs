@@ -346,7 +346,7 @@ namespace Boxify
         /// <param name="e"></param>
         private async void PrivacyButton_Click(object sender, RoutedEventArgs e)
         {
-            await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify/Boxify/PRIVACY.md"));
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY.md"));
         }
     }
 }

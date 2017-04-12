@@ -45,7 +45,7 @@ We are concerned about safeguarding the confidentiality of your information. We 
 
 ## Changes
 
-This Privacy Policy may be updated from time to time for any reason. We will notify you of any changes to our Privacy Policy by posting the new Privacy Policy in our GitHub repository here: https://github.com/aboe026/boxify/Boxify/PRIVACY.md. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes. You can check the history of this policy by examining past versions (e.g. https://github.com/aboe026/boxify/Boxify/PRIVACY_v1.1.0.0.md)
+This Privacy Policy may be updated from time to time for any reason. We will notify you of any changes to our Privacy Policy by posting the new Privacy Policy in our GitHub repository here: https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY.md. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes. You can check the history of this policy by examining past versions (e.g. https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY_v1.1.0.0.md)
 
 ## Your Consent
 
