@@ -204,15 +204,15 @@ namespace Boxify
             string previousVersion = announcements != null ? announcements.ToString() : "0.0.0.0";
             if (VersionGreaterThan(previousVersion, Settings.version))
             {
-                MainPage.announcementItems.Add(new Welcome());
-                MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
-                MainPage.announcementItems.Add(new ThemeMode(Settings.theme));
-                MainPage.announcementItems.Add(new PlaybackMode(Settings.playbackSource));
+                if (VersionGreaterThan(previousVersion, "1.0.0.0"))
+                {
+                    MainPage.announcementItems.Add(new Welcome());
+                    MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
+                    MainPage.announcementItems.Add(new ThemeMode(Settings.theme));
+                    MainPage.announcementItems.Add(new PlaybackMode(Settings.playbackSource));
+                }
             }
-            if (announcements == null)
-            {
-                roamingSettings.Values["Announcements"] = Settings.version.ToString();
-            }
+            roamingSettings.Values["Announcements"] = Settings.version.ToString();
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Boxify
             // in background mode and still has a view with content
             // then the view can be released to save memory and
             // can be recreated again later when leaving the background.
-            if (isInBackgroundMode && Window.Current.Content != null)
+            if (isInBackgroundMode && Window.Current != null &&  Window.Current.Content != null)
             {
                 // Some apps may wish to use this helper to explicitly disconnect
                 // child references.
@@ -414,7 +414,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Checks major, minor, build and revision number to see which version is greater
+        /// Checks major, minor, build and revision number to see if the second version is greater than the first
         /// </summary>
         /// <param name="first">The first version to compare against</param>
         /// <param name="second">The second version to check if its greater than the first</param>
