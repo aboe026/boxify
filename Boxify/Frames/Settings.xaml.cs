@@ -38,8 +38,6 @@ namespace Boxify
         public enum Theme { System, Light, Dark }
         public enum Playbacksource { Spotify, YouTube }
 
-        public static MainPage mainPage;
-
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
         public static Playbacksource playbackSource = Playbacksource.Spotify;
@@ -53,6 +51,7 @@ namespace Boxify
         public Settings()
         {
             this.InitializeComponent();
+            MainPage.settingsPage = this;
         }
 
         /// <summary>
@@ -61,11 +60,6 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
-
             // color theme
             if (theme == Theme.Light)
             {
@@ -109,11 +103,11 @@ namespace Boxify
                 tvSafeArea = toggleSwitch.IsOn;
                 if (toggleSwitch.IsOn)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
                 else
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
             SaveSettings();
@@ -129,16 +123,16 @@ namespace Boxify
             TvSafeArea.IsOn = enabled;
             if (enabled)
             {
-                if (mainPage != null)
+                if (App.mainPage != null)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
             }
             else
             {
-                if (mainPage != null)
+                if (App.mainPage != null)
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
             SaveSettings();
@@ -166,22 +160,22 @@ namespace Boxify
                 theme = Theme.System;
                 if (Application.Current.RequestedTheme == ApplicationTheme.Light)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Light;
+                    App.mainPage.RequestedTheme = ElementTheme.Light;
                 }
                 else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Dark;
+                    App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
             else if ((sender as RadioButton).Name == "Light")
             {
                 theme = Theme.Light;
-                mainPage.RequestedTheme = ElementTheme.Light;
+                App.mainPage.RequestedTheme = ElementTheme.Light;
             }
             else if ((sender as RadioButton).Name == "Dark")
             {
                 theme = Theme.Dark;
-                mainPage.RequestedTheme = ElementTheme.Dark;
+                App.mainPage.RequestedTheme = ElementTheme.Dark;
             }
             SaveSettings();
         }
@@ -193,27 +187,27 @@ namespace Boxify
         public void SetThemeUI(Theme newTheme)
         {
             theme = newTheme;
-            if (theme == Theme.System && mainPage != null)
+            if (theme == Theme.System && App.mainPage != null)
             {
                 System.IsChecked = true;
                 if (Application.Current.RequestedTheme == ApplicationTheme.Light)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Light;
+                    App.mainPage.RequestedTheme = ElementTheme.Light;
                 }
                 else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Dark;
+                    App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
-            else if (theme == Theme.Light && mainPage != null)
+            else if (theme == Theme.Light && App.mainPage != null)
             {
                 Light.IsChecked = true;
-                mainPage.RequestedTheme = ElementTheme.Light;
+                App.mainPage.RequestedTheme = ElementTheme.Light;
             }
-            else if (theme == Theme.Dark && mainPage != null)
+            else if (theme == Theme.Dark && App.mainPage != null)
             {
                 Dark.IsChecked = true;
-                mainPage.RequestedTheme = ElementTheme.Dark;
+                App.mainPage.RequestedTheme = ElementTheme.Dark;
             }
             SaveSettings();
         }
@@ -336,7 +330,7 @@ namespace Boxify
                 new ThemeMode(theme),
                 new PlaybackMode(playbackSource)
             };
-            mainPage.ShowAnnouncements(announcements, this);
+            App.mainPage.ShowAnnouncements(announcements, this);
         }
 
         /// <summary>

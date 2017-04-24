@@ -28,6 +28,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="960"
     d:DesignHeight="540"
+    NavigationCacheMode="Required"
     KeyUp="Page_KeyUp"
     Unloaded="Page_Unloaded">
 
@@ -52,7 +53,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        Canvas.ZIndex="3"
-                       Background="Transparent" KeyUp="AnnouncementsContainer_KeyUp">
+                       Background="Transparent"
+                       KeyUp="AnnouncementsContainer_KeyUp">
 
             <Border Name="AnnouncementsBackground"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
@@ -66,7 +68,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
             </Border>
 
-            <Button Name="LeftAnnouncement"
+            <Button Name="PreviousAnnouncement"
                     RelativePanel.AlignLeftWith="AnnouncementsBackground"
                     RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
                     Width="30"
@@ -75,9 +77,10 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Content="&#xE76B;"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="24"
-                    Background="{x:Null}" Click="LeftAnnouncement_Click"/>
+                    Background="{x:Null}"
+                    Click="PreviousAnnouncement_Click"/>
 
-            <Button Name="RightAnnouncement"
+            <Button Name="NextAnnouncement"
                     RelativePanel.AlignRightWith="AnnouncementsBackground"
                     RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
                     Width="30"
@@ -87,7 +90,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="24"
                     Background="{x:Null}"
-                    Click="RightAnnouncement_Click"/>
+                    Click="NextAnnouncement_Click"/>
 
             <Button Name="CloseAnnouncements"
                     RelativePanel.AlignTopWith="AnnouncementsBackground"

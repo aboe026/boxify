@@ -175,7 +175,7 @@ namespace Boxify
         /// </summary>
         public void PlayTrack()
         {
-            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, Href);
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, Href);
         }
     }
 }

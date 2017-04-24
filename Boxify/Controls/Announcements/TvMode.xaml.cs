@@ -51,22 +51,21 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         private void TvModeSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            MainPage mainPage = (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage);
             bool enabled = (sender as ToggleSwitch).IsOn;
-            if (mainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                mainPage.settingsPage.SetTvSafeUI(enabled);
+                MainPage.settingsPage.SetTvSafeUI(enabled);
             }
             else
             {
                 Settings.SetTvSafe(enabled);
                 if (enabled)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
                 else
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
         }

@@ -72,10 +72,9 @@ namespace Boxify.Controls.Announcements
             {
                 source = Playbacksource.YouTube;
             }
-            MainPage mainPage = (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage);
-            if (mainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                mainPage.settingsPage.SetPlaybackSourceUI(source);
+                MainPage.settingsPage.SetPlaybackSourceUI(source);
             }
             else
             {

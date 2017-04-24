@@ -31,9 +31,9 @@ namespace Boxify
     public class Album : BindableBase
     {
         private string id;
-        public string name;
-        public List<Artist> Artists { get; set; }
-        public List<BitmapImage> Images { get; set; }
+        public string name = "";
+        public List<Artist> Artists { get; set; } = new List<Artist>();
+        public List<BitmapImage> Images { get; set; } = new List<BitmapImage>();
         public string ImageUrl { get; set; }
         private static string tracksHref = "https://api.spotify.com/v1/albums/{0}/tracks";
 
@@ -42,9 +42,6 @@ namespace Boxify
         /// </summary>
         public Album()
         {
-            name = "";
-            Artists = new List<Artist>();
-            Images = new List<BitmapImage>();
         }
 
         /// <summary>
@@ -172,7 +169,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
         }
     }
 }

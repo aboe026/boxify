@@ -55,14 +55,14 @@ namespace Boxify
         /// </summary>
         public async Task UpdateUI()
         {
-            MediaItemDisplayProperties displayProperties = PlaybackService.currentlyPlayingItem.GetDisplayProperties();
+            MediaItemDisplayProperties displayProperties = App.playbackService.currentlyPlayingItem.GetDisplayProperties();
             TrackName.Text = displayProperties.MusicProperties.Title;
             TrackArtist.Text = displayProperties.MusicProperties.AlbumTitle;
             IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.SetSource(thumbnail);
             AlbumArt.Source = bitmapImage;
-            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
             {
                 Play.Visibility = Visibility.Collapsed;
                 uiUpdateTimer.Start();
@@ -71,6 +71,7 @@ namespace Boxify
             {
                 Pause.Visibility = Visibility.Collapsed;
             }
+            UpdateProgressUI();
             LoadingTrack.IsActive = false;
         }
 
@@ -162,14 +163,22 @@ namespace Boxify
         /// <param name="e"></param>
         public void UiUpdateTimer_Tick(object sender, object e)
         {
-            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
             {
-                Progress.Maximum = PlaybackService.Player.PlaybackSession.NaturalDuration.TotalSeconds;
-                Progress.Value = PlaybackService.Player.PlaybackSession.Position.TotalSeconds;
-
-                CurrentTime.Text = PlaybackService.Player.PlaybackSession.Position.ToString(@"mm\:ss");
-                Duration.Text = (PlaybackService.Player.PlaybackSession.NaturalDuration - PlaybackService.Player.PlaybackSession.Position).ToString(@"mm\:ss");
+                UpdateProgressUI();
             }
+        }
+
+        /// <summary>
+        /// Update the UI elements showing track playback progress
+        /// </summary>
+        private void UpdateProgressUI()
+        {
+            Progress.Maximum = App.playbackService.Player.PlaybackSession.NaturalDuration.TotalSeconds;
+            Progress.Value = App.playbackService.Player.PlaybackSession.Position.TotalSeconds;
+
+            CurrentTime.Text = App.playbackService.Player.PlaybackSession.Position.ToString(@"mm\:ss");
+            Duration.Text = (App.playbackService.Player.PlaybackSession.NaturalDuration - App.playbackService.Player.PlaybackSession.Position).ToString(@"mm\:ss");
         }
 
         /// <summary>
@@ -179,13 +188,13 @@ namespace Boxify
         /// <param name="e"></param>
         private void PlayPause_Click(object sender, RoutedEventArgs e)
         {
-            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
             {
-                PlaybackService.Player.Pause();
+                App.playbackService.Player.Pause();
             }
             else
             {
-                PlaybackService.Player.Play();
+                App.playbackService.Player.Play();
             }
         }
         
@@ -196,15 +205,15 @@ namespace Boxify
         /// <param name="e"></param>
         private async void Previous_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackService.PreviousTrack();
-            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
+            App.playbackService.PreviousTrack();
+            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     MediaPlaybackItem newTrack = null;
                     while (newTrack == null)
                     {
-                        newTrack = PlaybackService.queue.CurrentItem;
+                        newTrack = App.playbackService.queue.CurrentItem;
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
@@ -221,15 +230,15 @@ namespace Boxify
         /// <param name="e"></param>
         private async void Next_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackService.NextTrack();
-            if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
+            App.playbackService.NextTrack();
+            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Paused)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     MediaPlaybackItem newTrack = null;
                     while (newTrack == null)
                     {
-                        newTrack = PlaybackService.queue.CurrentItem;
+                        newTrack = App.playbackService.queue.CurrentItem;
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
@@ -246,7 +255,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Repeat_Click(object sender, RoutedEventArgs e)
         {
-            bool repeatOn = PlaybackService.ToggleRepeat();
+            bool repeatOn = App.playbackService.ToggleRepeat();
             if (repeatOn)
             {
                 Repeat.Visibility = Visibility.Collapsed;
@@ -279,7 +288,7 @@ namespace Boxify
         {
             if (enabled)
             {
-                PlaybackService.queue.AutoRepeatEnabled = true;
+                App.playbackService.queue.AutoRepeatEnabled = true;
                 Repeat.Visibility = Visibility.Collapsed;
                 RepeatEnabled.Visibility = Visibility.Visible;
                 RepeatEnabled.Focus(FocusState.Programmatic);
@@ -290,7 +299,7 @@ namespace Boxify
             }
             else
             {
-                PlaybackService.queue.AutoRepeatEnabled = false;
+                App.playbackService.queue.AutoRepeatEnabled = false;
                 Repeat.Visibility = Visibility.Visible;
                 RepeatEnabled.Visibility = Visibility.Collapsed;
                 Repeat.Focus(FocusState.Programmatic);
@@ -307,7 +316,7 @@ namespace Boxify
         /// <param name="volume">The volume, 0 to 100</param>
         public void SetVolume(double volume)
         {
-            PlaybackService.Player.Volume = volume;
+            App.playbackService.Player.Volume = volume;
             VolumeSlider.Value = volume;
             if (VolumeSlider.Value == 0)
             {
@@ -334,7 +343,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Volume_Click(object sender, RoutedEventArgs e)
         {
-            VolumeSlider.Value = PlaybackService.Player.Volume * 100;
+            VolumeSlider.Value = App.playbackService.Player.Volume * 100;
             Volume.Visibility = Visibility.Collapsed;
             if (Settings.repeatEnabled)
             {
@@ -391,7 +400,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void VolumeSlider_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
-            PlaybackService.Player.Volume = VolumeSlider.Value / 100;
+            App.playbackService.Player.Volume = VolumeSlider.Value / 100;
             if (VolumeSlider.Value == 0)
             {
                 Volume.Content = "\uE74F";

@@ -81,10 +81,9 @@ namespace Boxify.Controls.Announcements
                 newTheme = Theme.Dark;
             }
 
-            MainPage mainPage = (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage);
-            if (mainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                mainPage.settingsPage.SetThemeUI(newTheme);
+                MainPage.settingsPage.SetThemeUI(newTheme);
             }
             else
             {
@@ -93,20 +92,20 @@ namespace Boxify.Controls.Announcements
                 {
                     if (Application.Current.RequestedTheme == ApplicationTheme.Light)
                     {
-                        mainPage.RequestedTheme = ElementTheme.Light;
+                        App.mainPage.RequestedTheme = ElementTheme.Light;
                     }
                     else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                     {
-                        mainPage.RequestedTheme = ElementTheme.Dark;
+                        App.mainPage.RequestedTheme = ElementTheme.Dark;
                     }
                 }
                 else if (newTheme == Theme.Light)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Light;
+                    App.mainPage.RequestedTheme = ElementTheme.Light;
                 }
                 else if (newTheme == Theme.Dark)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Dark;
+                    App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
         }

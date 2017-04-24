@@ -38,9 +38,9 @@ namespace Boxify.Controls.Announcements
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Close_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void Close_Click(object sender, RoutedEventArgs e)
         {
-            (((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Visibility = Visibility.Collapsed;
+            App.mainPage.CloseAnnouncements_Click(null, null);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Boxify.Controls.Announcements
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
 
-            (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage).RightAnnouncement_Click(null, null);
+            App.mainPage.NextAnnouncement_Click(null, null);
         }
     }
 }

@@ -17,7 +17,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
 using Windows.UI;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -30,7 +29,6 @@ namespace Boxify
     /// </summary>
     public sealed partial class PlaylistList : UserControl
     {
-        public MainPage mainPage;
         public Playlist Playlist { get; set; }
 
         /// <summary>
@@ -48,31 +46,19 @@ namespace Boxify
         /// </summary>
         /// <param name="playlist">The Playlist whose information will be displayed</param>
         /// <param name="mainPage">The MainPage containing the Playlist</param>
-        public PlaylistList(Playlist playlist, MainPage mainPage) : this()
+        public PlaylistList(Playlist playlist) : this()
         {
             this.Playlist = playlist;
-            this.mainPage = mainPage;
             DataContext = this.Playlist;
         }
 
         /// <summary>
-        /// The Play button is clicked
+        /// Free up memory
         /// </summary>
-        /// <param name="sender">The actionButton that was clicked</param>
-        /// <param name="e">The routed event arguments</param>
-        private void Action_Click(object sender, RoutedEventArgs e)
+        public void Unload()
         {
-            Playlist.PlayTracks();
-        }
-
-        public void ShowPlay()
-        {
-            action.Foreground = new SolidColorBrush(Colors.Green);
-        }
-
-        public void HidePlay()
-        {
-            action.Foreground = new SolidColorBrush(Colors.Transparent);
+            Bindings.StopTracking();
+            Playlist = null;
         }
     }
 }

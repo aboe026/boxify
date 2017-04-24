@@ -160,7 +160,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, TracksHref); 
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, TracksHref); 
         }
     }
 }

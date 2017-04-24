@@ -19,6 +19,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 using Boxify.Frames;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
@@ -45,7 +46,11 @@ namespace Boxify
         public static bool returningFromMemoryReduction = false;
         public static string errorMessage = "";
         public static List<UserControl> announcementItems = new List<UserControl>();
-        public Settings settingsPage;
+        public static Browse browsePage;
+        public static Profile profilePage;
+        public static Search searchPage;
+        public static Settings settingsPage;
+        public static YourMusic yourMusicPage;
 
         /// <summary>
         /// The main page for the Boxify application
@@ -53,6 +58,7 @@ namespace Boxify
         public MainPage()
         {
             this.InitializeComponent();
+            App.mainPage = this;
         }
 
         /// <summary>
@@ -64,7 +70,6 @@ namespace Boxify
             // announcements
             if (announcementItems.Count > 0)
             {
-                Settings.mainPage = this;
                 ShowAnnouncements(announcementItems);
             }
             else
@@ -107,11 +112,14 @@ namespace Boxify
             YouTubeLoading.Visibility = Visibility.Collapsed;
             YouTubeMessage.Visibility = Visibility.Collapsed;
 
-            SelectHamburgerOption(App.hamburgerOptionToLoadTo);
+            SelectHamburgerOption(App.hamburgerOptionToLoadTo, true);
+            if (App.hamburgerOptionToLoadTo == "SettingsItem")
+            {
+                SettingsButton_Click(null, null);
+            }
             UpdateUserUI();
-
-            PlaybackService.mainPage = this;
-            if (PlaybackService.showing)
+            
+            if (App.playbackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 PlaybackMenu.Visibility = Visibility.Visible;
@@ -158,14 +166,14 @@ namespace Boxify
         {
             announcementItems = announcements;
             Announcements.Content = announcementItems[0];
-            LeftAnnouncement.Visibility = Visibility.Collapsed;
+            PreviousAnnouncement.Visibility = Visibility.Collapsed;
             if (announcementItems.Count == 1)
             {
-                RightAnnouncement.Visibility = Visibility.Collapsed;
+                NextAnnouncement.Visibility = Visibility.Collapsed;
             }
             else
             {
-                RightAnnouncement.Visibility = Visibility.Visible;
+                NextAnnouncement.Visibility = Visibility.Visible;
             }
             AnnouncementsContainer.Visibility = Visibility.Visible;
             Announcements.Focus(FocusState.Programmatic);
@@ -178,7 +186,7 @@ namespace Boxify
         /// <param name="settingsPage"></param>
         public void ShowAnnouncements(List<UserControl> announcements, Settings settingsPage)
         {
-            this.settingsPage = settingsPage;
+            MainPage.settingsPage = settingsPage;
             ShowAnnouncements(announcements);
         }
 
@@ -187,7 +195,7 @@ namespace Boxify
         /// </summary>
         public async void LoadUserPlaylists()
         {
-            if (UserProfile.IsLoggedIn() && YourMusic.playlistsSave == null)
+            if (UserProfile.IsLoggedIn())
             {
                 YourMusic.refreshing = true;
                 await YourMusic.SetPlaylists();
@@ -231,7 +239,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Return the PlaybackMenu control. Needed for static PlaybackService class.
+        /// Return the PlaybackMenu control. Needed for static App.playbackService class.
         /// </summary>
         /// <returns>The PlaybackMenu control</returns>
         public Playback GetPlaybackMenu()
@@ -258,6 +266,41 @@ namespace Boxify
         {
             if (MainContentFrame.CanGoBack)
             {
+                if (MainContentFrame.BackStack.Count == 0)
+                {
+                    SelectHamburgerOption("BrowseItem", true);
+                }
+                else
+                {
+                    PageStackEntry page = MainContentFrame.BackStack.ElementAt(MainContentFrame.BackStack.Count - 1);
+                    HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
+                    if (page.SourcePageType == typeof(Browse))
+                    {
+                        SelectHamburgerOption("BrowseItem", false);
+                        Title.Text = "Browse";
+                    }
+                    else if (page.SourcePageType == typeof(YourMusic))
+                    {
+                        SelectHamburgerOption("YourMusicItem", false);
+                        Title.Text = "Your Music";
+                    }
+                    else if (page.SourcePageType == typeof(Profile))
+                    {
+                        SelectHamburgerOption("ProfileItem", false);
+                        Title.Text = "Profile";
+                    }
+                    else if (page.SourcePageType == typeof(Search))
+                    {
+                        SelectHamburgerOption("SearchItem", false);
+                        Title.Text = "Search";
+                    }
+                    else if (page.SourcePageType == typeof(Settings))
+                    {
+                        SelectHamburgerOption("SettingsItem", false);
+                        Title.Text = "Settings";
+                    }
+                    HamburgerOptions.SelectionChanged += HamburgerOptions_SelectionChanged;
+                }
                 MainContentFrame.GoBack();
             }
         }
@@ -266,13 +309,16 @@ namespace Boxify
         /// Set the selected option of the hamburger navigation menu
         /// </summary>
         /// <param name="option"></param>
-        public void SelectHamburgerOption(string option)
+        public void SelectHamburgerOption(string option, Boolean setFocus)
         {
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
                 SettingsButton.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
-                SettingsButton.Focus(FocusState.Programmatic);
+                if (setFocus)
+                {
+                    SettingsButton.Focus(FocusState.Programmatic);
+                }
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
             }
@@ -287,7 +333,10 @@ namespace Boxify
                 {
                     item.IsSelected = true;
                     HamburgerOptions.SelectedItem = item;
-                    item.Focus(FocusState.Programmatic);
+                    if (setFocus)
+                    {
+                        item.Focus(FocusState.Programmatic);
+                    }
                     break;
                 }
                 else
@@ -324,22 +373,22 @@ namespace Boxify
                 }
                 if (BrowseItem.IsSelected)
                 {
-                    MainContentFrame.Navigate(typeof(Browse), this);
+                    NavigateToPage(typeof(Browse));
                     Title.Text = "Browse";
                 }
                 else if (YourMusicItem.IsSelected)
                 {
-                    MainContentFrame.Navigate(typeof(YourMusic), this);
+                    NavigateToPage(typeof(YourMusic));
                     Title.Text = "Your Music";
                 }
                 else if (SearchItem.IsSelected)
                 {
-                    MainContentFrame.Navigate(typeof(Search), this);
+                    NavigateToPage(typeof(Search));
                     Title.Text = "Search";
                 }
                 else if (ProfileItem.IsSelected)
                 {
-                    MainContentFrame.Navigate(typeof(Profile), this);
+                    NavigateToPage(typeof(Profile));
                     Title.Text = "Profile";
                 }
             }
@@ -383,7 +432,7 @@ namespace Boxify
             MainSplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
             RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
-            if (PlaybackService.showing)
+            if (App.playbackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
             }
@@ -404,7 +453,7 @@ namespace Boxify
             MainSplitView.Margin = new Thickness(48, 0, 48, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
             RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
-            if (PlaybackService.showing)
+            if (App.playbackService.showing)
             {
                 MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
             }
@@ -422,7 +471,7 @@ namespace Boxify
         /// <param name="e">The pointer routed event arguments</param>
         private void UserElement_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            SelectHamburgerOption("ProfileItem");
+            SelectHamburgerOption("ProfileItem", true);
         }
 
         /// <summary>
@@ -438,41 +487,41 @@ namespace Boxify
             }
             else if (e.Key == VirtualKey.GamepadY)
             {
-                SelectHamburgerOption("SearchItem");
+                SelectHamburgerOption("SearchItem", true);
             }
             else if (e.Key == VirtualKey.GamepadX)
             {
-                if (PlaybackService.showing)
+                if (App.playbackService.showing)
                 {
                     PlaybackMenu.FocusPlayPause();
                 }
             }
             else if (e.Key == VirtualKey.GamepadRightThumbstickButton)
             {
-                if (PlaybackService.showing)
+                if (App.playbackService.showing)
                 {
-                    if (PlaybackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+                    if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
                     {
-                        PlaybackService.Player.Pause();
+                        App.playbackService.Player.Pause();
                     }
                     else
                     {
-                        PlaybackService.Player.Play();
+                        App.playbackService.Player.Play();
                     }
                 }
             }
             else if (e.Key == VirtualKey.GamepadRightThumbstickRight)
             {
-                if (PlaybackService.showing)
+                if (App.playbackService.showing)
                 {
-                    PlaybackService.NextTrack();
+                    App.playbackService.NextTrack();
                 }
             }
             else if (e.Key == VirtualKey.GamepadRightThumbstickLeft)
             {
-                if (PlaybackService.showing)
+                if (App.playbackService.showing)
                 {
-                    PlaybackService.PreviousTrack();
+                    App.playbackService.PreviousTrack();
                 }
             }
             else if (e.Key == VirtualKey.Down && e.OriginalSource is Button && ((Button)e.OriginalSource).Name == "Back")
@@ -484,6 +533,27 @@ namespace Boxify
                 PlaybackMenu.VolumeSlider_LostFocus(null, null);
                 PlaybackMenu.FocusOnVolume();
             }
+            else if (e.Key == VirtualKey.Escape)
+            {
+                BackButton_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// Navigates to the desired page, ensuring all old BackStack references to the page are removed
+        /// </summary>
+        /// <param name="type"></param>
+        private void NavigateToPage(Type type)
+        {
+            IEnumerable<PageStackEntry> duplicatePages = MainContentFrame.BackStack.Where(page => page.SourcePageType == type);
+            if (duplicatePages.Count() > 0)
+            {
+                foreach (PageStackEntry page in duplicatePages)
+                {
+                    MainContentFrame.BackStack.Remove(page);
+                }
+            }
+            MainContentFrame.Navigate(type, this);
         }
 
         /// <summary>
@@ -497,9 +567,8 @@ namespace Boxify
             {
                 MainSplitView.IsPaneOpen = false;
             }
-            SelectHamburgerOption("SettingsItem");
-
-            MainContentFrame.Navigate(typeof(Settings), this);
+            SelectHamburgerOption("SettingsItem", true);
+            NavigateToPage(typeof(Settings));
             Title.Text = "Settings";
         }
 
@@ -521,7 +590,7 @@ namespace Boxify
         /// <param name="localLock">The lock to ensure no stale updates</param>
         public async void SetErrorMessage(string message, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -537,7 +606,7 @@ namespace Boxify
         /// <param name="cancelToken">The download token to cancel</param>
         public async void ShowCancelDialog(long localLock, CancellationTokenSource cancelToken, string trackName)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -554,7 +623,7 @@ namespace Boxify
         /// <param name="localLock">The lock to ensure no stale updates</param>
         public async void HideCancelDialog(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -583,7 +652,7 @@ namespace Boxify
         /// <param name="localLock"></param>
         public void BringUpSpotify(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 BringUpSpotify();
             }
@@ -604,7 +673,7 @@ namespace Boxify
         /// <param name="value">The amount of progress made</param>
         public void SetSpotifyLoadingValue(double value, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 SetSpotifyLoadingValue(value);
             }
@@ -625,7 +694,7 @@ namespace Boxify
         /// <param name="max">The limit of progress</param>
         public void SetSpotifyLoadingMaximum(double max, long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 SetSpotifyLoadingMaximum(max);
             }
@@ -658,7 +727,7 @@ namespace Boxify
         /// <param name="localLock"></param>
         public void BringUpYouTube(long localLock)
         {
-            if (!App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 BringUpYouTube();
             }
@@ -670,7 +739,7 @@ namespace Boxify
         /// <param name="value">The amount of progress made</param>
         public void SetYouTubeLoadingValue(double value, long localLock)
         {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 YouTubeLoading.Value = value;
             }
@@ -682,7 +751,7 @@ namespace Boxify
         /// <param name="max">The limit of progress</param>
         public void SetYouTubeLoadingMaximum(double max, long localLock)
         {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 YouTubeLoading.Maximum = max;
             }
@@ -692,11 +761,14 @@ namespace Boxify
         /// Set the message displayed under the YouTube logo
         /// </summary>
         /// <param name="message"></param>
-        public void SetYouTubeMessage(String message, long localLock)
+        public async void SetYouTubeMessage(String message, long localLock)
         {
-            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == PlaybackService.GlobalLock)
+            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
-                YouTubeMessage.Text = message;
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    YouTubeMessage.Text = message;
+                });
             }
         }
 
@@ -705,12 +777,30 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        public void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (App.isInBackgroundMode)
             {
                 this.KeyDown -= Page_KeyUp;
                 currentNavSelection = null;
+
+                if (browsePage != null)
+                {
+                    browsePage.Page_Unloaded(null, null);
+                    browsePage = null;
+                }
+                if (yourMusicPage != null)
+                {
+                    yourMusicPage.Page_Unloaded(null, null);
+                    yourMusicPage = null;
+                }
+                if (searchPage != null)
+                {
+                    searchPage.Page_Unloaded(null, null);
+                    searchPage = null;
+                }
+
+                Bindings.StopTracking();
             }
         }
 
@@ -719,9 +809,10 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
+        public void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
         {
             AnnouncementsContainer.Visibility = Visibility.Collapsed;
+            announcementItems.Clear();
         }
 
         /// <summary>
@@ -729,16 +820,16 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void RightAnnouncement_Click(object sender, RoutedEventArgs e)
+        public void NextAnnouncement_Click(object sender, RoutedEventArgs e)
         {
             int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
             if (currentIndex < announcementItems.Count - 1)
             {
                 Announcements.Content = announcementItems[currentIndex + 1];
-                LeftAnnouncement.Visibility = Visibility.Visible;
+                PreviousAnnouncement.Visibility = Visibility.Visible;
                 if (currentIndex + 1 == announcementItems.Count - 1)
                 {
-                    RightAnnouncement.Visibility = Visibility.Collapsed;
+                    NextAnnouncement.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -748,16 +839,16 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void LeftAnnouncement_Click(object sender, RoutedEventArgs e)
+        public void PreviousAnnouncement_Click(object sender, RoutedEventArgs e)
         {
             int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
             if (currentIndex > 0)
             {
                 Announcements.Content = announcementItems[currentIndex - 1];
-                RightAnnouncement.Visibility = Visibility.Visible;
+                NextAnnouncement.Visibility = Visibility.Visible;
                 if (currentIndex - 1 == 0)
                 {
-                    LeftAnnouncement.Visibility = Visibility.Collapsed;
+                    PreviousAnnouncement.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -775,11 +866,11 @@ namespace Boxify
             }
             if (e.Key == VirtualKey.GamepadRightShoulder)
             {
-                RightAnnouncement_Click(null, null);
+                NextAnnouncement_Click(null, null);
             }
             else if (e.Key == VirtualKey.GamepadLeftShoulder)
             {
-                LeftAnnouncement_Click(null, null);
+                PreviousAnnouncement_Click(null, null);
             }
         }
     }

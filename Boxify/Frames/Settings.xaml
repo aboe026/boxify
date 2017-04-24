@@ -26,7 +26,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="806"
-    d:DesignHeight="315">
+    d:DesignHeight="315"
+    NavigationCacheMode="Required">
 
     <Page.Resources>
         <ResourceDictionary>

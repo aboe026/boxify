@@ -78,20 +78,17 @@ namespace Boxify.Classes
                 totalTracks = 1;
             }
             prevRemoteAttempts.Add(0);
+            App.mainPage.SetYouTubeMessage("", localLock);
         }
 
         /// <summary>
         /// Update the UI with the current number of tracks that have failed
         /// </summary>
         /// <param name="increment"></param>
-        private async void UpdateFailuresCount(int increment)
+        private void UpdateFailuresCount(int increment)
         {
             failuresCount += increment;
-
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                PlaybackService.mainPage.SetYouTubeMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
-            });
+            App.mainPage.SetYouTubeMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
         }
 
         /// <summary>
@@ -139,18 +136,18 @@ namespace Boxify.Classes
 
             if (this.source == Playbacksource.Spotify)
             {
-                PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.SetSpotifyLoadingValue(0, localLock);
-                PlaybackService.mainPage.BringUpSpotify(localLock);
+                App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
+                App.mainPage.SetSpotifyLoadingValue(0, localLock);
+                App.mainPage.BringUpSpotify(localLock);
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.SetYouTubeLoadingValue(0, localLock);
-                PlaybackService.mainPage.BringUpYouTube(localLock);
+                App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                App.mainPage.SetYouTubeLoadingValue(0, localLock);
+                App.mainPage.BringUpYouTube(localLock);
             }
 
-            if (localLock != PlaybackService.GlobalLock) { return false; }
+            if (localLock != App.playbackService.GlobalLock) { return false; }
 
             List<Track> tracks = await GetTracks(start, limit);
 
@@ -159,11 +156,11 @@ namespace Boxify.Classes
                 limit = totalTracks;
                 if (this.source == Playbacksource.Spotify)
                 {
-                    PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
+                    App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
                 }
                 else if (this.source == Playbacksource.YouTube)
                 {
-                    PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                    App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
                 }
             }
 
@@ -180,7 +177,7 @@ namespace Boxify.Classes
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             if (track.PreviewUrl != "")
                             {
@@ -191,22 +188,22 @@ namespace Boxify.Classes
                                 UpdateFailuresCount(1);
                             }
                         }
-                        PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
-                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.GlobalLock)
+                else if (this.source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
                 {
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
 
                         string videoId = "";
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             videoId = await SearchForVideoId(track);
                         }
 
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             if (videoId == "")
                             {
@@ -224,7 +221,7 @@ namespace Boxify.Classes
                                 }
                             }
                         }
-                        PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
 
@@ -233,7 +230,7 @@ namespace Boxify.Classes
                 for (int i = 0; i < sources.Count; i++)
                 {
                     KeyValuePair<MediaSource, Track> pair = sources[i];
-                    if (localLock == PlaybackService.GlobalLock)
+                    if (localLock == App.playbackService.GlobalLock)
                     {
                         MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
                         MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
@@ -251,7 +248,7 @@ namespace Boxify.Classes
                         string id = GetMediaItemId(playbackItem);
                         if (!playlistMediaIds.Contains(id))
                         {
-                            PlaybackService.AddToQueue(playbackItem, localLock);
+                            App.playbackService.AddToQueue(playbackItem, localLock);
                             playlistMediaIds.Add(id);
                             successes++;
                         }
@@ -266,7 +263,7 @@ namespace Boxify.Classes
 
                 if (firstPlay)
                 {
-                    PlaybackService.PlayFromBeginning(localLock);
+                    App.playbackService.PlayFromBeginning(localLock);
                 }
             }
 
@@ -316,18 +313,18 @@ namespace Boxify.Classes
 
             if (this.source == Playbacksource.Spotify)
             {
-                PlaybackService.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.SetSpotifyLoadingValue(0, localLock);
-                PlaybackService.mainPage.BringUpSpotify(localLock);
+                App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
+                App.mainPage.SetSpotifyLoadingValue(0, localLock);
+                App.mainPage.BringUpSpotify(localLock);
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                PlaybackService.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
-                PlaybackService.mainPage.SetYouTubeLoadingValue(0, localLock);
-                PlaybackService.mainPage.BringUpYouTube(localLock);
+                App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                App.mainPage.SetYouTubeLoadingValue(0, localLock);
+                App.mainPage.BringUpYouTube(localLock);
             }
 
-            if (localLock != PlaybackService.GlobalLock) { return false; }
+            if (localLock != App.playbackService.GlobalLock) { return false; }
 
             List<Track> tracks = await GetTracks(start, limit);
             if (tracks.Count != limit)
@@ -343,7 +340,7 @@ namespace Boxify.Classes
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             if (track.PreviewUrl != "")
                             {
@@ -354,22 +351,22 @@ namespace Boxify.Classes
                                 UpdateFailuresCount(1);
                             }
                         }
-                        PlaybackService.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
-                else if (this.source == Playbacksource.YouTube && localLock == PlaybackService.GlobalLock)
+                else if (this.source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
                 {
                     for (int i = 0; i < tracks.Count; i++)
                     {
                         Track track = tracks[i];
 
                         string videoId = "";
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             videoId = await SearchForVideoId(track);
                         }
 
-                        if (localLock == PlaybackService.GlobalLock)
+                        if (localLock == App.playbackService.GlobalLock)
                         {
                             if (videoId == "")
                             {
@@ -387,14 +384,14 @@ namespace Boxify.Classes
                                 }
                             }
                         }
-                        PlaybackService.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
                     }
                 }
 
                 for (int i = sources.Count - 1; i >= 0; i--)
                 {
                     KeyValuePair<MediaSource, Track> pair = sources[i];
-                    if (localLock == PlaybackService.GlobalLock)
+                    if (localLock == App.playbackService.GlobalLock)
                     {
                         MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
                         MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
@@ -412,7 +409,7 @@ namespace Boxify.Classes
                         string id = GetMediaItemId(playbackItem);
                         if (!playlistMediaIds.Contains(id))
                         {
-                            PlaybackService.AddToBeginningOfQueue(playbackItem, localLock);
+                            App.playbackService.AddToBeginningOfQueue(playbackItem, localLock);
                             playlistMediaIds.Insert(0, id);
                             successes++;
                         }
@@ -466,7 +463,7 @@ namespace Boxify.Classes
                             int deleteUpTo = index - BUFFER_FROM_LOAD;
                             for (int i = 0; i < deleteUpTo; i++)
                             {
-                                PlaybackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
                                 playlistMediaIds.RemoveAt(0);
                             }
                         }
@@ -474,7 +471,7 @@ namespace Boxify.Classes
                     );
                 }
                 // toward end of local tracks and no more ahead on remote, go back to beginning
-                else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && PlaybackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
+                else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && App.playbackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
                 {
                     await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                     {
@@ -485,7 +482,7 @@ namespace Boxify.Classes
                             int deleteUpTo = index - BUFFER_FROM_LOAD;
                             for (int i = 0; i < deleteUpTo; i++)
                             {
-                                PlaybackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
                                 playlistMediaIds.RemoveAt(0);
                             }
                         }
@@ -504,7 +501,7 @@ namespace Boxify.Classes
                             int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
                             for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
                             {
-                                PlaybackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
+                                App.playbackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
                                 playlistMediaIds.RemoveAt(playlistMediaIds.Count - 1);
                             }
                         }
@@ -520,7 +517,7 @@ namespace Boxify.Classes
         /// <param name="item">The item that failed to open</param>
         public void ItemFailedToOpen(MediaPlaybackItem item)
         {
-            PlaybackService.RemoveFromQueue(GetMediaItemId(item), localLock);
+            App.playbackService.RemoveFromQueue(GetMediaItemId(item), localLock);
             playlistMediaIds.RemoveAt(playlistMediaIds.IndexOf(GetMediaItemId(item)));
             UpdateFailuresCount(1);
         }
@@ -568,7 +565,7 @@ namespace Boxify.Classes
 
             string tracksString = await RequestHandler.SendCliGetRequest(trackUrl);
 
-            if (localLock != PlaybackService.GlobalLock) { return tracks; }
+            if (localLock != App.playbackService.GlobalLock) { return tracks; }
 
             JsonObject tracksJson = new JsonObject();
             try
@@ -577,7 +574,7 @@ namespace Boxify.Classes
             }
             catch (COMException) { return tracks; }
 
-            if (localLock != PlaybackService.GlobalLock) { return tracks; }
+            if (localLock != App.playbackService.GlobalLock) { return tracks; }
 
             if (type == PlaybackType.Single)
             {
@@ -690,7 +687,7 @@ namespace Boxify.Classes
                 {
                     client.CancelPendingRequests();
                     client.Dispose();
-                    PlaybackService.mainPage.HideCancelDialog(localLock);
+                    App.mainPage.HideCancelDialog(localLock);
                 });
 
                 try
@@ -706,7 +703,7 @@ namespace Boxify.Classes
                         }
                         else
                         {
-                            PlaybackService.mainPage.ShowCancelDialog(localLock, cancelToken, trackName);
+                            App.mainPage.ShowCancelDialog(localLock, cancelToken, trackName);
                             await Task.Run(() =>
                             {
                                 while ((clientTask.Status == TaskStatus.WaitingForActivation ||
@@ -715,7 +712,7 @@ namespace Boxify.Classes
                                         clientTask.Status == TaskStatus.Running) && !cancelToken.Token.IsCancellationRequested)
                                 { }
                             });
-                            PlaybackService.mainPage.HideCancelDialog(localLock);
+                            App.mainPage.HideCancelDialog(localLock);
                             if (cancelToken.Token.IsCancellationRequested)
                             {
                                 return MediaSource.CreateFromUri(new Uri(""));

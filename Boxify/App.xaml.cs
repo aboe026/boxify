@@ -41,6 +41,8 @@ namespace Boxify
         public static bool isInBackgroundMode = false;
         private static bool finishedInitialization = false;
         public static string hamburgerOptionToLoadTo = "BrowseItem";
+        public static PlaybackService playbackService = new PlaybackService();
+        public static MainPage mainPage;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -53,11 +55,6 @@ namespace Boxify
 
             // disable pointer
             this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
-
-            // Playback Service "Initialization" of static class
-            PlaybackService.queue.CurrentItemChanged += PlaybackService.CurrentItemChanged;
-            PlaybackService.queue.ItemFailed += PlaybackService.ItemFailed;
-            PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.PlayStateChanges;
 
             // Subscribe to key lifecyle events to know when the app
             // transitions to and from foreground and background.
@@ -288,11 +285,19 @@ namespace Boxify
         {
             isInBackgroundMode = true;
 
-            PlaybackService.Player.PlaybackSession.PlaybackStateChanged -= PlaybackService.PlayStateChanges;
+            App.playbackService.Player.PlaybackSession.PlaybackStateChanged -= App.playbackService.PlayStateChanges;
 
-            if (PlaybackService.showing)
+            if (MainPage.currentNavSelection != null)
             {
                 hamburgerOptionToLoadTo = MainPage.currentNavSelection.Name;
+            }
+            else
+            {
+                hamburgerOptionToLoadTo = "SettingsItem";
+            }
+
+            if (App.playbackService.showing)
+            {
                 ReduceMemoryUsage(MemoryManager.AppMemoryUsage);
             }
         }
@@ -312,7 +317,7 @@ namespace Boxify
                 MainPage.returningFromMemoryReduction = true;
                 CreateRootFrame(ApplicationExecutionState.Running, string.Empty);
                 
-                PlaybackService.Player.PlaybackSession.PlaybackStateChanged += PlaybackService.PlayStateChanges;
+                App.playbackService.Player.PlaybackSession.PlaybackStateChanged += App.playbackService.PlayStateChanges;
             }
         }
 
@@ -336,7 +341,7 @@ namespace Boxify
             // so that the system does not suspend the app
             if (MemoryManager.AppMemoryUsage >= e.NewLimit)
             {
-                ReduceMemoryUsage(e.NewLimit);
+                // ReduceMemoryUsage(e.NewLimit);
             }
         }
 
@@ -369,7 +374,7 @@ namespace Boxify
             // the app may have increased its memory usage since then and will need to trim back.
             if (level == AppMemoryUsageLevel.OverLimit || level == AppMemoryUsageLevel.High)
             {
-                ReduceMemoryUsage(MemoryManager.AppMemoryUsageLimit);
+                // ReduceMemoryUsage(MemoryManager.AppMemoryUsageLimit);
             }
         }
 
@@ -390,7 +395,7 @@ namespace Boxify
         public void ReduceMemoryUsage(ulong limit)
         {
             // If the app has caches or other memory it can free, it should do so now.
-            
+            mainPage.Page_Unloaded(null, null);
 
             // Additionally, if the application is currently
             // in background mode and still has a view with content

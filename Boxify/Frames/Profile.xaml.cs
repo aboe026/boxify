@@ -32,13 +32,13 @@ namespace Boxify
     /// </summary>
     public sealed partial class Profile : Page
     {
-        private static MainPage mainPage;
         private static string loggedInText = "You are currently logged in as ";
         private static string loggedOutText = "You are currently not logged in. Select the button to fix that.";
 
         public Profile()
         {
             this.InitializeComponent();
+            MainPage.profilePage = this;
         }
 
         /// <summary>
@@ -47,10 +47,6 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
             UpdateUI();
         }
 
@@ -109,13 +105,13 @@ namespace Boxify
                 userPicContainer.Visibility = Visibility.Visible;
                 login.Content = "Log Out";
                 login.Visibility = Visibility.Visible;
-                if (mainPage != null)
+                if (App.mainPage != null)
                 {
-                    mainPage.UpdateUserUI();
+                    App.mainPage.UpdateUserUI();
                 }
-                mainPage.SelectHamburgerOption("ProfileItem");
-                YourMusic.playlistsSave = null;
-                mainPage.LoadUserPlaylists();
+                App.mainPage.SelectHamburgerOption("ProfileItem", true);
+                YourMusic.preEmptiveLoadPlaylists.Clear();
+                App.mainPage.LoadUserPlaylists();
             }
         }
 
@@ -144,9 +140,9 @@ namespace Boxify
                 login.Content = "Log In";
                 RequestHandler.ClearTokens();
             }
-            if (mainPage != null)
+            if (App.mainPage != null)
             {
-                mainPage.UpdateUserUI();
+                App.mainPage.UpdateUserUI();
             }
         }
     }

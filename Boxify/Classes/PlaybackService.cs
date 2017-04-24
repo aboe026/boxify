@@ -32,24 +32,33 @@ namespace Boxify
     /// The central authority on playback in the application
     /// providing access to the player and active playlist.
     /// </summary>
-    public static class PlaybackService
+    public class PlaybackService
     {
-        public static MediaPlayer Player = new MediaPlayer();
-        public static MediaPlaybackList queue = new MediaPlaybackList();
-        public static MediaPlaybackItem currentlyPlayingItem;
+        public MediaPlayer Player = new MediaPlayer();
+        public MediaPlaybackList queue = new MediaPlaybackList();
+        public MediaPlaybackItem currentlyPlayingItem;
+        
+        private PlaybackSession currentSession;
+        public bool showing = false;
 
-        public static MainPage mainPage;
-        private static PlaybackSession currentSession;
-        public static bool showing = false;
+        public long GlobalLock { get; private set; }
 
-        public static long GlobalLock { get; private set; }
+        /// <summary>
+        /// Main constructor
+        /// </summary>
+        public PlaybackService()
+        {
+            queue.CurrentItemChanged += CurrentItemChanged;
+            queue.ItemFailed += ItemFailed;
+            Player.PlaybackSession.PlaybackStateChanged += PlayStateChanges;
+        }
 
         /// <summary>
         /// Begins playback of a new playlist of tracks
         /// </summary>
         /// <param name="type">The type of playlist (single track, album, or simple playlist)</param>
         /// <param name="href">The uri to download tracks from</param>
-        public static async void StartNewSession(PlaybackType type, string href)
+        public async void StartNewSession(PlaybackType type, string href)
         {
             long currentLock = DateTime.Now.Ticks;
             GlobalLock = currentLock;
@@ -57,9 +66,9 @@ namespace Boxify
             if (!showing)
             {
                 showing = true;
-                mainPage.ShowPlaybackMenu();
+                App.mainPage.ShowPlaybackMenu();
             }
-            mainPage.SetPlaybackMenu(true);
+            App.mainPage.SetPlaybackMenu(true);
 
             if (currentSession != null)
             {
@@ -69,7 +78,7 @@ namespace Boxify
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
-            mainPage.SetPlaybackMenu(false);
+            App.mainPage.SetPlaybackMenu(false);
         }
 
         /// <summary>
@@ -77,7 +86,7 @@ namespace Boxify
         /// </summary>
         /// <param name="item">The media item containing the track to add to the queue</param>
         /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
-        public static void AddToQueue(MediaPlaybackItem item, long localLock)
+        public void AddToQueue(MediaPlaybackItem item, long localLock)
         {
             if (localLock == GlobalLock)
             {
@@ -90,7 +99,7 @@ namespace Boxify
         /// </summary>
         /// <param name="item">The media item containing the track to add to the queue</param>
         /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
-        public static void AddToBeginningOfQueue(MediaPlaybackItem item, long localLock)
+        public void AddToBeginningOfQueue(MediaPlaybackItem item, long localLock)
         {
             if (localLock == GlobalLock)
             {
@@ -103,12 +112,13 @@ namespace Boxify
         /// </summary>
         /// <param name="item">The id of the media item to remove</param>
         /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
-        public static void RemoveFromQueue(string mediaId, long localLock)
+        public void RemoveFromQueue(string mediaId, long localLock)
         {
             if (localLock == GlobalLock)
             {
                 MediaPlaybackItem item = queue.Items.First(kvp => kvp.Source.CustomProperties["mediaItemId"].ToString() == mediaId);
                 queue.Items.Remove(item);
+                item = null;
             }
         }
 
@@ -116,7 +126,7 @@ namespace Boxify
         /// Start playback of the queue from the first track
         /// </summary>
         /// <param name="localLock">The timestamp of the playback session to ensure old sessions don't interfere with the current session</param>
-        public static void PlayFromBeginning(long localLock)
+        public void PlayFromBeginning(long localLock)
         {
             if (localLock == GlobalLock)
             {
@@ -128,7 +138,7 @@ namespace Boxify
         /// <summary>
         /// Move to the next track in the playlist
         /// </summary>
-        public static void NextTrack()
+        public void NextTrack()
         {
             queue.MoveNext();
         }
@@ -136,7 +146,7 @@ namespace Boxify
         /// <summary>
         /// Move to the previous track in the playlist
         /// </summary>
-        public static void PreviousTrack()
+        public void PreviousTrack()
         {
             queue.MovePrevious();
         }
@@ -145,7 +155,7 @@ namespace Boxify
         /// Toggle repeating of the playlist
         /// </summary>
         /// <returns></returns>
-        public static bool ToggleRepeat()
+        public bool ToggleRepeat()
         {
             queue.AutoRepeatEnabled = !queue.AutoRepeatEnabled;
             return queue.AutoRepeatEnabled;
@@ -156,7 +166,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static async void CurrentItemChanged(object sender, CurrentMediaPlaybackItemChangedEventArgs e)
+        public async void CurrentItemChanged(object sender, CurrentMediaPlaybackItemChangedEventArgs e)
         {
             currentlyPlayingItem = e.NewItem;
             if (e.NewItem != null)
@@ -172,10 +182,10 @@ namespace Boxify
                             IRandomAccessStreamWithContentType thumbnail = await Player.SystemMediaTransportControls.DisplayUpdater.Thumbnail.OpenReadAsync();
                             BitmapImage bitmapImage = new BitmapImage();
                             bitmapImage.SetSource(thumbnail);
-                            mainPage.GetPlaybackMenu().SetTrackImage(bitmapImage);
+                            App.mainPage.GetPlaybackMenu().SetTrackImage(bitmapImage);
                         }
-                        mainPage.GetPlaybackMenu().SetTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
-                        mainPage.GetPlaybackMenu().SetArtistName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Artist);
+                        App.mainPage.GetPlaybackMenu().SetTrackName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Title);
+                        App.mainPage.GetPlaybackMenu().SetArtistName(Player.SystemMediaTransportControls.DisplayUpdater.MusicProperties.Artist);
                     }
                 });
             }
@@ -186,7 +196,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void ItemFailed(object sender, MediaPlaybackItemFailedEventArgs e)
+        public void ItemFailed(object sender, MediaPlaybackItemFailedEventArgs e)
         {
             currentSession.ItemFailedToOpen(e.Item);
         }
@@ -196,11 +206,11 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void PlayStateChanges(object sender, object e)
+        public void PlayStateChanges(object sender, object e)
         {
             if (!App.isInBackgroundMode)
             {
-                mainPage.GetPlaybackMenu().SetActionState(Player.PlaybackSession.PlaybackState);
+                App.mainPage.GetPlaybackMenu().SetActionState(Player.PlaybackSession.PlaybackState);
             }
         }
     }

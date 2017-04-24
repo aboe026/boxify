@@ -27,7 +27,6 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class AlbumList : UserControl
     {
-        public MainPage mainPage;
         public Album Album { get; set; }
 
         /// <summary>
@@ -44,11 +43,19 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="playlist">The Album whose information will be displayed</param>
         /// <param name="mainPage">The MainPage containing the Playlist</param>
-        public AlbumList(Album album, MainPage mainPage) : this()
+        public AlbumList(Album album) : this()
         {
             this.Album = album;
-            this.mainPage = mainPage;
             DataContext = this.Album;
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Unload()
+        {
+            Bindings.StopTracking();
+            Album = null;
         }
     }
 }

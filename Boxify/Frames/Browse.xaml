@@ -27,6 +27,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="806"
     d:DesignHeight="315"
+    NavigationCacheMode="Required"
     Unloaded="Page_Unloaded">
 
     <Page.Resources>

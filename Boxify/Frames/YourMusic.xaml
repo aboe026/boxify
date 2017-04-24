@@ -27,6 +27,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="806"
     d:DesignHeight="315"
+    NavigationCacheMode="Required"
     Unloaded="Page_Unloaded">
 
     <Page.Resources>
@@ -82,7 +83,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Style="{StaticResource ButtonStyle}"
                     Click="More_Click"/>
 
-            <ListView Name="playlists"
+            <ListView Name="Playlists"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.Below="playlistsLabel"
