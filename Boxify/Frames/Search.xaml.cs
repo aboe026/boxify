@@ -35,13 +35,24 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class Search : Page
     {
-        public static String searchUri = "https://api.spotify.com/v1/search";
+        public static string searchSave;
+        public static int searchTypeSave;
+        public const String SEARCH_URL = "https://api.spotify.com/v1/search";
 
         public Search()
         {
             this.InitializeComponent();
             MainPage.searchPage = this;
             Feedback.Text = "";
+
+            if (searchSave != null)
+            {
+                SearchBox.Text = searchSave;
+                SearchType.SelectionChanged -= SearchButton_Click;
+                SearchType.SelectedIndex = searchTypeSave;
+                SearchType.SelectionChanged += SearchButton_Click;
+                SearchButton_Click(SearchButton, null);
+            }
         }
 
         /// <summary>
@@ -64,10 +75,12 @@ namespace Boxify.Frames
             }
             else
             {
+                searchSave = SearchBox.Text;
+                searchTypeSave = SearchType.SelectedIndex;
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 ComboBoxItem selected = SearchType.SelectedValue as ComboBoxItem;
                 String selectedString = selected.Content.ToString().ToLower();
-                UriBuilder searchUriBuilder = new UriBuilder(searchUri);
+                UriBuilder searchUriBuilder = new UriBuilder(SEARCH_URL);
                 List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("type", selectedString),
@@ -116,7 +129,10 @@ namespace Boxify.Frames
                                     PlaylistList playlistList = new PlaylistList(playlist);
                                     try
                                     {
-                                        Results.Items.Add(playlistList);
+                                        if (!App.isInBackgroundMode)
+                                        {
+                                            Results.Items.Add(playlistList);
+                                        }
                                     }
                                     catch (COMException) { }
                                     App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
@@ -151,7 +167,10 @@ namespace Boxify.Frames
                                     TrackList trackList = new TrackList(track);
                                     try
                                     {
-                                        Results.Items.Add(trackList);
+                                        if (!App.isInBackgroundMode)
+                                        {
+                                            Results.Items.Add(trackList);
+                                        }
                                     }
                                     catch (COMException) { }
                                     App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
@@ -186,7 +205,10 @@ namespace Boxify.Frames
                                     AlbumList albumList = new AlbumList(album);
                                     try
                                     {
-                                        Results.Items.Add(albumList);
+                                        if (!App.isInBackgroundMode)
+                                        {
+                                            Results.Items.Add(albumList);
+                                        }
                                     }
                                     catch (COMException) { }
                                     App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
@@ -216,14 +238,14 @@ namespace Boxify.Frames
         {
             if (e.ClickedItem is TrackList)
             {
-                (e.ClickedItem as TrackList).Track.PlayTrack();
+                (e.ClickedItem as TrackList).track.PlayTrack();
             }
             else if (e.ClickedItem is PlaylistList)
             {
                 (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
             }
             else if (e.ClickedItem is AlbumList) {
-                (e.ClickedItem as AlbumList).Album.PlayTracks();
+                (e.ClickedItem as AlbumList).album.PlayTracks();
             }
         }
 
@@ -238,24 +260,36 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    Results.ItemClick -= Results_ItemClick;
-                    for (int i = 0; i < Results.Items.Count; i++)
+                    if (Results != null)
                     {
-                        object listItem = Results.Items.ElementAt(i);
-                        if (listItem is PlaylistList)
+                        Results.ItemClick -= Results_ItemClick;
+                        for (int i = 0; i < Results.Items.Count; i++)
                         {
-                            (listItem as PlaylistList).Unload();
+                            object listItem = Results.Items.ElementAt(i);
+                            if (listItem is PlaylistList)
+                            {
+                                PlaylistList playlistList = listItem as PlaylistList;
+                                playlistList.Unload();
+                                Results.Items.Remove(playlistList);
+                                playlistList = null;
+                            }
+                            else if (listItem is TrackList)
+                            {
+                                TrackList trackList = listItem as TrackList;
+                                trackList.Unload();
+                                Results.Items.Remove(trackList);
+                                trackList = null;
+                            }
+                            else if (listItem is AlbumList)
+                            {
+                                AlbumList albumList = listItem as AlbumList;
+                                albumList.Unload();
+                                Results.Items.Remove(albumList);
+                                albumList = null;
+                            }
                         }
-                        else if (listItem is TrackList)
-                        {
-                            (listItem as TrackList).Unload();
-                        }
-                        else if (listItem is AlbumList)
-                        {
-                            (listItem as AlbumList).Unload();
-                        }
+                        Results = null;
                     }
-                    Results.Items.Clear();
                 });
             }
         }

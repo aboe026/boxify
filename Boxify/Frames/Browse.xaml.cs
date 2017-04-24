@@ -151,7 +151,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistHero).Playlist.PlayTracks();
+            (e.ClickedItem as PlaylistHero).playlist.PlayTracks();
         }
 
         /// <summary>
@@ -178,7 +178,6 @@ namespace Boxify
                 featuredPlaylistsOffset = 0;
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    Bindings.StopTracking();
                     if (FeaturedPlaylists != null)
                     {
                         FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;

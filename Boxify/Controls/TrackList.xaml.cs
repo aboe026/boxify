@@ -27,7 +27,7 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class TrackList : UserControl
     {
-        public Track Track { get; set; }
+        public Track track;
 
         /// <summary>
         /// The main constructor
@@ -45,8 +45,18 @@ namespace Boxify.Frames
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public TrackList(Track track) : this()
         {
-            this.Track = track;
-            DataContext = this.Track;
+            this.track = track;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Track information
+        /// </summary>
+        private void PopulateData()
+        {
+            Image.Source = track.album.image;
+            Name.Text = track.name;
+            Artist.Text = track.GetMainArtistName();
         }
 
         /// <summary>
@@ -54,8 +64,17 @@ namespace Boxify.Frames
         /// </summary>
         public void Unload()
         {
-            Bindings.StopTracking();
-            Track = null;
+            track = null;
+
+            Image.ClearValue(Image.SourceProperty);
+            Name.ClearValue(TextBlock.TextProperty);
+            ArtistLabel.ClearValue(TextBlock.TextProperty);
+            Artist.ClearValue(TextBlock.TextProperty);
+
+            Image = null;
+            Name = null;
+            ArtistLabel = null;
+            Artist = null;
         }
     }
 }

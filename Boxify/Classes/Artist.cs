@@ -26,15 +26,7 @@ namespace Boxify
     /// </summary>
     public class Artist
     {
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The main constructor to create an empty instance
-        /// </summary>
-        public Artist()
-        {
-            Name = "";
-        }
+        public string name = "";
 
         /// <summary>
         /// Populate the artist information from the JSON object
@@ -53,7 +45,7 @@ namespace Boxify
             }
             if (trackJson.TryGetValue("name", out IJsonValue nameJson))
             {
-                Name = nameJson.GetString();
+                name = nameJson.GetString();
             }
         }
     }

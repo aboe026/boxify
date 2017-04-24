@@ -27,7 +27,7 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class AlbumList : UserControl
     {
-        public Album Album { get; set; }
+        public Album album;
 
         /// <summary>
         /// The main constructor
@@ -45,8 +45,18 @@ namespace Boxify.Frames
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public AlbumList(Album album) : this()
         {
-            this.Album = album;
-            DataContext = this.Album;
+            this.album = album;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Album information
+        /// </summary>
+        public void PopulateData()
+        {
+            Image.Source = album.image;
+            Name.Text = album.name;
+            Artist.Text = album.GetMainArtistName();
         }
 
         /// <summary>
@@ -54,8 +64,17 @@ namespace Boxify.Frames
         /// </summary>
         public void Unload()
         {
-            Bindings.StopTracking();
-            Album = null;
+            album = null;
+
+            Image.ClearValue(Image.SourceProperty);
+            Name.ClearValue(TextBlock.TextProperty);
+            ArtistLabel.ClearValue(TextBlock.TextProperty);
+            Artist.ClearValue(TextBlock.TextProperty);
+
+            Image = null;
+            Name = null;
+            ArtistLabel = null;
+            Artist = null;
         }
     }
 }

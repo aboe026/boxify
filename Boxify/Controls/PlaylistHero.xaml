@@ -40,40 +40,36 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
         <RelativePanel>
 
-            <Image Name="displayImage"
-                   Source="{x:Bind Playlist.image, Mode=OneWay}"
+            <Image Name="Image"
                    RelativePanel.AlignLeftWithPanel="True"
-                   Margin="0,0,5,0"
                    Width="100"
-                   Height="100"/>
+                   Height="100"
+                   Margin="0,0,5,0"/>
 
-            <TextBlock Name="displayName"
-                       Text="{x:Bind Playlist.Name, Mode=OneWay}"
-                       RelativePanel.RightOf="displayImage"
+            <TextBlock Name="Name"
+                       RelativePanel.RightOf="Image"
                        RelativePanel.AlignRightWithPanel="True"
                        Style="{StaticResource BodyTextBlockStyle}"/>
 
-            <TextBlock Name="displayDescription"
-                       Text="{x:Bind Playlist.Description, Mode=OneWay}"
-                       RelativePanel.RightOf="displayImage"
-                       RelativePanel.Below="displayName"
+            <TextBlock Name="Description"
+                       RelativePanel.RightOf="Image"
+                       RelativePanel.Below="Name"
                        RelativePanel.Above="Tracks"
                        RelativePanel.AlignRightWithPanel="True"
                        Margin="0,5,0,0"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        TextWrapping="WrapWholeWords"/>
 
-            <TextBlock Name="tracksLabel"
-                       RelativePanel.RightOf="displayImage"
+            <TextBlock Name="TracksLabel"
+                       RelativePanel.RightOf="Image"
                        RelativePanel.AlignBottomWithPanel="True"
                        Margin="0,0,5,0"
                        Text="Tracks: "
                        Style="{StaticResource BodyTextBlockStyle}"/>
 
             <TextBlock Name="Tracks"
-                       RelativePanel.RightOf="tracksLabel"
+                       RelativePanel.RightOf="TracksLabel"
                        RelativePanel.AlignBottomWithPanel="True"
-                       Text="{x:Bind Playlist.TracksCount, Mode=OneWay}"
                        Style="{StaticResource BodyTextBlockStyle}"/>
 
         </RelativePanel>

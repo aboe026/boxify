@@ -28,59 +28,34 @@ namespace Boxify
     /// <summary>
     /// An Album object
     /// </summary>
-    public class Album : BindableBase
+    public class Album
     {
-        private string id;
+        private string id = "";
         public string name = "";
-        public List<Artist> Artists { get; set; } = new List<Artist>();
-        public List<BitmapImage> Images { get; set; } = new List<BitmapImage>();
-        public string ImageUrl { get; set; }
-        private static string tracksHref = "https://api.spotify.com/v1/albums/{0}/tracks";
+        public List<Artist> artists = new List<Artist>();
+        public BitmapImage image = new BitmapImage();
+        public string imageUrl = "";
+        private const string TRACKS_HREF = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
         /// The main constructor to create an empty instance
         /// </summary>
         public Album()
         {
+
         }
 
         /// <summary>
-        /// The name of the album
+        /// Get the name of the first Artist
         /// </summary>
-        public string Name
+        /// <returns>The name of the first Artist</returns>
+        public string GetMainArtistName()
         {
-            get { return this.name; }
-            set { this.SetProperty(ref this.name, value); }
-        }
-
-        /// <summary>
-        /// The main image for the album
-        /// </summary>
-        public BitmapImage Image
-        {
-            get
+            if (this.artists.Count > 0)
             {
-                if (this.Images.Count > 0)
-                {
-                    return this.Images.ElementAt(0);
-                }
-                return new BitmapImage();
+                return this.artists.ElementAt(0).name;
             }
-        }
-
-        /// <summary>
-        /// The main artist for the album
-        /// </summary>
-        public string ArtistName
-        {
-            get
-            {
-                if (this.Artists.Count > 0)
-                {
-                    return this.Artists.ElementAt(0).Name;
-                }
-                return "";
-            }
+            return "";
         }
 
         /// <summary>
@@ -113,21 +88,18 @@ namespace Boxify
                 {
                     Artist artist = new Artist();
                     artist.SetInfo(artistObject.Stringify());
-                    Artists.Add(artist);
+                    artists.Add(artist);
                 }
             }
             if (albumJson.TryGetValue("images", out IJsonValue imagesJson)) {
                 JsonArray imagesArray = imagesJson.GetArray();
-                foreach (JsonValue imageObject in imagesArray)
+                if (imagesArray.Count > 0)
                 {
+                    JsonValue imageObject = imagesArray.ElementAt(0) as JsonValue;
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
-                    if (ImageUrl == null)
-                    {
-                        ImageUrl = url;
-                    }
-                    BitmapImage image = await RequestHandler.DownloadImage(url);
-                    Images.Add(image);
+                    imageUrl = url;
+                    image = await RequestHandler.DownloadImage(url);
                 }
             }
         }
@@ -139,7 +111,7 @@ namespace Boxify
         public async Task<List<Track>> GetTracks()
         {
             List<Track> tracks = new List<Track>();
-            string tracksString = await RequestHandler.SendCliGetRequest(tracksHref.Replace("{id}", id));
+            string tracksString = await RequestHandler.SendCliGetRequest(TRACKS_HREF.Replace("{id}", id));
             JsonObject tracksJson = new JsonObject();
             try
             {
@@ -169,7 +141,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(tracksHref, id));
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id));
         }
     }
 }

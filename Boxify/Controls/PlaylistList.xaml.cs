@@ -16,9 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
-using Windows.UI;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -37,7 +35,6 @@ namespace Boxify
         public PlaylistList()
         {
             this.InitializeComponent();
-            action.Foreground = new SolidColorBrush(Colors.Transparent);
         }
         
         /// <summary>
@@ -49,7 +46,17 @@ namespace Boxify
         public PlaylistList(Playlist playlist) : this()
         {
             this.Playlist = playlist;
-            DataContext = this.Playlist;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Playlist information
+        /// </summary>
+        public void PopulateData()
+        {
+            Image.Source = Playlist.image;
+            Name.Text = Playlist.name;
+            Tracks.Text = Playlist.tracksCount.ToString();
         }
 
         /// <summary>
@@ -57,8 +64,17 @@ namespace Boxify
         /// </summary>
         public void Unload()
         {
-            Bindings.StopTracking();
             Playlist = null;
+
+            Image.ClearValue(Image.SourceProperty);
+            Name.ClearValue(TextBlock.TextProperty);
+            TracksLabel.ClearValue(TextBlock.TextProperty);
+            Tracks.ClearValue(TextBlock.TextProperty);
+
+            Image = null;
+            Name = null;
+            Tracks = null;
+            TracksLabel = null;
         }
     }
 }

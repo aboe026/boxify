@@ -24,7 +24,7 @@ namespace Boxify
 {
     public sealed partial class PlaylistHero : UserControl
     {
-        public Playlist Playlist { get; set; }
+        public Playlist playlist;
 
         /// <summary>
         /// The main constructor
@@ -42,8 +42,19 @@ namespace Boxify
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public PlaylistHero(Playlist playlist) : this()
         {
-            this.Playlist = playlist;
-            DataContext = this.Playlist;
+            this.playlist = playlist;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Playlist information
+        /// </summary>
+        public void PopulateData()
+        {
+            Image.Source = playlist.image;
+            Name.Text = playlist.name;
+            Description.Text = playlist.description;
+            Tracks.Text = playlist.tracksCount.ToString();
         }
 
         /// <summary>
@@ -51,8 +62,19 @@ namespace Boxify
         /// </summary>
         public void Unload()
         {
-            Bindings.StopTracking();
-            Playlist = null;
+            playlist = null;
+
+            Image.ClearValue(Image.SourceProperty);
+            Name.ClearValue(TextBlock.TextProperty);
+            Description.ClearValue(TextBlock.TextProperty);
+            TracksLabel.ClearValue(TextBlock.TextProperty);
+            Tracks.ClearValue(TextBlock.TextProperty);
+
+            Image = null;
+            Name = null;
+            Description = null;
+            TracksLabel = null;
+            Tracks = null;
         }
     }
 }

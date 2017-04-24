@@ -179,9 +179,9 @@ namespace Boxify.Classes
                         Track track = tracks[i];
                         if (localLock == App.playbackService.GlobalLock)
                         {
-                            if (track.PreviewUrl != "")
+                            if (track.previewUrl != "")
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.PreviewUrl)), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
                             }
                             else
                             {
@@ -213,7 +213,7 @@ namespace Boxify.Classes
                             {
                                 try
                                 {
-                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
+                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.name), track));
                                 }
                                 catch (Exception)
                                 {
@@ -237,13 +237,13 @@ namespace Boxify.Classes
                         displayProperties.Type = MediaPlaybackType.Music;
                         displayProperties.MusicProperties.Title = pair.Value.name;
                         displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
-                        displayProperties.MusicProperties.Artist = pair.Value.ArtistName;
-                        if (pair.Value.album.Images.Count > 0 && pair.Value.album.Images.ElementAt(0) != null)
+                        displayProperties.MusicProperties.Artist = pair.Value.GetMainArtistName();
+                        if (pair.Value.album.imageUrl != "")
                         {
-                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.ImageUrl));
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
                         }
                         playbackItem.ApplyDisplayProperties(displayProperties);
-                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.Id;
+                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
 
                         string id = GetMediaItemId(playbackItem);
                         if (!playlistMediaIds.Contains(id))
@@ -342,9 +342,9 @@ namespace Boxify.Classes
                         Track track = tracks[i];
                         if (localLock == App.playbackService.GlobalLock)
                         {
-                            if (track.PreviewUrl != "")
+                            if (track.previewUrl != "")
                             {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.PreviewUrl)), track));
+                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
                             }
                             else
                             {
@@ -376,7 +376,7 @@ namespace Boxify.Classes
                             {
                                 try
                                 {
-                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.Name), track));
+                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.name), track));
                                 }
                                 catch (Exception)
                                 {
@@ -398,13 +398,13 @@ namespace Boxify.Classes
                         displayProperties.Type = MediaPlaybackType.Music;
                         displayProperties.MusicProperties.Title = pair.Value.name;
                         displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
-                        displayProperties.MusicProperties.Artist = pair.Value.ArtistName;
-                        if (pair.Value.album.Images.Count > 0 && pair.Value.album.Images.ElementAt(0) != null)
+                        displayProperties.MusicProperties.Artist = pair.Value.GetMainArtistName();
+                        if (pair.Value.album.imageUrl != "")
                         {
-                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.ImageUrl));
+                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
                         }
                         playbackItem.ApplyDisplayProperties(displayProperties);
-                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.Id;
+                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
 
                         string id = GetMediaItemId(playbackItem);
                         if (!playlistMediaIds.Contains(id))
@@ -625,7 +625,7 @@ namespace Boxify.Classes
         /// <returns>The YouTube ID of the video</returns>
         private async Task<string> SearchForVideoId(Track track)
         {
-            return await RequestHandler.SearchYoutube(track.name + " " + track.Artists[0].Name + " " + track.album.name);
+            return await RequestHandler.SearchYoutube(track.name + " " + track.artists[0].name + " " + track.album.name);
         }
 
         /// <summary>

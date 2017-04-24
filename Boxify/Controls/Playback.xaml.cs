@@ -58,10 +58,13 @@ namespace Boxify
             MediaItemDisplayProperties displayProperties = App.playbackService.currentlyPlayingItem.GetDisplayProperties();
             TrackName.Text = displayProperties.MusicProperties.Title;
             TrackArtist.Text = displayProperties.MusicProperties.AlbumTitle;
-            IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.SetSource(thumbnail);
-            AlbumArt.Source = bitmapImage;
+            if (displayProperties.Thumbnail != null)
+            {
+                IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.SetSource(thumbnail);
+                AlbumArt.Source = bitmapImage;
+            }
             if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
             {
                 Play.Visibility = Visibility.Collapsed;
