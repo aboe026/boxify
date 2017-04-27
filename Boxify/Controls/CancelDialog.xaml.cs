@@ -18,6 +18,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using System;
 using System.Threading;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -62,6 +64,23 @@ namespace Boxify
             {
                 cancelToken.Cancel();
             }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public async void Unload()
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (Cancel != null)
+                {
+                    Cancel.Click -= Cancel_Click;
+                    Cancel = null;
+                }
+
+                CancelText = null;
+            });
         }
     }
 }

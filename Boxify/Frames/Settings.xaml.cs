@@ -20,11 +20,12 @@ using Boxify.Controls.Announcements;
 using System;
 using System.Collections.Generic;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -52,14 +53,7 @@ namespace Boxify
         {
             this.InitializeComponent();
             MainPage.settingsPage = this;
-        }
 
-        /// <summary>
-        /// When the user navigates to this page
-        /// </summary>
-        /// <param name="e">The navigation event arguments</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
             // color theme
             if (theme == Theme.Light)
             {
@@ -341,6 +335,61 @@ namespace Boxify
         private async void PrivacyButton_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY.md"));
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (TvSafeArea != null)
+                    {
+                        TvSafeArea.Toggled -= TvSafe_Toggled;
+                    }
+                    if (System != null)
+                    {
+                        System.Click -= ThemeColor_Click;
+                    }
+                    if (Light != null)
+                    {
+                        Light.Click -= ThemeColor_Click;
+                    }
+                    if (Dark != null)
+                    {
+                        Dark.Click -= ThemeColor_Click;
+                    }
+                    if (Spotify != null)
+                    {
+                        Spotify.Click -= Playbacksource_Click;
+                    }
+                    if (YouTube != null)
+                    {
+                        YouTube.Click -= Playbacksource_Click;
+                    }
+                    if (Announcement1000 != null)
+                    {
+                        Announcement1000.Click -= Announcement1000_Click;
+                    }
+                    if (RateButton != null)
+                    {
+                        RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
+                    }
+                    if (Repo != null)
+                    {
+                        Repo.Click -= Repo_Click;
+                    }
+                    if (PrivacyButton != null)
+                    {
+                        PrivacyButton.Click -= PrivacyButton_Click;
+                    }
+                });
+            }
         }
     }
 }

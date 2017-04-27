@@ -142,8 +142,7 @@ namespace Boxify.Classes
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
-                App.mainPage.SetYouTubeLoadingValue(0, localLock);
+                App.mainPage.SetYouTubeValues(0, limit, localLock);
                 App.mainPage.BringUpYouTube(localLock);
             }
 
@@ -160,7 +159,7 @@ namespace Boxify.Classes
                 }
                 else if (this.source == Playbacksource.YouTube)
                 {
-                    App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
+                    App.mainPage.SetYouTubeValues(0, limit, localLock);
                 }
             }
 
@@ -221,7 +220,7 @@ namespace Boxify.Classes
                                 }
                             }
                         }
-                        App.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
                     }
                 }
 
@@ -319,8 +318,7 @@ namespace Boxify.Classes
             }
             else if (this.source == Playbacksource.YouTube)
             {
-                App.mainPage.SetYouTubeLoadingMaximum(limit, localLock);
-                App.mainPage.SetYouTubeLoadingValue(0, localLock);
+                App.mainPage.SetYouTubeValues(0, limit, localLock);
                 App.mainPage.BringUpYouTube(localLock);
             }
 
@@ -384,7 +382,7 @@ namespace Boxify.Classes
                                 }
                             }
                         }
-                        App.mainPage.SetYouTubeLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
                     }
                 }
 

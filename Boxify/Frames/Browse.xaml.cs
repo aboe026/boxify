@@ -167,7 +167,7 @@ namespace Boxify
         }
 
         /// <summary>
-        /// free memory
+        /// Free up memory
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -178,6 +178,7 @@ namespace Boxify
                 featuredPlaylistsOffset = 0;
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
+                    Bindings.StopTracking();
                     if (FeaturedPlaylists != null)
                     {
                         FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
@@ -192,6 +193,20 @@ namespace Boxify
 
                         FeaturedPlaylists = null;
                     }
+
+                    if (Refresh != null)
+                    {
+                        Refresh.Click -= Refresh_Click;
+                        Refresh = null;
+                    }
+                    if (More != null)
+                    {
+                        More.Click -= More_Click;
+                        More = null;
+                    }
+
+                    FeaturedPlaylistLabel = null;
+                    FeaturedPlaylistMessage = null;
                 });
             }
         }

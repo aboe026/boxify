@@ -100,7 +100,7 @@ namespace Boxify.Frames
                     return;
                 }
 
-                Results.Items.Clear();
+                clearResults();
                 Results.Visibility = Visibility.Visible;
 
                 // playlists
@@ -250,6 +250,38 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Clears the search results objects to purge them from memory
+        /// </summary>
+        private void clearResults()
+        {
+            while (Results.Items.Count > 0)
+            {
+                object listItem = Results.Items.ElementAt(0);
+                if (listItem is PlaylistList)
+                {
+                    PlaylistList playlistList = listItem as PlaylistList;
+                    playlistList.Unload();
+                    Results.Items.Remove(playlistList);
+                    playlistList = null;
+                }
+                else if (listItem is TrackList)
+                {
+                    TrackList trackList = listItem as TrackList;
+                    trackList.Unload();
+                    Results.Items.Remove(trackList);
+                    trackList = null;
+                }
+                else if (listItem is AlbumList)
+                {
+                    AlbumList albumList = listItem as AlbumList;
+                    albumList.Unload();
+                    Results.Items.Remove(albumList);
+                    albumList = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Used when freeing memory
         /// </summary>
         /// <param name="sender"></param>
@@ -263,33 +295,22 @@ namespace Boxify.Frames
                     if (Results != null)
                     {
                         Results.ItemClick -= Results_ItemClick;
-                        for (int i = 0; i < Results.Items.Count; i++)
-                        {
-                            object listItem = Results.Items.ElementAt(i);
-                            if (listItem is PlaylistList)
-                            {
-                                PlaylistList playlistList = listItem as PlaylistList;
-                                playlistList.Unload();
-                                Results.Items.Remove(playlistList);
-                                playlistList = null;
-                            }
-                            else if (listItem is TrackList)
-                            {
-                                TrackList trackList = listItem as TrackList;
-                                trackList.Unload();
-                                Results.Items.Remove(trackList);
-                                trackList = null;
-                            }
-                            else if (listItem is AlbumList)
-                            {
-                                AlbumList albumList = listItem as AlbumList;
-                                albumList.Unload();
-                                Results.Items.Remove(albumList);
-                                albumList = null;
-                            }
-                        }
+                        clearResults();
                         Results = null;
                     }
+                    if (SearchType != null)
+                    {
+                        SearchType.SelectionChanged -= SearchButton_Click;
+                        SearchType = null;
+                    }
+                    if (SearchButton != null)
+                    {
+                        SearchButton.Click -= SearchButton_Click;
+                        SearchButton = null;
+                    }
+
+                    SearchBox = null;
+                    Feedback = null;
                 });
             }
         }

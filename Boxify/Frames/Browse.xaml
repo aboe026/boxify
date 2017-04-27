@@ -55,7 +55,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="24" 
                     Content="&#xE72C;"
-                    Background="{x:Null}"
+                    Background="Transparent"
                     Click="Refresh_Click"
                     XYFocusRight="{x:Bind More}"/>
 

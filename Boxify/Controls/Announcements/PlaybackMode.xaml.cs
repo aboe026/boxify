@@ -16,17 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using static Boxify.Settings;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Boxify.Controls.Announcements
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PlaybackMode : Page
+    public sealed partial class PlaybackMode : UserControl
     {
         /// <summary>
         /// Main constructor
@@ -80,6 +83,33 @@ namespace Boxify.Controls.Announcements
             {
                 Settings.SetPlaybackSource(source);
             }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void UserControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (Spotify != null)
+                {
+                    Spotify.Click -= PlaybackMode_Click;
+                    Spotify = null;
+                }
+                if (YouTube != null)
+                {
+                    YouTube.Click -= PlaybackMode_Click;
+                    YouTube = null;
+                }
+
+                Header = null;
+                Message = null;
+
+                CenteredPanel = null;
+            });
         }
     }
 }

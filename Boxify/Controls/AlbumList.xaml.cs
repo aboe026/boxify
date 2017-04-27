@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -62,19 +65,17 @@ namespace Boxify.Frames
         /// <summary>
         /// Free up memory
         /// </summary>
-        public void Unload()
+        public async void Unload()
         {
-            album = null;
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                album = null;
 
-            Image.ClearValue(Image.SourceProperty);
-            Name.ClearValue(TextBlock.TextProperty);
-            ArtistLabel.ClearValue(TextBlock.TextProperty);
-            Artist.ClearValue(TextBlock.TextProperty);
-
-            Image = null;
-            Name = null;
-            ArtistLabel = null;
-            Artist = null;
+                Image = null;
+                Name = null;
+                ArtistLabel = null;
+                Artist = null;
+            });
         }
     }
 }

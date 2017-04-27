@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls.Announcements;
 using Boxify.Frames;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace Boxify
         public static bool returningFromMemoryReduction = false;
         public static string errorMessage = "";
         public static List<UserControl> announcementItems = new List<UserControl>();
+        public static bool closedAnnouncements = false;
         public static Browse browsePage;
         public static Profile profilePage;
         public static Search searchPage;
@@ -68,7 +70,7 @@ namespace Boxify
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             // announcements
-            if (announcementItems.Count > 0)
+            if (announcementItems.Count > 0 && !closedAnnouncements)
             {
                 ShowAnnouncements(announcementItems);
             }
@@ -115,7 +117,7 @@ namespace Boxify
             SelectHamburgerOption(App.hamburgerOptionToLoadTo, true);
             if (App.hamburgerOptionToLoadTo == "SettingsItem")
             {
-                SettingsButton_Click(null, null);
+                SettingsItem_Click(null, null);
             }
             UpdateUserUI();
             
@@ -234,7 +236,10 @@ namespace Boxify
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                PlaybackMenu.SetLoadingActive(active);
+                if (PlaybackMenu != null)
+                {
+                    PlaybackMenu.SetLoadingActive(active);
+                }
             });
         }
 
@@ -252,7 +257,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
+        private void Hamburger_Click(object sender, RoutedEventArgs e)
         {
             MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
         }
@@ -262,7 +267,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (MainContentFrame.CanGoBack)
             {
@@ -314,17 +319,17 @@ namespace Boxify
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
-                SettingsButton.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
+                SettingsItem.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
                 if (setFocus)
                 {
-                    SettingsButton.Focus(FocusState.Programmatic);
+                    SettingsItem.Focus(FocusState.Programmatic);
                 }
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
             }
             else
             {
-                SettingsButton.Background = new SolidColorBrush(Colors.Transparent);
+                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
             }
             for (int i = 0; i < HamburgerOptions.Items.Count; i++)
             {
@@ -361,7 +366,7 @@ namespace Boxify
                 {
                     return;
                 }
-                SettingsButton.Background = new SolidColorBrush(Colors.Transparent);
+                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
                 currentNavSelection = selectedItem;
                 currentNavSelection.Focus(FocusState.Programmatic);
                 foreach (ListViewItem item in HamburgerOptions.Items)
@@ -481,61 +486,64 @@ namespace Boxify
         /// <param name="e"></param>
         private void Page_KeyUp(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == VirtualKey.GamepadView)
+            if (AnnouncementsContainer.Visibility != Visibility.Visible)
             {
-                MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
-            }
-            else if (e.Key == VirtualKey.GamepadY)
-            {
-                SelectHamburgerOption("SearchItem", true);
-            }
-            else if (e.Key == VirtualKey.GamepadX)
-            {
-                if (App.playbackService.showing)
+                if (e.Key == VirtualKey.GamepadView)
                 {
-                    PlaybackMenu.FocusPlayPause();
+                    MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
                 }
-            }
-            else if (e.Key == VirtualKey.GamepadRightThumbstickButton)
-            {
-                if (App.playbackService.showing)
+                else if (e.Key == VirtualKey.GamepadY)
                 {
-                    if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+                    SelectHamburgerOption("SearchItem", true);
+                }
+                else if (e.Key == VirtualKey.GamepadX)
+                {
+                    if (App.playbackService.showing)
                     {
-                        App.playbackService.Player.Pause();
-                    }
-                    else
-                    {
-                        App.playbackService.Player.Play();
+                        PlaybackMenu.FocusPlayPause();
                     }
                 }
-            }
-            else if (e.Key == VirtualKey.GamepadRightThumbstickRight)
-            {
-                if (App.playbackService.showing)
+                else if (e.Key == VirtualKey.GamepadRightThumbstickButton)
                 {
-                    App.playbackService.NextTrack();
+                    if (App.playbackService.showing)
+                    {
+                        if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+                        {
+                            App.playbackService.Player.Pause();
+                        }
+                        else
+                        {
+                            App.playbackService.Player.Play();
+                        }
+                    }
                 }
-            }
-            else if (e.Key == VirtualKey.GamepadRightThumbstickLeft)
-            {
-                if (App.playbackService.showing)
+                else if (e.Key == VirtualKey.GamepadRightThumbstickRight)
                 {
-                    App.playbackService.PreviousTrack();
+                    if (App.playbackService.showing)
+                    {
+                        App.playbackService.NextTrack();
+                    }
                 }
-            }
-            else if (e.Key == VirtualKey.Down && e.OriginalSource is Button && ((Button)e.OriginalSource).Name == "Back")
-            {
-                MainContentFrame.Focus(FocusState.Programmatic);
-            }
-            else if (e.Key == VirtualKey.Escape && e.OriginalSource is Slider && ((Slider)e.OriginalSource).Name == "VolumeSlider")
-            {
-                PlaybackMenu.VolumeSlider_LostFocus(null, null);
-                PlaybackMenu.FocusOnVolume();
-            }
-            else if (e.Key == VirtualKey.Escape)
-            {
-                BackButton_Click(null, null);
+                else if (e.Key == VirtualKey.GamepadRightThumbstickLeft)
+                {
+                    if (App.playbackService.showing)
+                    {
+                        App.playbackService.PreviousTrack();
+                    }
+                }
+                else if (e.Key == VirtualKey.Down && e.OriginalSource is Button && ((Button)e.OriginalSource).Name == "Back")
+                {
+                    MainContentFrame.Focus(FocusState.Programmatic);
+                }
+                else if (e.Key == VirtualKey.Escape && e.OriginalSource is Slider && ((Slider)e.OriginalSource).Name == "VolumeSlider")
+                {
+                    PlaybackMenu.VolumeSlider_LostFocus(null, null);
+                    PlaybackMenu.FocusOnVolume();
+                }
+                else if (e.Key == VirtualKey.Escape)
+                {
+                    Back_Click(null, null);
+                }
             }
         }
 
@@ -561,7 +569,7 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private void SettingsItem_Click(object sender, RoutedEventArgs e)
         {
             if (MainSplitView.IsPaneOpen)
             {
@@ -736,23 +744,16 @@ namespace Boxify
         /// <summary>
         /// Set the current YouTube loading progress
         /// </summary>
-        /// <param name="value">The amount of progress made</param>
-        public void SetYouTubeLoadingValue(double value, long localLock)
+        /// <param name="loading">The amount of progress made</param>
+        public void SetYouTubeValues(double loading, double max, long localLock)
         {
             if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
-                YouTubeLoading.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Set the maximum YouTube loading value
-        /// </summary>
-        /// <param name="max">The limit of progress</param>
-        public void SetYouTubeLoadingMaximum(double max, long localLock)
-        {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
-            {
+                if (YouTubeLoading.Visibility == Visibility.Collapsed)
+                {
+                    BringUpYouTube();
+                }
+                YouTubeLoading.Value = loading;
                 YouTubeLoading.Maximum = max;
             }
         }
@@ -777,30 +778,180 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void Page_Unloaded(object sender, RoutedEventArgs e)
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (App.isInBackgroundMode)
             {
-                this.KeyDown -= Page_KeyUp;
-                currentNavSelection = null;
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Bindings.StopTracking();
+                    this.KeyDown -= Page_KeyUp;
+                    currentNavSelection = null;
 
-                if (browsePage != null)
-                {
-                    browsePage.Page_Unloaded(null, null);
-                    browsePage = null;
-                }
-                if (yourMusicPage != null)
-                {
-                    yourMusicPage.Page_Unloaded(null, null);
-                    yourMusicPage = null;
-                }
-                if (searchPage != null)
-                {
-                    searchPage.Page_Unloaded(null, null);
-                    searchPage = null;
-                }
+                    // direct elements
+                    if (UserName != null)
+                    {
+                        UserName.PointerReleased -= UserElement_PointerReleased;
+                        UserName = null;
+                    }
+                    if (UserPicContainer != null)
+                    {
+                        UserPicContainer.PointerReleased -= UserElement_PointerReleased;
+                        UserPicContainer = null;
+                    }
+                    if (BlankUser != null)
+                    {
+                        BlankUser.PointerReleased -= UserElement_PointerReleased;
+                        BlankUser = null;
+                    }
+                    if (Hamburger != null)
+                    {
+                        Hamburger.Click -= Hamburger_Click;
+                        Hamburger = null;
+                    }
+                    if (Back != null)
+                    {
+                        Back.Click -= Back_Click;
+                        Back = null;
+                    }
+                    Title = null;
+                    SpotifyLogo = null;
+                    SpotifyLoading = null;
+                    YouTubeLogo = null;
+                    YouTubeLoading = null;
+                    YouTubeMessage = null;
+                    Header = null;
+                    NavLeftBorder = null;
+                    RightMainBackground = null;
+                    UserPic = null;
 
-                Bindings.StopTracking();
+                    if (HamburgerOptions != null)
+                    {
+                        HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
+                        HamburgerOptions = null;
+                    }
+                    if (SettingsItem != null)
+                    {
+                        SettingsItem.Click -= SettingsItem_Click;
+                        SettingsItem = null;
+                    }
+
+                    BrowseItem = null;
+                    YourMusicItem = null;
+                    ProfileItem = null;
+                    SearchItem = null;
+
+                    if (CancelDialog != null)
+                    {
+                        CancelDialog.Unload();
+                        CancelDialog = null;
+                    }
+                    ErrorMessage = null;
+                    ErrorMessageGrid = null;
+
+                    MainContentFrame = null;
+                    MainSplitView = null;
+
+                    if (PlaybackMenu != null)
+                    {
+                        PlaybackMenu.UserControl_Unloaded(null, null);
+                        PlaybackMenu.Unloaded -= PlaybackMenu.UserControl_Unloaded;
+                        PlaybackMenu = null;
+                    }
+
+
+
+                    // dependant pages
+                    if (browsePage != null)
+                    {
+                        browsePage.Page_Unloaded(null, null);
+                        browsePage.Unloaded -= browsePage.Page_Unloaded;
+                        browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                        browsePage = null;
+                    }
+                    if (profilePage != null)
+                    {
+                        profilePage.Page_Unloaded(null, null);
+                        profilePage = null;
+                    }
+                    if (yourMusicPage != null)
+                    {
+                        yourMusicPage.Page_Unloaded(null, null);
+                        yourMusicPage = null;
+                    }
+                    if (searchPage != null)
+                    {
+                        searchPage.Page_Unloaded(null, null);
+                        searchPage = null;
+                    }
+                    if (settingsPage != null)
+                    {
+                        settingsPage.Page_Unloaded(null, null);
+                        settingsPage = null;
+                    }
+
+                    // announcements
+                    while (announcementItems.Count > 0)
+                    {
+                        UserControl announcement = announcementItems.ElementAt(0);
+                        if (announcement is Welcome)
+                        {
+                            Welcome welcome = announcement as Welcome;
+                            welcome.UserControl_Unloaded(null, null);
+                            welcome.Unloaded -= welcome.UserControl_Unloaded;
+                            announcementItems.Remove(welcome);
+                            welcome = null;
+                        }
+                        if (announcement is PlaybackMode)
+                        {
+                            PlaybackMode playbackMode = announcement as PlaybackMode;
+                            playbackMode.UserControl_Unloaded(null, null);
+                            playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
+                            announcementItems.Remove(playbackMode);
+                            playbackMode = null;
+                        }
+                        if (announcement is ThemeMode)
+                        {
+                            ThemeMode themeMode = announcement as ThemeMode;
+                            themeMode.UserControl_Unloaded(null, null);
+                            themeMode.Unloaded -= themeMode.UserControl_Unloaded;
+                            announcementItems.Remove(themeMode);
+                            themeMode = null;
+                        }
+                        if (announcement is TvMode)
+                        {
+                            TvMode tvMode = announcement as TvMode;
+                            tvMode.UserControl_Unloaded(null, null);
+                            announcementItems.Remove(tvMode);
+                            tvMode = null;
+                        }
+                    }
+                    Announcements = null;
+                    AnnouncementsBackground = null;
+
+                    if (PreviousAnnouncement != null)
+                    {
+                        PreviousAnnouncement.Click -= PreviousAnnouncement_Click;
+                        PreviousAnnouncement = null;
+                    }
+                    if (NextAnnouncement != null)
+                    {
+                        NextAnnouncement.Click -= NextAnnouncement_Click;
+                        NextAnnouncement = null;
+                    }
+                    if (CloseAnnouncements != null)
+                    {
+                        CloseAnnouncements.Click -= CloseAnnouncements_Click;
+                        CloseAnnouncements = null;
+                    }
+                    if (AnnouncementsContainer != null)
+                    {
+                        AnnouncementsContainer.KeyUp -= AnnouncementsContainer_KeyUp;
+                        AnnouncementsContainer = null;
+                    }
+
+                    BackgroundGrid = null;
+                });
             }
         }
 
@@ -811,8 +962,10 @@ namespace Boxify
         /// <param name="e"></param>
         public void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
         {
+            closedAnnouncements = true;
             AnnouncementsContainer.Visibility = Visibility.Collapsed;
             announcementItems.Clear();
+            MainContentFrame.Focus(FocusState.Programmatic);
         }
 
         /// <summary>
@@ -860,6 +1013,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void AnnouncementsContainer_KeyUp(object sender, KeyRoutedEventArgs e)
         {
+            e.Handled = true;
             if (e.Key == VirtualKey.Escape)
             {
                 CloseAnnouncements_Click(null, null);

@@ -67,11 +67,11 @@ namespace Boxify
             if (UserProfile.IsLoggedIn())
             {
                 More.IsEnabled = false;
-                warning.Visibility = Visibility.Collapsed;
-                logIn.Visibility = Visibility.Collapsed;
+                Warning.Visibility = Visibility.Collapsed;
+                LogIn.Visibility = Visibility.Collapsed;
                 if (refreshing)
                 {
-                    refresh.Visibility = Visibility.Collapsed;
+                    Refresh.Visibility = Visibility.Collapsed;
                     App.mainPage.SetSpotifyLoadingMaximum(playlistsCount);
                     App.mainPage.SetSpotifyLoadingValue(0);
                     App.mainPage.BringUpSpotify();
@@ -93,7 +93,7 @@ namespace Boxify
                         }
                         catch (COMException) { }
                     }
-                    refresh.Visibility = Visibility.Visible;
+                    Refresh.Visibility = Visibility.Visible;
                     preEmptiveLoadPlaylists.Clear();
                 }
                 else if (Playlists.Items.Count == 0)
@@ -115,10 +115,10 @@ namespace Boxify
             else
             {
                 More.Visibility = Visibility.Collapsed;
-                playlistsLabel.Visibility = Visibility.Collapsed;
-                refresh.Visibility = Visibility.Collapsed;
-                warning.Visibility = Visibility.Visible;
-                logIn.Visibility = Visibility.Visible;
+                PlaylistsLabel.Visibility = Visibility.Collapsed;
+                Refresh.Visibility = Visibility.Collapsed;
+                Warning.Visibility = Visibility.Visible;
+                LogIn.Visibility = Visibility.Visible;
             }
         }
 
@@ -129,7 +129,7 @@ namespace Boxify
         public async Task LoadPlaylists()
         {
             More.IsEnabled = false;
-            refresh.IsEnabled = false;
+            Refresh.IsEnabled = false;
             App.mainPage.SetSpotifyLoadingValue(0);
             App.mainPage.BringUpSpotify();
 
@@ -167,7 +167,7 @@ namespace Boxify
                     App.mainPage.SetSpotifyLoadingValue(Playlists.Items.Count);
                 }
             }
-            refresh.IsEnabled = true;
+            Refresh.IsEnabled = true;
             if (playlistsOffset + playlistLimit >= playlistsTotal)
             {
                 More.Content = "No More";
@@ -277,13 +277,41 @@ namespace Boxify
                 playlistsOffset = 0;
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    Playlists.ItemClick -= Playlists_ItemClick;
-                    for (int i = 0; i < Playlists.Items.Count; i++)
+                    Bindings.StopTracking();
+
+                    if (Playlists != null)
                     {
-                        PlaylistList playlistList = Playlists.Items.ElementAt(i) as PlaylistList;
-                        playlistList.Unload();
+                        Playlists.ItemClick -= Playlists_ItemClick;
+                        while (Playlists.Items.Count > 0)
+                        {
+                            PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                            playlistList.Unload();
+                            Playlists.Items.Remove(playlistList);
+                            playlistList = null;
+                        }
+                        Playlists = null;
                     }
-                    Playlists.Items.Clear();
+
+                    if (LogIn != null)
+                    {
+                        LogIn.Click -= LogIn_Click;
+                        LogIn = null;
+                    }
+                    if (Refresh != null)
+                    {
+                        Refresh.Click -= Refresh_Click;
+                        Refresh = null;
+                    }
+                    if (More != null)
+                    {
+                        More.Click -= More_Click;
+                        More = null;
+                    }
+
+
+                    Warning = null;
+                    PlaylistsLabel = null;
+
                 });
             }
         }

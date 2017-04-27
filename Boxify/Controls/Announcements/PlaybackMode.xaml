@@ -18,7 +18,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 -->
 
-<Page
+<UserControl
     x:Class="Boxify.Controls.Announcements.PlaybackMode"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,7 +26,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Height="300"
-    Width="500">
+    Width="500"
+    Unloaded="UserControl_Unloaded">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -119,4 +120,4 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
         </RelativePanel>
     </RelativePanel>
-</Page>
+</UserControl>

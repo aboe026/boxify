@@ -55,27 +55,34 @@ namespace Boxify
         /// </summary>
         public async Task UpdateUI()
         {
-            MediaItemDisplayProperties displayProperties = App.playbackService.currentlyPlayingItem.GetDisplayProperties();
-            TrackName.Text = displayProperties.MusicProperties.Title;
-            TrackArtist.Text = displayProperties.MusicProperties.AlbumTitle;
-            if (displayProperties.Thumbnail != null)
+            if (App.playbackService.currentlyPlayingItem != null)
             {
-                IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.SetSource(thumbnail);
-                AlbumArt.Source = bitmapImage;
-            }
-            if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
-            {
-                Play.Visibility = Visibility.Collapsed;
-                uiUpdateTimer.Start();
+                MediaItemDisplayProperties displayProperties = App.playbackService.currentlyPlayingItem.GetDisplayProperties();
+                TrackName.Text = displayProperties.MusicProperties.Title;
+                TrackArtist.Text = displayProperties.MusicProperties.AlbumTitle;
+                if (displayProperties.Thumbnail != null)
+                {
+                    IRandomAccessStreamWithContentType thumbnail = await displayProperties.Thumbnail.OpenReadAsync();
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.SetSource(thumbnail);
+                    AlbumArt.Source = bitmapImage;
+                }
+                if (App.playbackService.Player.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+                {
+                    Play.Visibility = Visibility.Collapsed;
+                    uiUpdateTimer.Start();
+                }
+                else
+                {
+                    Pause.Visibility = Visibility.Collapsed;
+                }
+                UpdateProgressUI();
+                LoadingTrack.IsActive = false;
             }
             else
             {
-                Pause.Visibility = Visibility.Collapsed;
+                SetLoadingActive(true);
             }
-            UpdateProgressUI();
-            LoadingTrack.IsActive = false;
         }
 
         /// <summary>
@@ -453,6 +460,8 @@ namespace Boxify
                 Previous.Click -= Previous_Click;
                 Play.Click -= PlayPause_Click;
                 Pause.Click -= PlayPause_Click;
+                Play.Visibility = Visibility.Visible;
+                Pause.Visibility = Visibility.Collapsed;
                 TrackName.Text = "";
                 TrackArtist.Text = "";
                 Progress.Value = 0;
@@ -463,6 +472,8 @@ namespace Boxify
             else
             {
                 uiUpdateTimer.Start();
+                Play.Visibility = Visibility.Collapsed;
+                Pause.Visibility = Visibility.Visible;
                 Next.Click += Next_Click;
                 Previous.Click += Previous_Click;
                 Play.Click += PlayPause_Click;
@@ -471,15 +482,75 @@ namespace Boxify
         }
 
         /// <summary>
-        /// Used when freeing memory
+        /// Free up memory
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (App.isInBackgroundMode)
             {
-                this.uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (uiUpdateTimer != null)
+                    {
+                        uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
+                        uiUpdateTimer = null;
+                    }
+
+                    if (Repeat != null)
+                    {
+                        Repeat.Click -= Repeat_Click;
+                        Repeat = null;
+                    }
+                    if (RepeatEnabled != null)
+                    {
+                        RepeatEnabled.Click -= Repeat_Click;
+                        RepeatEnabled = null;
+                    }
+                    if (Volume != null)
+                    {
+                        Volume.Click -= Volume_Click;
+                        Volume = null;
+                    }
+                    if (VolumeSlider != null)
+                    {
+                        VolumeSlider.LostFocus -= VolumeSlider_LostFocus;
+                        VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
+                        VolumeSlider = null;
+                    }
+                    if (Play != null)
+                    {
+                        Play.Click -= PlayPause_Click;
+                        Play = null;
+                    }
+                    if (Pause != null)
+                    {
+                        Pause.Click -= PlayPause_Click;
+                        Pause = null;
+                    }
+                    if (Previous != null)
+                    {
+                        Previous.Click -= Previous_Click;
+                        Previous = null;
+                    }
+                    if (Next != null)
+                    {
+                        Next.Click -= Next_Click;
+                        Next = null;
+                    }
+
+                    LoadingTrack = null;
+                    AlbumArt = null;
+                    TrackName = null;
+                    TrackArtist = null;
+                    CurrentTime = null;
+                    Progress = null;
+                    Duration = null;
+
+                    MainPanel = null;
+                    MainGrid = null;
+                });
             }
         }
     }

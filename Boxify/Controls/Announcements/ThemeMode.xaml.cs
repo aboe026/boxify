@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using static Boxify.Settings;
@@ -108,6 +111,38 @@ namespace Boxify.Controls.Announcements
                     App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (System != null)
+                {
+                    System.Click -= ThemeMode_Click;
+                    System = null;
+                }
+                if (Light != null)
+                {
+                    Light.Click -= ThemeMode_Click;
+                    Light = null;
+                }
+                if (Dark != null)
+                {
+                    Dark.Click -= ThemeMode_Click;
+                    Dark = null;
+                }
+
+                Header = null;
+                Message = null;
+
+                CenteredPanel = null;
+            });
         }
     }
 }
