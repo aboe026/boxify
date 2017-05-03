@@ -27,6 +27,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="806"
     d:DesignHeight="315"
+    NavigationCacheMode="Required"
     Unloaded="Page_Unloaded">
 
     <Page.Resources>
@@ -41,54 +42,54 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
         <RelativePanel>
 
-            <TextBlock Name="warning"
+            <TextBlock Name="Warning"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        Margin="0,0,0,0"
                        Text="You must be logged in to view Your Music"
                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-            <Button Name="logIn"
+            <Button Name="LogIn"
                     Content="Manage Proflie"
-                    RelativePanel.Below="warning"
+                    RelativePanel.Below="Warning"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     Margin="0,10,0,0"
                     Style="{StaticResource ButtonStyle}"
                     Click="LogIn_Click" />
             
-            <TextBlock Name="playlistsLabel"
+            <TextBlock Name="PlaylistsLabel"
                        Text="Your Playlists"
                        RelativePanel.AlignLeftWithPanel="True"
                        RelativePanel.AlignTopWithPanel="True"
                        Margin="0,0,0,20"
                        Style="{StaticResource SubheaderTextBlockStyle}"/>
 
-            <Button Name="refresh" 
-                    RelativePanel.RightOf="playlistsLabel"
-                    RelativePanel.AlignVerticalCenterWith="playlistsLabel"
+            <Button Name="Refresh" 
+                    RelativePanel.RightOf="PlaylistsLabel"
+                    RelativePanel.AlignVerticalCenterWith="PlaylistsLabel"
                     Margin="20,-15,0,0"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="24" 
                     Content="&#xE72C;"
-                    Background="{x:Null}"
+                    Background="Transparent"
                     Click="Refresh_Click"
                     XYFocusRight="{x:Bind More}"/>
 
             <Button Name="More"
-                    RelativePanel.RightOf="refresh"
-                    RelativePanel.AlignVerticalCenterWith="playlistsLabel"
+                    RelativePanel.RightOf="Refresh"
+                    RelativePanel.AlignVerticalCenterWith="PlaylistsLabel"
                     Margin="20,-15,0,0"
                     Content="More..."
                     Style="{StaticResource ButtonStyle}"
                     Click="More_Click"/>
 
-            <ListView Name="playlists"
+            <ListView Name="Playlists"
                       RelativePanel.AlignLeftWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
-                      RelativePanel.Below="playlistsLabel"
+                      RelativePanel.Below="PlaylistsLabel"
                       IsItemClickEnabled="True"
                       ItemClick="Playlists_ItemClick"
-                      XYFocusUp="{x:Bind refresh}">
+                      XYFocusUp="{x:Bind Refresh}">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">

@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -51,24 +54,45 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         private void TvModeSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            MainPage mainPage = (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage);
             bool enabled = (sender as ToggleSwitch).IsOn;
-            if (mainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                mainPage.settingsPage.SetTvSafeUI(enabled);
+                MainPage.settingsPage.SetTvSafeUI(enabled);
             }
             else
             {
                 Settings.SetTvSafe(enabled);
                 if (enabled)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
                 else
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (TvModeSwitch != null)
+                {
+                    TvModeSwitch.Toggled -= TvModeSwitch_Toggled;
+                    TvModeSwitch = null;
+                }
+
+                Header = null;
+                Message = null;
+
+                CenteredPanel = null;
+            });
         }
     }
 }

@@ -18,9 +18,12 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Data.Json;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -34,13 +37,10 @@ namespace Boxify
     /// </summary>
     public sealed partial class Browse : Page
     {
-        private static MainPage mainPage;
         private static string featuredPlaylistsHref = "https://api.spotify.com/v1/browse/featured-playlists";
         private static int featuredPlaylistLimit = 6;
         private static int featuredPlaylistsOffset = 0;
         private static int featuredPlaylistsTotal = 15;
-        private static string featuredPlaylistsMessageSave = "";
-        private static List<PlaylistHero> featuredPlaylistsSave;
 
         /// <summary>
         /// The main constructor
@@ -48,6 +48,7 @@ namespace Boxify
         public Browse()
         {
             this.InitializeComponent();
+            MainPage.browsePage = this;
         }
 
         /// <summary>
@@ -56,56 +57,10 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
-            if (featuredPlaylistsSave == null)
+            if (FeaturedPlaylists.Items.Count == 0)
             {
                 await LoadFeaturedPlaylists();
             }
-            else
-            {
-                FeaturedPlaylistMessage.Text = featuredPlaylistsMessageSave;
-                foreach (PlaylistHero playlist in featuredPlaylistsSave)
-                {
-                    try
-                    {
-                        FeaturedPlaylists.Items.Add(playlist);
-                    }
-                    catch (COMException) { }
-                }
-            }
-            if (featuredPlaylistsOffset + featuredPlaylistLimit >= featuredPlaylistsTotal)
-            {
-                More.Content = "No More";
-                More.IsEnabled = false;
-            }
-            else
-            {
-                More.Content = "More...";
-                More.IsEnabled = true;
-            }
-        }
-
-        /// <summary>
-        /// When a user leaves the page
-        /// </summary>
-        /// <param name="e">The naviagation event arguments</param>
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            FeaturedPlaylists.Items.Clear();
-        }
-
-        /// <summary>
-        /// When a user leaves the page
-        /// </summary>
-        /// <param name="e">The navigation cancelled event arguments</param>
-        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            FeaturedPlaylists.Items.Clear();
-            base.OnNavigatingFrom(e);
         }
 
         /// <summary>
@@ -116,8 +71,8 @@ namespace Boxify
         {
             More.IsEnabled = false;
             Refresh.IsEnabled = false;
-            mainPage.SetSpotifyLoadingValue(0);
-            mainPage.BringUpSpotify();
+            App.mainPage.SetSpotifyLoadingValue(0);
+            App.mainPage.BringUpSpotify();
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
             {
@@ -138,7 +93,6 @@ namespace Boxify
             if (featuredPlaylistsJson.TryGetValue("message", out IJsonValue messageJson))
             {
                 FeaturedPlaylistMessage.Text = messageJson.GetString();
-                featuredPlaylistsMessageSave = FeaturedPlaylistMessage.Text;
             }
             if (featuredPlaylistsJson.TryGetValue("playlists", out IJsonValue playlistsJson))
             {
@@ -150,11 +104,7 @@ namespace Boxify
                 if (playlists.TryGetValue("items", out IJsonValue itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
-                    mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
-                    if (featuredPlaylistsSave == null)
-                    {
-                        featuredPlaylistsSave = new List<PlaylistHero>();
-                    }
+                    App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
                         if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
@@ -162,10 +112,9 @@ namespace Boxify
                             string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
                             await playlist.SetInfo(fullPlaylistString);
-                            PlaylistHero playlistHero = new PlaylistHero(playlist, mainPage);
+                            PlaylistHero playlistHero = new PlaylistHero(playlist);
                             FeaturedPlaylists.Items.Add(playlistHero);
-                            featuredPlaylistsSave.Add(playlistHero);
-                            mainPage.SetSpotifyLoadingValue(featuredPlaylistsSave.Count);
+                            App.mainPage.SetSpotifyLoadingValue(FeaturedPlaylists.Items.Count);
                         }
                     }
                 }
@@ -191,8 +140,13 @@ namespace Boxify
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             featuredPlaylistsOffset = 0;
-            featuredPlaylistsSave = new List<PlaylistHero>();
-            FeaturedPlaylists.Items.Clear();
+            while (FeaturedPlaylists.Items.Count > 0)
+            {
+                PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
+                playlistHero.Unload();
+                FeaturedPlaylists.Items.Remove(playlistHero);
+                playlistHero = null;
+            }
             await LoadFeaturedPlaylists();
         }
 
@@ -203,7 +157,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistHero).Playlist.PlayTracks();
+            (e.ClickedItem as PlaylistHero).playlist.PlayTracks();
         }
 
         /// <summary>
@@ -219,16 +173,47 @@ namespace Boxify
         }
 
         /// <summary>
-        /// free memory
+        /// Free up memory
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (App.isInBackgroundMode)
             {
                 featuredPlaylistsOffset = 0;
-                featuredPlaylistsSave = null;
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Bindings.StopTracking();
+                    if (FeaturedPlaylists != null)
+                    {
+                        FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
+
+                        while (FeaturedPlaylists.Items.Count > 0)
+                        {
+                            PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
+                            playlistHero.Unload();
+                            FeaturedPlaylists.Items.Remove(playlistHero);
+                            playlistHero = null;
+                        }
+
+                        FeaturedPlaylists = null;
+                    }
+
+                    if (Refresh != null)
+                    {
+                        Refresh.Click -= Refresh_Click;
+                        Refresh = null;
+                    }
+                    if (More != null)
+                    {
+                        More.Click -= More_Click;
+                        More = null;
+                    }
+
+                    FeaturedPlaylistLabel = null;
+                    FeaturedPlaylistMessage = null;
+                });
             }
         }
     }

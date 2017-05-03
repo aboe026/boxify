@@ -22,74 +22,41 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
-using Windows.UI.Xaml.Media.Imaging;
-
 namespace Boxify
 {
     /// <summary>
     /// A Track object
     /// </summary>
-    public class Track : BindableBase
+    public class Track
     {
-        public string Href { get; set; }
-        public string Id { get; set; }
-        public string name;
-        public string AlbumString { get; set; }
-        public Album album;
-        public List<Artist> Artists { get; set; }
-        public string PreviewUrl { get; set; }
-        public int Duration { get; set; }
+        public string id = "";
+        public string href = "";
+        public string name = "";
+        public string albumJson = "";
+        public Album album = new Album();
+        public List<Artist> artists = new List<Artist>();
+        public string previewUrl = "";
+        public int duration = 0;
 
         /// <summary>
         /// The main constructor to create an empty instance
         /// </summary>
         public Track()
         {
-            name = "";
-            AlbumString = "";
-            album = new Album();
-            Artists = new List<Artist>();
-            PreviewUrl = "";
-            Duration = 0;
+
         }
 
         /// <summary>
-        /// The name of the track
+        /// Get the name of the first Artist
         /// </summary>
-        public string Name
+        /// <returns>The name of the first Artist</returns>
+        public string GetMainArtistName()
         {
-            get { return this.name; }
-            set { this.SetProperty(ref this.name, value); }
-        }
-
-        /// <summary>
-        /// The main image for the track
-        /// </summary>
-        public BitmapImage Image
-        {
-            get
+            if (this.artists.Count > 0)
             {
-                if (this.album.Images.Count > 0)
-                {
-                    return this.album.Images.ElementAt(0);
-                }
-                return new BitmapImage();
+                return this.artists.ElementAt(0).name;
             }
-        }
-
-        /// <summary>
-        /// The main artist for the track
-        /// </summary>
-        public string ArtistName
-        {
-            get
-            {
-                if (this.Artists.Count > 0)
-                {
-                    return this.Artists.ElementAt(0).Name;
-                }
-                return "";
-            }
+            return "";
         }
 
         /// <summary>
@@ -131,13 +98,13 @@ namespace Boxify
             {
                 return;
             }
-            if (trackObjectJson.TryGetValue("href", out IJsonValue trackHref))
-            {
-                Href = trackHref.GetString();
-            }
             if (trackObjectJson.TryGetValue("id", out IJsonValue trackId))
             {
-                Id = trackId.GetString();
+                id = trackId.GetString();
+            }
+            if (trackObjectJson.TryGetValue("href", out IJsonValue trackHref))
+            {
+                href = trackHref.GetString();
             }
             if (trackObjectJson.TryGetValue("name", out IJsonValue trackName))
             {
@@ -147,12 +114,12 @@ namespace Boxify
             {
                 if (trackPreview.ToString() != "null")
                 {
-                    PreviewUrl = trackPreview.GetString();
+                    previewUrl = trackPreview.GetString();
                 }
             }
             if (trackObjectJson.TryGetValue("duration_ms", out IJsonValue trackDuration))
             {
-                Duration = Convert.ToInt32(trackDuration.GetNumber());
+                duration = Convert.ToInt32(trackDuration.GetNumber());
             }
             if (trackObjectJson.TryGetValue("album", out IJsonValue trackAlbum))
             {
@@ -165,7 +132,7 @@ namespace Boxify
                 {
                     Artist artist = new Artist();
                     artist.SetInfo(artistObject.Stringify());
-                    Artists.Add(artist);
+                    artists.Add(artist);
                 }
             }
         }
@@ -175,7 +142,7 @@ namespace Boxify
         /// </summary>
         public void PlayTrack()
         {
-            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, Href);
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, href);
         }
     }
 }

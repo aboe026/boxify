@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -27,8 +30,7 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class AlbumList : UserControl
     {
-        public MainPage mainPage;
-        public Album Album { get; set; }
+        public Album album;
 
         /// <summary>
         /// The main constructor
@@ -44,11 +46,36 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="playlist">The Album whose information will be displayed</param>
         /// <param name="mainPage">The MainPage containing the Playlist</param>
-        public AlbumList(Album album, MainPage mainPage) : this()
+        public AlbumList(Album album) : this()
         {
-            this.Album = album;
-            this.mainPage = mainPage;
-            DataContext = this.Album;
+            this.album = album;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Album information
+        /// </summary>
+        public void PopulateData()
+        {
+            Image.Source = album.image;
+            Name.Text = album.name;
+            Artist.Text = album.GetMainArtistName();
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public async void Unload()
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                album = null;
+
+                Image = null;
+                Name = null;
+                ArtistLabel = null;
+                Artist = null;
+            });
         }
     }
 }

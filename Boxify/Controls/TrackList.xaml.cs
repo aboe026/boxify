@@ -27,8 +27,7 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class TrackList : UserControl
     {
-        public MainPage mainPage;
-        public Track Track { get; set; }
+        public Track track;
 
         /// <summary>
         /// The main constructor
@@ -44,11 +43,33 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="playlist">The Track whose information will be displayed</param>
         /// <param name="mainPage">The MainPage containing the Playlist</param>
-        public TrackList(Track track, MainPage mainPage) : this()
+        public TrackList(Track track) : this()
         {
-            this.Track = track;
-            this.mainPage = mainPage;
-            DataContext = this.Track;
+            this.track = track;
+            PopulateData();
+        }
+
+        /// <summary>
+        /// Populate UI with Track information
+        /// </summary>
+        private void PopulateData()
+        {
+            Image.Source = track.album.image;
+            Name.Text = track.name;
+            Artist.Text = track.GetMainArtistName();
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Unload()
+        {
+            track = null;
+
+            Image = null;
+            Name = null;
+            ArtistLabel = null;
+            Artist = null;
         }
     }
 }

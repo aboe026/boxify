@@ -28,6 +28,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     mc:Ignorable="d"
     d:DesignWidth="960"
     d:DesignHeight="540"
+    NavigationCacheMode="Required"
     KeyUp="Page_KeyUp"
     Unloaded="Page_Unloaded">
 
@@ -52,7 +53,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        Canvas.ZIndex="3"
-                       Background="Transparent" KeyUp="AnnouncementsContainer_KeyUp">
+                       Background="Transparent"
+                       KeyUp="AnnouncementsContainer_KeyUp">
 
             <Border Name="AnnouncementsBackground"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
@@ -66,7 +68,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
             </Border>
 
-            <Button Name="LeftAnnouncement"
+            <Button Name="PreviousAnnouncement"
                     RelativePanel.AlignLeftWith="AnnouncementsBackground"
                     RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
                     Width="30"
@@ -75,9 +77,10 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Content="&#xE76B;"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="24"
-                    Background="{x:Null}" Click="LeftAnnouncement_Click"/>
+                    Background="Transparent"
+                    Click="PreviousAnnouncement_Click"/>
 
-            <Button Name="RightAnnouncement"
+            <Button Name="NextAnnouncement"
                     RelativePanel.AlignRightWith="AnnouncementsBackground"
                     RelativePanel.AlignVerticalCenterWith="AnnouncementsBackground"
                     Width="30"
@@ -86,8 +89,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Content="&#xE76C;"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="24"
-                    Background="{x:Null}"
-                    Click="RightAnnouncement_Click"/>
+                    Background="Transparent"
+                    Click="NextAnnouncement_Click"/>
 
             <Button Name="CloseAnnouncements"
                     RelativePanel.AlignTopWith="AnnouncementsBackground"
@@ -96,7 +99,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Content="&#xE894;"
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="24"
-                    Background="{x:Null}"
+                    Background="Transparent"
                     Click="CloseAnnouncements_Click"/>
 
 
@@ -114,7 +117,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="46"
                     BorderBrush="{ThemeResource AppButtonBorder}"
-                    Click="HamburgerButton_Click"
+                    Click="Hamburger_Click"
                     XYFocusDown="{x:Bind BrowseItem}"/>
 
             <Button Name="Back"
@@ -124,8 +127,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     FontFamily="Segoe MDl2 Assets" 
                     FontSize="36"
                     Content="&#xE0C4;"
-                    Background="{x:Null}"
-                    Click="BackButton_Click"/>
+                    Background="Transparent"
+                    Click="Back_Click"/>
 
             <TextBlock Name="Title"
                        RelativePanel.RightOf="Back"
@@ -229,6 +232,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                    OpenPaneLength="250"
                    Canvas.ZIndex="2"
                    CompactPaneLength="66">
+            
             <SplitView.Pane>
                 <ListView Name="HamburgerOptions"
                           Margin="0,0,0,48"
@@ -261,7 +265,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         </StackPanel>
                     </ListViewItem>
                     <ListView.Footer>
-                        <Button Name="SettingsButton" Width="250" Height="67" Background="Transparent" Click="SettingsButton_Click">
+                        <Button Name="SettingsItem" Width="250" Height="67" Background="Transparent" Click="SettingsItem_Click">
                             <StackPanel Orientation="Horizontal" Width="250">
                                 <TextBlock Text="&#xE713;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
                                 <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Settings</TextBlock>
@@ -307,7 +311,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                            RelativePanel.AlignRightWithPanel="True"
                            RelativePanel.Above="PlaybackMenu"
                            Margin="0,0,0,148"
-                           XYFocusDown="{Binding PlaybackMenu}"/>
+                           XYFocusDown="{x:Bind PlaybackMenu}"/>
 
                     <local:Playback x:Name="PlaybackMenu"
                                     RelativePanel.AlignBottomWithPanel="True"

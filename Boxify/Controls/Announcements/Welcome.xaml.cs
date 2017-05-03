@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -38,9 +41,9 @@ namespace Boxify.Controls.Announcements
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Close_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void Close_Click(object sender, RoutedEventArgs e)
         {
-            (((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Visibility = Visibility.Collapsed;
+            App.mainPage.CloseAnnouncements_Click(null, null);
         }
 
         /// <summary>
@@ -51,7 +54,34 @@ namespace Boxify.Controls.Announcements
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
 
-            (((((this.Parent as ContentControl).Parent as Border).Parent as RelativePanel).Parent as Grid).Parent as MainPage).RightAnnouncement_Click(null, null);
+            App.mainPage.NextAnnouncement_Click(null, null);
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (Close != null)
+                {
+                    Close.Click -= Close_Click;
+                    Close = null;
+                }
+                if (Settings != null)
+                {
+                    Settings.Click -= Settings_Click;
+                    Settings = null;
+                }
+
+                Header = null;
+                Message = null;
+
+                CenteredPanel = null;
+            });
         }
     }
 }

@@ -17,7 +17,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -30,66 +29,23 @@ namespace Boxify
     /// <summary>
     /// A playlist object containing tracks
     /// </summary>
-    public class Playlist : BindableBase
+    public class Playlist
     {
-        public string Id { get; set; }
-        public string Href { get; set; }
-        public string name;
-        public string description;
-        public string TracksHref { get; set; }
+        public string id = "";
+        public string href = "";
+        public string name = "";
+        public string description = "";
+        public string tracksHref = "";
         private const int maxTracksPerRequest = 100;
-        public int tracksCount;
-        public List<BitmapImage> Images { get; set; }
-        public BitmapImage image;
+        public int tracksCount = 0;
+        public BitmapImage image = new BitmapImage();
 
         /// <summary>
         /// The main constructor to create an empty instance
         /// </summary>
         public Playlist()
         {
-            Id = "";
-            Href = "";
-            name = "";
-            TracksHref = "";
-            tracksCount = 0;
-            Images = new List<BitmapImage>();
-            image = new BitmapImage();
-        }
 
-        /// <summary>
-        /// The name of the playlist
-        /// </summary>
-        public string Name
-        {
-            get { return this.name; }
-            set { this.SetProperty(ref this.name, value); }
-        }
-
-        /// <summary>
-        /// The name of the playlist
-        /// </summary>
-        public string Description
-        {
-            get { return this.description; }
-            set { this.SetProperty(ref this.description, value); }
-        }
-
-        /// <summary>
-        /// The number of tracks in the playlist
-        /// </summary>
-        public int TracksCount
-        {
-            get { return this.tracksCount; }
-            set { this.SetProperty(ref this.tracksCount, value); }
-        }
-
-        /// <summary>
-        /// The main image for the playlist
-        /// </summary>
-        public BitmapImage Image
-        {
-            get { return this.image; }
-            set { this.SetProperty(ref this.image, value); }
         }
 
         /// <summary>
@@ -110,11 +66,11 @@ namespace Boxify
             }
             if (playlistJson.TryGetValue("id", out IJsonValue idJson))
             {
-                Id = idJson.GetString();
+                id = idJson.GetString();
             }
             if (playlistJson.TryGetValue("href", out IJsonValue hrefJson))
             {
-                Href = hrefJson.GetString();
+                href = hrefJson.GetString();
             }
             if (playlistJson.TryGetValue("name", out IJsonValue nameJson))
             {
@@ -130,7 +86,7 @@ namespace Boxify
                 JsonObject trackJson = tracksJson.GetObject();
                 if (trackJson.TryGetValue("href", out IJsonValue trackHrefJson))
                 {
-                    TracksHref = trackHrefJson.GetString();
+                    tracksHref = trackHrefJson.GetString();
                 }
                 if (trackJson.TryGetValue("total", out IJsonValue trackNumberJson))
                 {
@@ -140,16 +96,12 @@ namespace Boxify
             if (playlistJson.TryGetValue("images", out IJsonValue imagesJson))
             {
                 JsonArray imagesArray = imagesJson.GetArray();
-                foreach (JsonValue imageObject in imagesArray)
+                if (imagesArray.Count > 0)
                 {
+                    JsonValue imageObject = imagesArray.ElementAt(0) as JsonValue;
                     JsonValue urlJson = imageObject.GetObject().GetNamedValue("url");
                     string url = urlJson.GetString();
-                    BitmapImage image = await RequestHandler.DownloadImage(url);
-                    Images.Add(image);
-                }
-                if (Images.Count > 0)
-                {
-                    image = Images.ElementAt(0);
+                    image = await RequestHandler.DownloadImage(url);
                 }
             }
         }
@@ -160,7 +112,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            PlaybackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, TracksHref); 
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, tracksHref); 
         }
     }
 }

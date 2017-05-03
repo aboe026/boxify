@@ -17,11 +17,12 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
 using System;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -32,25 +33,13 @@ namespace Boxify
     /// </summary>
     public sealed partial class Profile : Page
     {
-        private static MainPage mainPage;
         private static string loggedInText = "You are currently logged in as ";
         private static string loggedOutText = "You are currently not logged in. Select the button to fix that.";
 
         public Profile()
         {
             this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// When the user navigates to this page
-        /// </summary>
-        /// <param name="e">The navigation event arguments</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
+            MainPage.profilePage = this;
             UpdateUI();
         }
 
@@ -61,22 +50,22 @@ namespace Boxify
         {
             if (UserProfile.DisplalyName == "")
             {
-                webView.Visibility = Visibility.Collapsed;
-                blankUser.Text = "\uE77B";
-                status.Text = loggedOutText;
-                status.Visibility = Visibility.Visible;
-                login.Content = "Log In";
-                login.Visibility = Visibility.Visible;
+                WebBrowser.Visibility = Visibility.Collapsed;
+                BlankUser.Text = "\uE77B";
+                Status.Text = loggedOutText;
+                Status.Visibility = Visibility.Visible;
+                Login.Content = "Log In";
+                Login.Visibility = Visibility.Visible;
             }
             else
             {
-                webView.Visibility = Visibility.Collapsed;
-                status.Text = loggedInText + UserProfile.DisplalyName;
-                userPic.ImageSource = UserProfile.userPic;
-                blankUser.Text = "";
-                status.Visibility = Visibility.Visible;
-                login.Content = "Log Out";
-                login.Visibility = Visibility.Visible;
+                WebBrowser.Visibility = Visibility.Collapsed;
+                Status.Text = loggedInText + UserProfile.DisplalyName;
+                UserPic.ImageSource = UserProfile.userPic;
+                BlankUser.Text = "";
+                Status.Visibility = Visibility.Visible;
+                Login.Content = "Log Out";
+                Login.Visibility = Visibility.Visible;
             }
         }
 
@@ -89,7 +78,7 @@ namespace Boxify
         {
             if (args.Uri.AbsoluteUri.StartsWith(RequestHandler.callbackUrl))
             {
-                webView.Visibility = Visibility.Collapsed;
+                WebBrowser.Visibility = Visibility.Collapsed;
 
                 WwwFormUrlDecoder queryParams = new WwwFormUrlDecoder(args.Uri.Query);
                 try
@@ -102,20 +91,20 @@ namespace Boxify
                 }
                 catch (ArgumentException) { return; }
 
-                webView.Visibility = Visibility.Collapsed;
-                status.Text = loggedInText + UserProfile.DisplalyName;
-                status.Visibility = Visibility.Visible;
-                userPic.ImageSource = UserProfile.userPic;
-                userPicContainer.Visibility = Visibility.Visible;
-                login.Content = "Log Out";
-                login.Visibility = Visibility.Visible;
-                if (mainPage != null)
+                WebBrowser.Visibility = Visibility.Collapsed;
+                Status.Text = loggedInText + UserProfile.DisplalyName;
+                Status.Visibility = Visibility.Visible;
+                UserPic.ImageSource = UserProfile.userPic;
+                UserPicContainer.Visibility = Visibility.Visible;
+                Login.Content = "Log Out";
+                Login.Visibility = Visibility.Visible;
+                if (App.mainPage != null)
                 {
-                    mainPage.UpdateUserUI();
+                    App.mainPage.UpdateUserUI();
                 }
-                mainPage.SelectHamburgerOption("ProfileItem");
-                YourMusic.playlistsSave = null;
-                mainPage.LoadUserPlaylists();
+                App.mainPage.SelectHamburgerOption("ProfileItem", true);
+                YourMusic.preEmptiveLoadPlaylists.Clear();
+                App.mainPage.LoadUserPlaylists();
             }
         }
 
@@ -126,27 +115,57 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            if (login.Content.ToString() == "Log In")
+            if (Login.Content.ToString() == "Log In")
             {
-                status.Visibility = Visibility.Collapsed;
-                login.Visibility = Visibility.Collapsed;
-                userPicContainer.Visibility = Visibility.Collapsed;
-                blankUser.Text = "";
-                webView.Visibility = Visibility.Visible;
-                webView.Focus(FocusState.Programmatic);
-                webView.Navigate(RequestHandler.GetAuthorizationUri());
+                Status.Visibility = Visibility.Collapsed;
+                Login.Visibility = Visibility.Collapsed;
+                UserPicContainer.Visibility = Visibility.Collapsed;
+                BlankUser.Text = "";
+                WebBrowser.Visibility = Visibility.Visible;
+                WebBrowser.Focus(FocusState.Programmatic);
+                WebBrowser.Navigate(RequestHandler.GetAuthorizationUri());
             }
-            else if (login.Content.ToString() == "Log Out")
+            else if (Login.Content.ToString() == "Log Out")
             {
-                userPic.ImageSource = new BitmapImage();
-                blankUser.Text = "\uE77B";
-                status.Text = loggedOutText;
-                login.Content = "Log In";
+                UserPic.ImageSource = new BitmapImage();
+                BlankUser.Text = "\uE77B";
+                Status.Text = loggedOutText;
+                Login.Content = "Log In";
                 RequestHandler.ClearTokens();
             }
-            if (mainPage != null)
+            if (App.mainPage != null)
             {
-                mainPage.UpdateUserUI();
+                App.mainPage.UpdateUserUI();
+            }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (WebBrowser != null)
+                    {
+                        WebBrowser.NavigationStarting -= WebView_NavigationStarting;
+                        WebBrowser = null;
+                    }
+                    if (Login != null)
+                    {
+                        Login.Click -= Login_Click;
+                        Login = null;
+                    }
+
+                    UserPic = null;
+                    UserPicContainer = null;
+                    BlankUser = null;
+                    Status = null;
+                });
             }
         }
     }

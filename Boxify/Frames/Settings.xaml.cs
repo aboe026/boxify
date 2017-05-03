@@ -20,11 +20,12 @@ using Boxify.Controls.Announcements;
 using System;
 using System.Collections.Generic;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -37,8 +38,6 @@ namespace Boxify
     {
         public enum Theme { System, Light, Dark }
         public enum Playbacksource { Spotify, YouTube }
-
-        public static MainPage mainPage;
 
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
@@ -53,18 +52,7 @@ namespace Boxify
         public Settings()
         {
             this.InitializeComponent();
-        }
-
-        /// <summary>
-        /// When the user navigates to this page
-        /// </summary>
-        /// <param name="e">The navigation event arguments</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
+            MainPage.settingsPage = this;
 
             // color theme
             if (theme == Theme.Light)
@@ -109,11 +97,11 @@ namespace Boxify
                 tvSafeArea = toggleSwitch.IsOn;
                 if (toggleSwitch.IsOn)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
                 else
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
             SaveSettings();
@@ -129,16 +117,16 @@ namespace Boxify
             TvSafeArea.IsOn = enabled;
             if (enabled)
             {
-                if (mainPage != null)
+                if (App.mainPage != null)
                 {
-                    mainPage.SafeAreaOn();
+                    App.mainPage.SafeAreaOn();
                 }
             }
             else
             {
-                if (mainPage != null)
+                if (App.mainPage != null)
                 {
-                    mainPage.SafeAreaOff();
+                    App.mainPage.SafeAreaOff();
                 }
             }
             SaveSettings();
@@ -166,22 +154,22 @@ namespace Boxify
                 theme = Theme.System;
                 if (Application.Current.RequestedTheme == ApplicationTheme.Light)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Light;
+                    App.mainPage.RequestedTheme = ElementTheme.Light;
                 }
                 else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Dark;
+                    App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
             else if ((sender as RadioButton).Name == "Light")
             {
                 theme = Theme.Light;
-                mainPage.RequestedTheme = ElementTheme.Light;
+                App.mainPage.RequestedTheme = ElementTheme.Light;
             }
             else if ((sender as RadioButton).Name == "Dark")
             {
                 theme = Theme.Dark;
-                mainPage.RequestedTheme = ElementTheme.Dark;
+                App.mainPage.RequestedTheme = ElementTheme.Dark;
             }
             SaveSettings();
         }
@@ -193,27 +181,27 @@ namespace Boxify
         public void SetThemeUI(Theme newTheme)
         {
             theme = newTheme;
-            if (theme == Theme.System && mainPage != null)
+            if (theme == Theme.System && App.mainPage != null)
             {
                 System.IsChecked = true;
                 if (Application.Current.RequestedTheme == ApplicationTheme.Light)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Light;
+                    App.mainPage.RequestedTheme = ElementTheme.Light;
                 }
                 else if (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                 {
-                    mainPage.RequestedTheme = ElementTheme.Dark;
+                    App.mainPage.RequestedTheme = ElementTheme.Dark;
                 }
             }
-            else if (theme == Theme.Light && mainPage != null)
+            else if (theme == Theme.Light && App.mainPage != null)
             {
                 Light.IsChecked = true;
-                mainPage.RequestedTheme = ElementTheme.Light;
+                App.mainPage.RequestedTheme = ElementTheme.Light;
             }
-            else if (theme == Theme.Dark && mainPage != null)
+            else if (theme == Theme.Dark && App.mainPage != null)
             {
                 Dark.IsChecked = true;
-                mainPage.RequestedTheme = ElementTheme.Dark;
+                App.mainPage.RequestedTheme = ElementTheme.Dark;
             }
             SaveSettings();
         }
@@ -336,7 +324,7 @@ namespace Boxify
                 new ThemeMode(theme),
                 new PlaybackMode(playbackSource)
             };
-            mainPage.ShowAnnouncements(announcements, this);
+            App.mainPage.ShowAnnouncements(announcements, this);
         }
 
         /// <summary>
@@ -347,6 +335,61 @@ namespace Boxify
         private async void PrivacyButton_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri("https://github.com/aboe026/boxify/tree/master/Boxify/PRIVACY.md"));
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (App.isInBackgroundMode)
+            {
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if (TvSafeArea != null)
+                    {
+                        TvSafeArea.Toggled -= TvSafe_Toggled;
+                    }
+                    if (System != null)
+                    {
+                        System.Click -= ThemeColor_Click;
+                    }
+                    if (Light != null)
+                    {
+                        Light.Click -= ThemeColor_Click;
+                    }
+                    if (Dark != null)
+                    {
+                        Dark.Click -= ThemeColor_Click;
+                    }
+                    if (Spotify != null)
+                    {
+                        Spotify.Click -= Playbacksource_Click;
+                    }
+                    if (YouTube != null)
+                    {
+                        YouTube.Click -= Playbacksource_Click;
+                    }
+                    if (Announcement1000 != null)
+                    {
+                        Announcement1000.Click -= Announcement1000_Click;
+                    }
+                    if (RateButton != null)
+                    {
+                        RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
+                    }
+                    if (Repo != null)
+                    {
+                        Repo.Click -= Repo_Click;
+                    }
+                    if (PrivacyButton != null)
+                    {
+                        PrivacyButton.Click -= PrivacyButton_Click;
+                    }
+                });
+            }
         }
     }
 }

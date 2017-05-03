@@ -26,7 +26,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="806"
-    d:DesignHeight="415">
+    d:DesignHeight="415"
+    NavigationCacheMode="Required"
+    Unloaded="Page_Unloaded">
 
     <Page.Resources>
         <ResourceDictionary>
@@ -44,14 +46,14 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <WebView x:Name="webView"
+        <WebView Name="WebBrowser"
                  Grid.Row="0"
                  Grid.RowSpan="3"
                  Margin="20"
                  NavigationStarting="WebView_NavigationStarting"/>
 
         <RelativePanel Grid.Row="1">
-            <Ellipse Name="userPicContainer"
+            <Ellipse Name="UserPicContainer"
                      RelativePanel.AlignHorizontalCenterWithPanel="True"
                      Height="120"
                      Width="120"
@@ -59,20 +61,20 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                      StrokeThickness="2">
 
                 <Ellipse.Fill>
-                    <ImageBrush x:Name="userPic"
+                    <ImageBrush x:Name="UserPic"
                                 Stretch="Uniform"/>
                 </Ellipse.Fill>
             </Ellipse>
 
-            <TextBlock Name="blankUser"
+            <TextBlock Name="BlankUser"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWith="userPicContainer"
+                       RelativePanel.AlignVerticalCenterWith="UserPicContainer"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="60"
                        Text="&#xE77B;"/>
 
-            <TextBlock x:Name="status"
-                       RelativePanel.Below="userPicContainer"
+            <TextBlock Name="Status"
+                       RelativePanel.Below="UserPicContainer"
                        RelativePanel.AlignLeftWithPanel="True"
                        RelativePanel.AlignRightWithPanel="True"
                        Margin="0,20,0,0"
@@ -82,10 +84,10 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        Text="You are currently not logged in. Select the button to fix that."
                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-            <Button x:Name="login"
+            <Button Name="Login"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
-                    RelativePanel.Below="status"
+                    RelativePanel.Below="Status"
                     Margin="0,10,0,0"
                     Content="Log In"
                     Click="Login_Click"

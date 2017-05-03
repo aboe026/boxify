@@ -18,9 +18,12 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Data.Json;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -34,14 +37,13 @@ namespace Boxify
     /// </summary>
     public sealed partial class YourMusic : Page
     {
-        private static MainPage mainPage;
         private static string playlistsHref = "https://api.spotify.com/v1/me/playlists";
         private static int playlistLimit = 10;
         private static int playlistsOffset = 0;
         private static int playlistsTotal = 20;
-        public static List<PlaylistList> playlistsSave;
-        public static bool refreshing = false;
         private static int playlistsCount = 0;
+        public static bool refreshing = false;
+        public static List<PlaylistList> preEmptiveLoadPlaylists = new List<PlaylistList>();
 
         /// <summary>
         /// The main constructor
@@ -57,44 +59,45 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter != null)
-            {
-                mainPage = (MainPage)e.Parameter;
-            }
+            MainPage.yourMusicPage = this;
             if (UserProfile.IsLoggedIn())
             {
                 More.IsEnabled = false;
-                warning.Visibility = Visibility.Collapsed;
-                logIn.Visibility = Visibility.Collapsed;
-                if (playlistsSave == null)
+                Warning.Visibility = Visibility.Collapsed;
+                LogIn.Visibility = Visibility.Collapsed;
+                More.Visibility = Visibility.Visible;
+                PlaylistsLabel.Visibility = Visibility.Visible;
+                Refresh.Visibility = Visibility.Visible;
+                if (refreshing)
                 {
-                    await LoadPlaylists();
-                }
-                else
-                {
-                    if (refreshing)
+                    Refresh.Visibility = Visibility.Collapsed;
+                    App.mainPage.SetSpotifyLoadingMaximum(playlistsCount);
+                    App.mainPage.SetSpotifyLoadingValue(0);
+                    App.mainPage.BringUpSpotify();
+                    while (refreshing)
                     {
-                        refresh.Visibility = Visibility.Collapsed;
-                        mainPage.SetSpotifyLoadingMaximum(playlistsCount);
-                        mainPage.SetSpotifyLoadingValue(0);
-                        mainPage.BringUpSpotify();
-                        while (refreshing)
-                        {
-                            mainPage.SetSpotifyLoadingMaximum(playlistsCount);
-                            mainPage.SetSpotifyLoadingValue(playlistsSave.Count);
-                            await Task.Delay(TimeSpan.FromMilliseconds(100));
-                        }
-                        mainPage.SetSpotifyLoadingValue(playlistsCount);
+                        App.mainPage.SetSpotifyLoadingMaximum(playlistsCount);
+                        App.mainPage.SetSpotifyLoadingValue(preEmptiveLoadPlaylists.Count);
+                        await Task.Delay(TimeSpan.FromMilliseconds(100));
                     }
-                    foreach (PlaylistList playlist in playlistsSave)
+                    App.mainPage.SetSpotifyLoadingValue(playlistsCount);
+                }
+                if (preEmptiveLoadPlaylists.Count > 0)
+                {
+                    foreach (PlaylistList playlist in preEmptiveLoadPlaylists)
                     {
                         try
                         {
-                            playlists.Items.Add(playlist);
+                            Playlists.Items.Add(playlist);
                         }
                         catch (COMException) { }
                     }
-                    refresh.Visibility = Visibility.Visible;
+                    Refresh.Visibility = Visibility.Visible;
+                    preEmptiveLoadPlaylists.Clear();
+                }
+                else if (Playlists.Items.Count == 0)
+                {
+                    await LoadPlaylists();
                 }
 
                 if (playlistsOffset + playlistLimit >= playlistsTotal)
@@ -111,44 +114,23 @@ namespace Boxify
             else
             {
                 More.Visibility = Visibility.Collapsed;
-                playlistsSave = null;
-                playlistsLabel.Visibility = Visibility.Collapsed;
-                refresh.Visibility = Visibility.Collapsed;
-                warning.Visibility = Visibility.Visible;
-                logIn.Visibility = Visibility.Visible;
+                PlaylistsLabel.Visibility = Visibility.Collapsed;
+                Refresh.Visibility = Visibility.Collapsed;
+                Warning.Visibility = Visibility.Visible;
+                LogIn.Visibility = Visibility.Visible;
             }
-        }
-
-        /// <summary>
-        /// When a user leaves the page
-        /// </summary>
-        /// <param name="e">The naviagation event arguments</param>
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            playlists.Items.Clear();
-            base.OnNavigatedFrom(e);
-        }
-
-        /// <summary>
-        /// When a user leaves the page
-        /// </summary>
-        /// <param name="e">The navigation cancelled event arguments</param>
-        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            playlists.Items.Clear();
-            base.OnNavigatingFrom(e);
         }
 
         /// <summary>
         /// Refreshes the users playlists
         /// </summary>
         /// <returns></returns>
-        private async Task LoadPlaylists()
+        public async Task LoadPlaylists()
         {
             More.IsEnabled = false;
-            refresh.IsEnabled = false;
-            mainPage.SetSpotifyLoadingValue(0);
-            mainPage.BringUpSpotify();
+            Refresh.IsEnabled = false;
+            App.mainPage.SetSpotifyLoadingValue(0);
+            App.mainPage.BringUpSpotify();
 
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
@@ -174,22 +156,17 @@ namespace Boxify
             if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
-                if (playlistsSave == null)
-                {
-                    playlistsSave = new List<PlaylistList>();
-                }
+                App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                    playlistsSave.Add(playlistList);
-                    playlists.Items.Add(playlistList);
-                    mainPage.SetSpotifyLoadingValue(playlistsSave.Count);
+                    PlaylistList playlistList = new PlaylistList(playlist);
+                    Playlists.Items.Add(playlistList);
+                    App.mainPage.SetSpotifyLoadingValue(Playlists.Items.Count);
                 }
             }
-            refresh.IsEnabled = true;
+            Refresh.IsEnabled = true;
             if (playlistsOffset + playlistLimit >= playlistsTotal)
             {
                 More.Content = "No More";
@@ -233,16 +210,12 @@ namespace Boxify
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 playlistsCount = playlistsArray.Count;
-                if (playlistsSave == null)
-                {
-                    playlistsSave = new List<PlaylistList>();
-                }
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist, mainPage);
-                    playlistsSave.Add(playlistList);
+                    PlaylistList playlistList = new PlaylistList(playlist);
+                    preEmptiveLoadPlaylists.Add(playlistList);
                 }
             }
         }
@@ -254,7 +227,7 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private void LogIn_Click(object sender, RoutedEventArgs e)
         {
-            mainPage.SelectHamburgerOption("ProfileItem");
+            App.mainPage.SelectHamburgerOption("ProfileItem", true);
         }
 
         /// <summary>
@@ -265,8 +238,13 @@ namespace Boxify
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             playlistsOffset = 0;
-            playlistsSave = new List<PlaylistList>();
-            playlists.Items.Clear();
+            while (Playlists.Items.Count > 0)
+            {
+                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                playlistList.Unload();
+                Playlists.Items.Remove(playlistList);
+                playlistList = null;
+            }
             await LoadPlaylists();
         }
 
@@ -287,7 +265,7 @@ namespace Boxify
         /// <param name="e"></param>
         private async void More_Click(object sender, RoutedEventArgs e)
         {
-            playlists.Focus(FocusState.Programmatic);
+            Playlists.Focus(FocusState.Programmatic);
             playlistsOffset += playlistLimit;
             await LoadPlaylists();
         }
@@ -297,12 +275,49 @@ namespace Boxify
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        public async void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (App.isInBackgroundMode)
             {
                 playlistsOffset = 0;
-                playlistsSave = null;
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Bindings.StopTracking();
+
+                    if (Playlists != null)
+                    {
+                        Playlists.ItemClick -= Playlists_ItemClick;
+                        while (Playlists.Items.Count > 0)
+                        {
+                            PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                            playlistList.Unload();
+                            Playlists.Items.Remove(playlistList);
+                            playlistList = null;
+                        }
+                        Playlists = null;
+                    }
+
+                    if (LogIn != null)
+                    {
+                        LogIn.Click -= LogIn_Click;
+                        LogIn = null;
+                    }
+                    if (Refresh != null)
+                    {
+                        Refresh.Click -= Refresh_Click;
+                        Refresh = null;
+                    }
+                    if (More != null)
+                    {
+                        More.Click -= More_Click;
+                        More = null;
+                    }
+
+
+                    Warning = null;
+                    PlaylistsLabel = null;
+
+                });
             }
         }
     }

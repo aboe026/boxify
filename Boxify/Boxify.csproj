@@ -117,7 +117,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\Artist.cs" />
-    <Compile Include="Classes\BindableBase.cs" />
     <Compile Include="Classes\PlaybackSession.cs" />
     <Compile Include="Controls\AlbumList.xaml.cs">
       <DependentUpon>AlbumList.xaml</DependentUpon>
