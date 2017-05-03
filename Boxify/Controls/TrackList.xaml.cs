@@ -66,11 +66,6 @@ namespace Boxify.Frames
         {
             track = null;
 
-            Image.ClearValue(Image.SourceProperty);
-            Name.ClearValue(TextBlock.TextProperty);
-            ArtistLabel.ClearValue(TextBlock.TextProperty);
-            Artist.ClearValue(TextBlock.TextProperty);
-
             Image = null;
             Name = null;
             ArtistLabel = null;

@@ -64,12 +64,6 @@ namespace Boxify
         {
             playlist = null;
 
-            Image.ClearValue(Image.SourceProperty);
-            Name.ClearValue(TextBlock.TextProperty);
-            Description.ClearValue(TextBlock.TextProperty);
-            TracksLabel.ClearValue(TextBlock.TextProperty);
-            Tracks.ClearValue(TextBlock.TextProperty);
-
             Image = null;
             Name = null;
             Description = null;

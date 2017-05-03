@@ -140,7 +140,13 @@ namespace Boxify
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             featuredPlaylistsOffset = 0;
-            FeaturedPlaylists.Items.Clear();
+            while (FeaturedPlaylists.Items.Count > 0)
+            {
+                PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
+                playlistHero.Unload();
+                FeaturedPlaylists.Items.Remove(playlistHero);
+                playlistHero = null;
+            }
             await LoadFeaturedPlaylists();
         }
 

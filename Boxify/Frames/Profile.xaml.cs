@@ -146,26 +146,27 @@ namespace Boxify
         /// <param name="e"></param>
         public async void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            if (App.isInBackgroundMode)
             {
-                if (WebBrowser != null)
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    WebBrowser.NavigationStarting -= WebView_NavigationStarting;
-                    WebBrowser = null;
-                }
-                if (Login != null)
-                {
-                    Login.Click -= Login_Click;
-                    Login = null;
-                }
+                    if (WebBrowser != null)
+                    {
+                        WebBrowser.NavigationStarting -= WebView_NavigationStarting;
+                        WebBrowser = null;
+                    }
+                    if (Login != null)
+                    {
+                        Login.Click -= Login_Click;
+                        Login = null;
+                    }
 
-                UserPic = null;
-                UserPicContainer = null;
-                BlankUser = null;
-                Status = null;
-
-                
-            });
+                    UserPic = null;
+                    UserPicContainer = null;
+                    BlankUser = null;
+                    Status = null;
+                });
+            }
         }
     }
 }

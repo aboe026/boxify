@@ -59,16 +59,15 @@ namespace Boxify
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is MainPage)
-            {
-                App.mainPage = e.Parameter as MainPage;
-                MainPage.yourMusicPage = this;
-            }
+            MainPage.yourMusicPage = this;
             if (UserProfile.IsLoggedIn())
             {
                 More.IsEnabled = false;
                 Warning.Visibility = Visibility.Collapsed;
                 LogIn.Visibility = Visibility.Collapsed;
+                More.Visibility = Visibility.Visible;
+                PlaylistsLabel.Visibility = Visibility.Visible;
+                Refresh.Visibility = Visibility.Visible;
                 if (refreshing)
                 {
                     Refresh.Visibility = Visibility.Collapsed;
@@ -239,7 +238,13 @@ namespace Boxify
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             playlistsOffset = 0;
-            Playlists.Items.Clear();
+            while (Playlists.Items.Count > 0)
+            {
+                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                playlistList.Unload();
+                Playlists.Items.Remove(playlistList);
+                playlistList = null;
+            }
             await LoadPlaylists();
         }
 
