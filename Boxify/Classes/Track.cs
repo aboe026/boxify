@@ -112,7 +112,7 @@ namespace Boxify
             }
             if (trackObjectJson.TryGetValue("preview_url", out IJsonValue trackPreview))
             {
-                if (trackPreview.ToString() != "null")
+                if (trackPreview.ValueType == JsonValueType.String)
                 {
                     previewUrl = trackPreview.GetString();
                 }

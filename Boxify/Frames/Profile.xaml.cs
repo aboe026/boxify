@@ -48,7 +48,7 @@ namespace Boxify
         /// </summary>
         private void UpdateUI()
         {
-            if (UserProfile.DisplalyName == "")
+            if (UserProfile.userId == "")
             {
                 WebBrowser.Visibility = Visibility.Collapsed;
                 BlankUser.Text = "\uE77B";
@@ -60,9 +60,16 @@ namespace Boxify
             else
             {
                 WebBrowser.Visibility = Visibility.Collapsed;
-                Status.Text = loggedInText + UserProfile.DisplalyName;
-                UserPic.ImageSource = UserProfile.userPic;
-                BlankUser.Text = "";
+                Status.Text = loggedInText + UserProfile.displayName;
+                if (UserProfile.userPic.PixelHeight != 0)
+                {
+                    UserPic.ImageSource = UserProfile.userPic;
+                    BlankUser.Text = "";
+                }
+                else
+                {
+                    BlankUser.Text = "\uEA8C";
+                }
                 Status.Visibility = Visibility.Visible;
                 Login.Content = "Log Out";
                 Login.Visibility = Visibility.Visible;
@@ -92,9 +99,16 @@ namespace Boxify
                 catch (ArgumentException) { return; }
 
                 WebBrowser.Visibility = Visibility.Collapsed;
-                Status.Text = loggedInText + UserProfile.DisplalyName;
+                Status.Text = loggedInText + UserProfile.displayName;
                 Status.Visibility = Visibility.Visible;
-                UserPic.ImageSource = UserProfile.userPic;
+                if (UserProfile.userPic.PixelHeight != 0)
+                {
+                    UserPic.ImageSource = UserProfile.userPic;
+                }
+                else
+                {
+                    BlankUser.Text = "\uEA8C";
+                }
                 UserPicContainer.Visibility = Visibility.Visible;
                 Login.Content = "Log Out";
                 Login.Visibility = Visibility.Visible;
@@ -103,7 +117,6 @@ namespace Boxify
                     App.mainPage.UpdateUserUI();
                 }
                 App.mainPage.SelectHamburgerOption("ProfileItem", true);
-                YourMusic.preEmptiveLoadPlaylists.Clear();
                 App.mainPage.LoadUserPlaylists();
             }
         }

@@ -221,6 +221,21 @@ namespace Boxify
         }
 
         /// <summary>
+        /// Clears UI playlists
+        /// </summary>
+        public void clearPlaylists()
+        {
+            playlistsOffset = 0;
+            while (Playlists.Items.Count > 0)
+            {
+                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                playlistList.Unload();
+                Playlists.Items.Remove(playlistList);
+                playlistList = null;
+            }
+        }
+
+        /// <summary>
         /// Send a user to the login page
         /// </summary>
         /// <param name="sender">The object that was clicked</param>
@@ -237,14 +252,7 @@ namespace Boxify
         /// <param name="e">The routed event arguments</param>
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            playlistsOffset = 0;
-            while (Playlists.Items.Count > 0)
-            {
-                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
-                playlistList.Unload();
-                Playlists.Items.Remove(playlistList);
-                playlistList = null;
-            }
+            clearPlaylists();
             await LoadPlaylists();
         }
 
@@ -287,13 +295,7 @@ namespace Boxify
                     if (Playlists != null)
                     {
                         Playlists.ItemClick -= Playlists_ItemClick;
-                        while (Playlists.Items.Count > 0)
-                        {
-                            PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
-                            playlistList.Unload();
-                            Playlists.Items.Remove(playlistList);
-                            playlistList = null;
-                        }
+                        clearPlaylists();
                         Playlists = null;
                     }
 

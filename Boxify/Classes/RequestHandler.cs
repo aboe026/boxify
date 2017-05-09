@@ -42,7 +42,7 @@ namespace Boxify
 
         public static string callbackUrl = "https://example.com/callback/";
         public static string state = "";
-        private static string scopes = "playlist-read-private";
+        private static string scopes = "playlist-read-private+playlist-read-collaborative";
         private static string credentailsFilePath = "ms-appx:///Credentials.json";
         private static string clientId = "";
         private static string clientSecret = "";
@@ -554,7 +554,7 @@ namespace Boxify
             roamingSettings.Values["Tokens"] = null;
 
             UserProfile.userId = "";
-            UserProfile.DisplalyName = "";
+            UserProfile.displayName = "";
             UserProfile.userPic = new BitmapImage();
         }
 

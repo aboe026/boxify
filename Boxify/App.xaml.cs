@@ -193,15 +193,16 @@ namespace Boxify
 
             // Announcements
             Object announcements = roamingSettings.Values["Announcements"];
+            Object announcementsClosed = roamingSettings.Values["AnnouncementsClosed"];
             Settings.version = string.Format("{0}.{1}.{2}.{3}",
                                              Package.Current.Id.Version.Major,
                                              Package.Current.Id.Version.Minor,
                                              Package.Current.Id.Version.Build,
                                              Package.Current.Id.Version.Revision);
             string previousVersion = announcements != null ? announcements.ToString() : "0.0.0.0";
-            if (VersionGreaterThan(previousVersion, Settings.version))
+            if (VersionGreaterThan(previousVersion, Settings.version) || announcementsClosed == null)
             {
-                if (VersionGreaterThan(previousVersion, "1.0.0.0"))
+                if (VersionGreaterThan(previousVersion, "1.0.0.0") || announcementsClosed == null)
                 {
                     MainPage.announcementItems.Add(new Welcome());
                     MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
