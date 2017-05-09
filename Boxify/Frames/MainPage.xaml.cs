@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -199,6 +200,12 @@ namespace Boxify
         {
             if (UserProfile.IsLoggedIn())
             {
+
+                YourMusic.preEmptiveLoadPlaylists.Clear();
+                if (yourMusicPage != null)
+                {
+                    yourMusicPage.clearPlaylists();
+                }
                 YourMusic.refreshing = true;
                 await YourMusic.SetPlaylists();
                 YourMusic.refreshing = false;
@@ -412,9 +419,9 @@ namespace Boxify
         /// </summary>
         public void UpdateUserUI()
         {
-            UserName.Text = UserProfile.DisplalyName;
+            UserName.Text = UserProfile.displayName;
             UserPic.ImageSource = UserProfile.userPic;
-            if (UserProfile.DisplalyName == "")
+            if (UserProfile.userId == "")
             {
                 BlankUser.Text = "\uE77B";
                 UserPicContainer.StrokeThickness = 2;
@@ -422,8 +429,15 @@ namespace Boxify
             else
             {
                 UserPicContainer.StrokeThickness = 0.5;
-                UserPic.ImageSource = UserProfile.userPic;
-                BlankUser.Text = "";
+                if (UserProfile.userPic.PixelHeight != 0)
+                {
+                    UserPic.ImageSource = UserProfile.userPic;
+                    BlankUser.Text = "";
+                }
+                else
+                {
+                    BlankUser.Text = "\uEA8C";
+                }
             }
         }
 
@@ -962,6 +976,8 @@ namespace Boxify
         /// <param name="e"></param>
         public void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
         {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["AnnouncementsClosed"] = true;
             closedAnnouncements = true;
             AnnouncementsContainer.Visibility = Visibility.Collapsed;
             announcementItems.Clear();

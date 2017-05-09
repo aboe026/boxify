@@ -30,7 +30,7 @@ namespace Boxify
 {
     public static class UserProfile
     {
-        public static string DisplalyName { get; set; } = "";
+        public static string displayName = "";
         public static string userId = "";
         public static BitmapImage userPic = new BitmapImage();
 
@@ -53,11 +53,18 @@ namespace Boxify
             }
             if (userJson.TryGetValue("display_name", out IJsonValue displayNameJson))
             {
-                DisplalyName = displayNameJson.GetString();
+                if (displayNameJson.ValueType == JsonValueType.String)
+                {
+                    displayName = displayNameJson.GetString();
+                }
             }
             if (userJson.TryGetValue("id", out IJsonValue userIdJson))
             {
                 userId = userIdJson.GetString();
+                if (displayName == "")
+                {
+                    displayName = userIdJson.GetString();
+                }
             }
 
             // picture
