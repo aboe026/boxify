@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
@@ -76,9 +77,9 @@ namespace Boxify.Controls.Announcements
             {
                 source = Playbacksource.YouTube;
             }
-            if (Frames.MainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                Frames.MainPage.settingsPage.SetPlaybackSourceUI(source);
+                MainPage.settingsPage.SetPlaybackSourceUI(source);
             }
             else
             {

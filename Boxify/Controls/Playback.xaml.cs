@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -286,8 +287,8 @@ namespace Boxify.Controls
                 TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
                 Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
-            Frames.Settings.repeatEnabled = repeatOn;
-            Frames.Settings.SaveSettings();
+            Settings.repeatEnabled = repeatOn;
+            Settings.SaveSettings();
         }
 
         /// <summary>
@@ -355,7 +356,7 @@ namespace Boxify.Controls
         {
             VolumeSlider.Value = App.playbackService.Player.Volume * 100;
             Volume.Visibility = Visibility.Collapsed;
-            if (Frames.Settings.repeatEnabled)
+            if (Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Collapsed;
             }
@@ -379,7 +380,7 @@ namespace Boxify.Controls
         {
             Volume.Visibility = Visibility.Visible;
             VolumeSlider.Visibility = Visibility.Collapsed;
-            if (Frames.Settings.repeatEnabled)
+            if (Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Visible;
                 TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
@@ -427,8 +428,8 @@ namespace Boxify.Controls
             {
                 Volume.Content = "\uE995";
             }
-            Frames.Settings.volume = VolumeSlider.Value;
-            Frames.Settings.SaveSettings();
+            Settings.volume = VolumeSlider.Value;
+            Settings.SaveSettings();
         }
 
         /// <summary>

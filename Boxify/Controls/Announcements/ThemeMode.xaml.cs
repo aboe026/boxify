@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
@@ -84,13 +85,13 @@ namespace Boxify.Controls.Announcements
                 newTheme = Theme.Dark;
             }
 
-            if (Frames.MainPage.settingsPage != null)
+            if (MainPage.settingsPage != null)
             {
-                Frames.MainPage.settingsPage.SetThemeUI(newTheme);
+                MainPage.settingsPage.SetThemeUI(newTheme);
             }
             else
             {
-                Frames.Settings.SetTheme(newTheme);
+                Settings.SetTheme(newTheme);
                 if (newTheme == Theme.System)
                 {
                     if (Application.Current.RequestedTheme == ApplicationTheme.Light)

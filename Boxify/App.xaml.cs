@@ -18,6 +18,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using Boxify.Classes;
 using Boxify.Controls.Announcements;
+using Boxify.Frames;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -42,7 +43,7 @@ namespace Boxify
         private static bool finishedInitialization = false;
         public static string hamburgerOptionToLoadTo = "BrowseItem";
         public static PlaybackService playbackService = new PlaybackService();
-        public static Frames.MainPage mainPage;
+        public static MainPage mainPage;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -129,45 +130,45 @@ namespace Boxify
                 // tv safe area
                 if (composite["TvSafeAreaOff"] != null && composite["TvSafeAreaOff"].ToString() == "True")
                 {
-                    Frames.Settings.tvSafeArea = false;
+                    Settings.tvSafeArea = false;
                 }
                 else
                 {
-                    Frames.Settings.tvSafeArea = true;
+                    Settings.tvSafeArea = true;
                 }
 
                 // theme
                 if (composite["Theme"] != null && composite["Theme"].ToString() == "Light")
                 {
-                    Frames.Settings.theme = Frames.Settings.Theme.Light;
+                    Settings.theme = Settings.Theme.Light;
                 }
                 else if (composite["Theme"].ToString() == "Dark")
                 {
-                    Frames.Settings.theme = Frames.Settings.Theme.Dark;
+                    Settings.theme = Settings.Theme.Dark;
                 }
                 else
                 {
-                    Frames.Settings.theme = Frames.Settings.Theme.System;
+                    Settings.theme = Settings.Theme.System;
                 }
 
                 // playback source
                 if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
                 {
-                    Frames.Settings.playbackSource = Frames.Settings.Playbacksource.YouTube;
+                    Settings.playbackSource = Settings.Playbacksource.YouTube;
                 }
                 else
                 {
-                    Frames.Settings.playbackSource = Frames.Settings.Playbacksource.Spotify;
+                    Settings.playbackSource = Settings.Playbacksource.Spotify;
                 }
 
                 // repeat
                 if (composite["RepeatEnabled"] != null && composite["RepeatEnabled"].ToString() == "True")
                 {
-                    Frames.Settings.repeatEnabled = true;
+                    Settings.repeatEnabled = true;
                 }
                 else
                 {
-                    Frames.Settings.repeatEnabled = false;
+                    Settings.repeatEnabled = false;
                 }
 
                 // volume
@@ -175,42 +176,42 @@ namespace Boxify
                 {
                     if (Double.TryParse(composite["Volume"].ToString(), out double value))
                     {
-                        Frames.Settings.volume = value;
+                        Settings.volume = value;
                     }
                 }
                 else
                 {
-                    Frames.Settings.volume = 100;
+                    Settings.volume = 100;
                 }
             }
             else
             {
                 // Defaults
-                Frames.Settings.tvSafeArea = true;
-                Frames.Settings.theme = Frames.Settings.Theme.System;
-                Frames.Settings.playbackSource = Frames.Settings.Playbacksource.Spotify;
+                Settings.tvSafeArea = true;
+                Settings.theme = Settings.Theme.System;
+                Settings.playbackSource = Settings.Playbacksource.Spotify;
             }
 
             // Announcements
             Object announcements = roamingSettings.Values["Announcements"];
             Object announcementsClosed = roamingSettings.Values["AnnouncementsClosed"];
-            Frames.Settings.version = string.Format("{0}.{1}.{2}.{3}",
+            Settings.version = string.Format("{0}.{1}.{2}.{3}",
                                              Package.Current.Id.Version.Major,
                                              Package.Current.Id.Version.Minor,
                                              Package.Current.Id.Version.Build,
                                              Package.Current.Id.Version.Revision);
             string previousVersion = announcements != null ? announcements.ToString() : "0.0.0.0";
-            if (VersionGreaterThan(previousVersion, Frames.Settings.version) || announcementsClosed == null)
+            if (VersionGreaterThan(previousVersion, Settings.version) || announcementsClosed == null)
             {
                 if (VersionGreaterThan(previousVersion, "1.0.0.0") || announcementsClosed == null)
                 {
-                    Frames.MainPage.announcementItems.Add(new Welcome());
-                    Frames.MainPage.announcementItems.Add(new TvMode(Frames.Settings.tvSafeArea));
-                    Frames.MainPage.announcementItems.Add(new ThemeMode(Frames.Settings.theme));
-                    Frames.MainPage.announcementItems.Add(new PlaybackMode(Frames.Settings.playbackSource));
+                    MainPage.announcementItems.Add(new Welcome());
+                    MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
+                    MainPage.announcementItems.Add(new ThemeMode(Settings.theme));
+                    MainPage.announcementItems.Add(new PlaybackMode(Settings.playbackSource));
                 }
             }
-            roamingSettings.Values["Announcements"] = Frames.Settings.version.ToString();
+            roamingSettings.Values["Announcements"] = Settings.version.ToString();
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace Boxify
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(Frames.MainPage), arguments);
+                rootFrame.Navigate(typeof(MainPage), arguments);
             }
         }
 
@@ -288,9 +289,9 @@ namespace Boxify
 
             App.playbackService.Player.PlaybackSession.PlaybackStateChanged -= App.playbackService.PlayStateChanges;
 
-            if (Frames.MainPage.currentNavSelection != null)
+            if (MainPage.currentNavSelection != null)
             {
-                hamburgerOptionToLoadTo = Frames.MainPage.currentNavSelection.Name;
+                hamburgerOptionToLoadTo = MainPage.currentNavSelection.Name;
             }
             else
             {
@@ -315,7 +316,7 @@ namespace Boxify
             // Restore view content if it was previously unloaded
             if (finishedInitialization && Window.Current.Content == null)
             {
-                Frames.MainPage.returningFromMemoryReduction = true;
+                MainPage.returningFromMemoryReduction = true;
                 CreateRootFrame(ApplicationExecutionState.Running, string.Empty);
                 
                 App.playbackService.Player.PlaybackSession.PlaybackStateChanged += App.playbackService.PlayStateChanges;

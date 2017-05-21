@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -73,7 +74,7 @@ namespace Boxify.Classes
             {
                 currentSession.Dispose();
             }
-            currentSession = new PlaybackSession(currentLock, Frames.Settings.playbackSource, type, href);
+            currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, href);
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
