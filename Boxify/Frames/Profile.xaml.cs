@@ -26,7 +26,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.

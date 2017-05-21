@@ -32,7 +32,7 @@ using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
-using static Boxify.Settings;
+using static Boxify.Frames.Settings;
 
 namespace Boxify.Classes
 {

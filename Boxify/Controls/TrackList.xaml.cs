@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify.Frames
+namespace Boxify.Controls
 {
     /// <summary>
     /// Class for listing the details of a track in a row
@@ -55,7 +55,7 @@ namespace Boxify.Frames
         private void PopulateData()
         {
             Image.Source = track.album.image;
-            Name.Text = track.name;
+            DisplayName.Text = track.name;
             Artist.Text = track.GetMainArtistName();
         }
 
@@ -67,7 +67,7 @@ namespace Boxify.Frames
             track = null;
 
             Image = null;
-            Name = null;
+            DisplayName = null;
             ArtistLabel = null;
             Artist = null;
         }

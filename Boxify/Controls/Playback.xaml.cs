@@ -28,7 +28,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify
+namespace Boxify.Controls
 {
     /// <summary>
     /// Used to control the playback of songs
@@ -286,8 +286,8 @@ namespace Boxify
                 TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
                 Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
-            Settings.repeatEnabled = repeatOn;
-            Settings.SaveSettings();
+            Frames.Settings.repeatEnabled = repeatOn;
+            Frames.Settings.SaveSettings();
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Boxify
         {
             VolumeSlider.Value = App.playbackService.Player.Volume * 100;
             Volume.Visibility = Visibility.Collapsed;
-            if (Settings.repeatEnabled)
+            if (Frames.Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Collapsed;
             }
@@ -379,7 +379,7 @@ namespace Boxify
         {
             Volume.Visibility = Visibility.Visible;
             VolumeSlider.Visibility = Visibility.Collapsed;
-            if (Settings.repeatEnabled)
+            if (Frames.Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Visible;
                 TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
@@ -427,8 +427,8 @@ namespace Boxify
             {
                 Volume.Content = "\uE995";
             }
-            Settings.volume = VolumeSlider.Value;
-            Settings.SaveSettings();
+            Frames.Settings.volume = VolumeSlider.Value;
+            Frames.Settings.SaveSettings();
         }
 
         /// <summary>

@@ -248,7 +248,7 @@ namespace Boxify
                 {
                     extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
                 }
-                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                Frames.MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return;
             }
@@ -303,7 +303,7 @@ namespace Boxify
                 {
                     extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
                 }
-                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                Frames.MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return;
             }
@@ -460,7 +460,7 @@ namespace Boxify
                 {
                     extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
                 }
-                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                Frames.MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
             }
 
@@ -596,7 +596,7 @@ namespace Boxify
                 {
                     extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
                 }
-                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                Frames.MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return "";
             }

@@ -126,7 +126,7 @@ namespace Boxify.Frames
 
                                     Playlist playlist = new Playlist();
                                     await playlist.SetInfo(playlistJson.Stringify());
-                                    PlaylistList playlistList = new PlaylistList(playlist);
+                                    Controls.PlaylistList playlistList = new Controls.PlaylistList(playlist);
                                     try
                                     {
                                         if (!App.isInBackgroundMode)
@@ -141,7 +141,7 @@ namespace Boxify.Frames
                         }
                     }
                 }
-                
+
                 // track
                 else if (selectedString == "track")
                 {
@@ -164,7 +164,7 @@ namespace Boxify.Frames
                                 {
                                     Track track = new Track();
                                     await track.SetInfoDirect(trackJson.Stringify());
-                                    TrackList trackList = new TrackList(track);
+                                    Controls.TrackList trackList = new Controls.TrackList(track);
                                     try
                                     {
                                         if (!App.isInBackgroundMode)
@@ -202,7 +202,7 @@ namespace Boxify.Frames
                                 {
                                     Album album = new Album();
                                     await album.SetInfo(albumJson.Stringify());
-                                    AlbumList albumList = new AlbumList(album);
+                                    Controls.AlbumList albumList = new Controls.AlbumList(album);
                                     try
                                     {
                                         if (!App.isInBackgroundMode)
@@ -236,16 +236,17 @@ namespace Boxify.Frames
         /// <param name="e"></param>
         private void Results_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is TrackList)
+            if (e.ClickedItem is Controls.TrackList)
             {
-                (e.ClickedItem as TrackList).track.PlayTrack();
+                (e.ClickedItem as Controls.TrackList).track.PlayTrack();
             }
-            else if (e.ClickedItem is PlaylistList)
+            else if (e.ClickedItem is Controls.PlaylistList)
             {
-                (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
+                (e.ClickedItem as Controls.PlaylistList).Playlist.PlayTracks();
             }
-            else if (e.ClickedItem is AlbumList) {
-                (e.ClickedItem as AlbumList).album.PlayTracks();
+            else if (e.ClickedItem is Controls.AlbumList)
+            {
+                (e.ClickedItem as Controls.AlbumList).album.PlayTracks();
             }
         }
 
@@ -257,23 +258,23 @@ namespace Boxify.Frames
             while (Results.Items.Count > 0)
             {
                 object listItem = Results.Items.ElementAt(0);
-                if (listItem is PlaylistList)
+                if (listItem is Controls.PlaylistList)
                 {
-                    PlaylistList playlistList = listItem as PlaylistList;
+                    Controls.PlaylistList playlistList = listItem as Controls.PlaylistList;
                     playlistList.Unload();
                     Results.Items.Remove(playlistList);
                     playlistList = null;
                 }
-                else if (listItem is TrackList)
+                else if (listItem is Controls.TrackList)
                 {
-                    TrackList trackList = listItem as TrackList;
+                    Controls.TrackList trackList = listItem as Controls.TrackList;
                     trackList.Unload();
                     Results.Items.Remove(trackList);
                     trackList = null;
                 }
-                else if (listItem is AlbumList)
+                else if (listItem is Controls.AlbumList)
                 {
-                    AlbumList albumList = listItem as AlbumList;
+                    Controls.AlbumList albumList = listItem as Controls.AlbumList;
                     albumList.Unload();
                     Results.Items.Remove(albumList);
                     albumList = null;

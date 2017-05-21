@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify
+namespace Boxify.Controls
 {
     /// <summary>
     /// A class for listing the details of a playlist in a row
@@ -55,7 +55,7 @@ namespace Boxify
         public void PopulateData()
         {
             Image.Source = Playlist.image;
-            Name.Text = Playlist.name;
+            DisplayName.Text = Playlist.name;
             Tracks.Text = Playlist.tracksCount.ToString();
         }
 
@@ -67,7 +67,7 @@ namespace Boxify
             Playlist = null;
 
             Image = null;
-            Name = null;
+            DisplayName = null;
             Tracks = null;
             TracksLabel = null;
         }

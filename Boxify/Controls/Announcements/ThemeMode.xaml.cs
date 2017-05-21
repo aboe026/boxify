@@ -21,7 +21,7 @@ using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static Boxify.Settings;
+using static Boxify.Frames.Settings;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -84,13 +84,13 @@ namespace Boxify.Controls.Announcements
                 newTheme = Theme.Dark;
             }
 
-            if (MainPage.settingsPage != null)
+            if (Frames.MainPage.settingsPage != null)
             {
-                MainPage.settingsPage.SetThemeUI(newTheme);
+                Frames.MainPage.settingsPage.SetThemeUI(newTheme);
             }
             else
             {
-                Settings.SetTheme(newTheme);
+                Frames.Settings.SetTheme(newTheme);
                 if (newTheme == Theme.System)
                 {
                     if (Application.Current.RequestedTheme == ApplicationTheme.Light)

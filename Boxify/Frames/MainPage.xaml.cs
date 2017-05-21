@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls;
 using Boxify.Controls.Announcements;
-using Boxify.Frames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,11 +33,10 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using static Boxify.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -81,11 +80,11 @@ namespace Boxify
             }
 
             // settings
-            if (Settings.theme == Theme.Light)
+            if (Settings.theme == Settings.Theme.Light)
             {
                 this.RequestedTheme = ElementTheme.Light;
             }
-            else if (Settings.theme == Theme.Dark)
+            else if (Settings.theme == Settings.Theme.Dark)
             {
                 this.RequestedTheme = ElementTheme.Dark;
             }

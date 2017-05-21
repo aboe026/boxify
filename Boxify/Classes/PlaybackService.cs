@@ -74,7 +74,7 @@ namespace Boxify
             {
                 currentSession.Dispose();
             }
-            currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, href);
+            currentSession = new PlaybackSession(currentLock, Frames.Settings.playbackSource, type, href);
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);

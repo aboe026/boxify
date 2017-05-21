@@ -30,7 +30,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// The page displaying the users custom music selections
@@ -43,7 +43,7 @@ namespace Boxify
         private static int playlistsTotal = 20;
         private static int playlistsCount = 0;
         public static bool refreshing = false;
-        public static List<PlaylistList> preEmptiveLoadPlaylists = new List<PlaylistList>();
+        public static List<Controls.PlaylistList> preEmptiveLoadPlaylists = new List<Controls.PlaylistList>();
 
         /// <summary>
         /// The main constructor
@@ -84,7 +84,7 @@ namespace Boxify
                 }
                 if (preEmptiveLoadPlaylists.Count > 0)
                 {
-                    foreach (PlaylistList playlist in preEmptiveLoadPlaylists)
+                    foreach (Controls.PlaylistList playlist in preEmptiveLoadPlaylists)
                     {
                         try
                         {
@@ -161,7 +161,7 @@ namespace Boxify
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist);
+                    Controls.PlaylistList playlistList = new Controls.PlaylistList(playlist);
                     Playlists.Items.Add(playlistList);
                     App.mainPage.SetSpotifyLoadingValue(Playlists.Items.Count);
                 }
@@ -214,7 +214,7 @@ namespace Boxify
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist);
+                    Controls.PlaylistList playlistList = new Controls.PlaylistList(playlist);
                     preEmptiveLoadPlaylists.Add(playlistList);
                 }
             }
@@ -228,7 +228,7 @@ namespace Boxify
             playlistsOffset = 0;
             while (Playlists.Items.Count > 0)
             {
-                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                Controls.PlaylistList playlistList = Playlists.Items.ElementAt(0) as Controls.PlaylistList;
                 playlistList.Unload();
                 Playlists.Items.Remove(playlistList);
                 playlistList = null;
@@ -263,7 +263,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
+            (e.ClickedItem as Controls.PlaylistList).Playlist.PlayTracks();
         }
 
         /// <summary>
@@ -314,11 +314,21 @@ namespace Boxify
                         More.Click -= More_Click;
                         More = null;
                     }
-
+                    if (preEmptiveLoadPlaylists != null)
+                    {
+                        while (preEmptiveLoadPlaylists.Count > 0)
+                        {
+                            Controls.PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as Controls.PlaylistList;
+                            playlistList.Unload();
+                            preEmptiveLoadPlaylists.Remove(playlistList);
+                            playlistList = null;
+                        }
+                        preEmptiveLoadPlaylists.Clear();
+                        preEmptiveLoadPlaylists = null;
+                    }
 
                     Warning = null;
                     PlaylistsLabel = null;
-
                 });
             }
         }

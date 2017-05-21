@@ -19,8 +19,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static Boxify.Settings;
+using static Boxify.Frames.Settings;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -64,7 +65,7 @@ namespace Boxify.Controls.Announcements
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PlaybackMode_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void PlaybackMode_Click(object sender, RoutedEventArgs e)
         {
             Playbacksource source = Playbacksource.Spotify;
             if (Spotify.IsChecked == true)
@@ -75,13 +76,13 @@ namespace Boxify.Controls.Announcements
             {
                 source = Playbacksource.YouTube;
             }
-            if (MainPage.settingsPage != null)
+            if (Frames.MainPage.settingsPage != null)
             {
-                MainPage.settingsPage.SetPlaybackSourceUI(source);
+                Frames.MainPage.settingsPage.SetPlaybackSourceUI(source);
             }
             else
             {
-                Settings.SetPlaybackSource(source);
+                SetPlaybackSource(source);
             }
         }
 
@@ -90,7 +91,7 @@ namespace Boxify.Controls.Announcements
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public async void UserControl_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
