@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Classes;
 using Boxify.Controls.Announcements;
+using Boxify.Frames;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -28,7 +30,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using static Boxify.Settings;
 
 namespace Boxify
 {
@@ -153,11 +154,11 @@ namespace Boxify
                 // playback source
                 if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
                 {
-                    Settings.playbackSource = Playbacksource.YouTube;
+                    Settings.playbackSource = Settings.Playbacksource.YouTube;
                 }
                 else
                 {
-                    Settings.playbackSource = Playbacksource.Spotify;
+                    Settings.playbackSource = Settings.Playbacksource.Spotify;
                 }
 
                 // repeat
@@ -187,8 +188,8 @@ namespace Boxify
             {
                 // Defaults
                 Settings.tvSafeArea = true;
-                Settings.theme = Theme.System;
-                Settings.playbackSource = Playbacksource.Spotify;
+                Settings.theme = Settings.Theme.System;
+                Settings.playbackSource = Settings.Playbacksource.Spotify;
             }
 
             // Announcements

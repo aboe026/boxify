@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Classes;
+using Boxify.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +32,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// A page displaying the public Spotify activity
@@ -188,21 +190,24 @@ namespace Boxify
                     if (FeaturedPlaylists != null)
                     {
                         FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
+                        FeaturedPlaylists.ClearValue(XYFocusUpProperty);
 
                         while (FeaturedPlaylists.Items.Count > 0)
                         {
                             PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
-                            playlistHero.Unload();
                             FeaturedPlaylists.Items.Remove(playlistHero);
+                            playlistHero.Unload();
                             playlistHero = null;
                         }
 
+                        FeaturedPlaylists.ItemsSource = null;
                         FeaturedPlaylists = null;
                     }
 
                     if (Refresh != null)
                     {
                         Refresh.Click -= Refresh_Click;
+                        Refresh.ClearValue(XYFocusRightProperty);
                         Refresh = null;
                     }
                     if (More != null)

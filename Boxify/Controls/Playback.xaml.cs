@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -28,7 +29,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify
+namespace Boxify.Controls
 {
     /// <summary>
     /// Used to control the playback of songs
@@ -541,6 +542,7 @@ namespace Boxify
                     }
 
                     LoadingTrack = null;
+                    AlbumArt.Source = null;
                     AlbumArt = null;
                     TrackName = null;
                     TrackArtist = null;

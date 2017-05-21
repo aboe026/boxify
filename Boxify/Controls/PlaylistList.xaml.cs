@@ -20,14 +20,14 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify
+namespace Boxify.Controls
 {
     /// <summary>
     /// A class for listing the details of a playlist in a row
     /// </summary>
     public sealed partial class PlaylistList : UserControl
     {
-        public Playlist Playlist { get; set; }
+        public Playlist playlist;
 
         /// <summary>
         /// The main constructor
@@ -45,7 +45,7 @@ namespace Boxify
         /// <param name="mainPage">The MainPage containing the Playlist</param>
         public PlaylistList(Playlist playlist) : this()
         {
-            this.Playlist = playlist;
+            this.playlist = playlist;
             PopulateData();
         }
 
@@ -54,9 +54,9 @@ namespace Boxify
         /// </summary>
         public void PopulateData()
         {
-            Image.Source = Playlist.image;
-            Name.Text = Playlist.name;
-            Tracks.Text = Playlist.tracksCount.ToString();
+            Image.Source = playlist.image;
+            DisplayName.Text = playlist.name;
+            Tracks.Text = playlist.tracksCount.ToString();
         }
 
         /// <summary>
@@ -64,10 +64,12 @@ namespace Boxify
         /// </summary>
         public void Unload()
         {
-            Playlist = null;
+            playlist.Dispose();
+            playlist = null;
 
+            Image.Source = null;
             Image = null;
-            Name = null;
+            DisplayName = null;
             Tracks = null;
             TracksLabel = null;
         }

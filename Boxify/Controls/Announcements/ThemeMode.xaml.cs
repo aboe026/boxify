@@ -16,12 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static Boxify.Settings;
+using static Boxify.Frames.Settings;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 

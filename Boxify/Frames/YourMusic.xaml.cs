@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +28,11 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Boxify.Classes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// The page displaying the users custom music selections
@@ -263,7 +265,7 @@ namespace Boxify
         /// <param name="e"></param>
         private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
+            (e.ClickedItem as PlaylistList).playlist.PlayTracks();
         }
 
         /// <summary>
@@ -314,11 +316,21 @@ namespace Boxify
                         More.Click -= More_Click;
                         More = null;
                     }
-
+                    if (preEmptiveLoadPlaylists != null)
+                    {
+                        while (preEmptiveLoadPlaylists.Count > 0)
+                        {
+                            PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as PlaylistList;
+                            playlistList.Unload();
+                            preEmptiveLoadPlaylists.Remove(playlistList);
+                            playlistList = null;
+                        }
+                        preEmptiveLoadPlaylists.Clear();
+                        preEmptiveLoadPlaylists = null;
+                    }
 
                     Warning = null;
                     PlaylistsLabel = null;
-
                 });
             }
         }

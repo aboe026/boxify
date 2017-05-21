@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
 using System.Runtime.InteropServices;
 using Windows.Data.Json;
 
@@ -24,8 +25,9 @@ namespace Boxify
     /// <summary>
     /// An Artist object
     /// </summary>
-    public class Artist
+    public class Artist : IDisposable
     {
+        private bool disposed = false;
         public string name = "";
 
         /// <summary>
@@ -46,6 +48,24 @@ namespace Boxify
             if (trackJson.TryGetValue("name", out IJsonValue nameJson))
             {
                 name = nameJson.GetString();
+            }
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            disposed = true;
+            if (disposing)
+            {
+               name = null;
             }
         }
     }

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
-using Boxify.Classes;
+using Boxify.Frames;
 using System;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -26,7 +26,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
 using static Boxify.Classes.PlaybackSession;
 
-namespace Boxify
+namespace Boxify.Classes
 {
     /// <summary>
     /// The central authority on playback in the application

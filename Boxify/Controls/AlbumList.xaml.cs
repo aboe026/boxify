@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify.Frames
+namespace Boxify.Controls
 {
     /// <summary>
     /// Class for listing the details of an album in a row
@@ -58,7 +58,7 @@ namespace Boxify.Frames
         public void PopulateData()
         {
             Image.Source = album.image;
-            Name.Text = album.name;
+            DisplayName.Text = album.name;
             Artist.Text = album.GetMainArtistName();
         }
 
@@ -69,10 +69,12 @@ namespace Boxify.Frames
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
+                album.Dispose();
                 album = null;
 
+                Image.Source = null;
                 Image = null;
-                Name = null;
+                DisplayName = null;
                 ArtistLabel = null;
                 Artist = null;
             });

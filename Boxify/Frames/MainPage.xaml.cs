@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls;
 using Boxify.Controls.Announcements;
-using Boxify.Frames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,11 +33,12 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using static Boxify.Settings;
+using Boxify.Classes;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace Boxify
+namespace Boxify.Frames
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -81,11 +82,11 @@ namespace Boxify
             }
 
             // settings
-            if (Settings.theme == Theme.Light)
+            if (Settings.theme == Settings.Theme.Light)
             {
                 this.RequestedTheme = ElementTheme.Light;
             }
-            else if (Settings.theme == Theme.Dark)
+            else if (Settings.theme == Settings.Theme.Dark)
             {
                 this.RequestedTheme = ElementTheme.Dark;
             }
@@ -788,6 +789,81 @@ namespace Boxify
         }
 
         /// <summary>
+        /// User wishes to close Announcements
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["AnnouncementsClosed"] = true;
+            closedAnnouncements = true;
+            AnnouncementsContainer.Visibility = Visibility.Collapsed;
+            announcementItems.Clear();
+            MainContentFrame.Focus(FocusState.Programmatic);
+        }
+
+        /// <summary>
+        /// User moves to the next announcement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void NextAnnouncement_Click(object sender, RoutedEventArgs e)
+        {
+            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
+            if (currentIndex < announcementItems.Count - 1)
+            {
+                Announcements.Content = announcementItems[currentIndex + 1];
+                PreviousAnnouncement.Visibility = Visibility.Visible;
+                if (currentIndex + 1 == announcementItems.Count - 1)
+                {
+                    NextAnnouncement.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// User moves to previous announcement
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void PreviousAnnouncement_Click(object sender, RoutedEventArgs e)
+        {
+            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
+            if (currentIndex > 0)
+            {
+                Announcements.Content = announcementItems[currentIndex - 1];
+                NextAnnouncement.Visibility = Visibility.Visible;
+                if (currentIndex - 1 == 0)
+                {
+                    PreviousAnnouncement.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// User clicks button in announcement popup
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AnnouncementsContainer_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (e.Key == VirtualKey.Escape)
+            {
+                CloseAnnouncements_Click(null, null);
+            }
+            if (e.Key == VirtualKey.GamepadRightShoulder)
+            {
+                NextAnnouncement_Click(null, null);
+            }
+            else if (e.Key == VirtualKey.GamepadLeftShoulder)
+            {
+                PreviousAnnouncement_Click(null, null);
+            }
+        }
+
+        /// <summary>
         /// Used when freeing memory
         /// </summary>
         /// <param name="sender"></param>
@@ -796,7 +872,7 @@ namespace Boxify
         {
             if (App.isInBackgroundMode)
             {
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
                     Bindings.StopTracking();
                     this.KeyDown -= Page_KeyUp;
@@ -873,35 +949,56 @@ namespace Boxify
                         PlaybackMenu = null;
                     }
 
-
-
                     // dependant pages
                     if (browsePage != null)
                     {
-                        browsePage.Page_Unloaded(null, null);
-                        browsePage.Unloaded -= browsePage.Page_Unloaded;
-                        browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        browsePage = null;
+                        await Task.Run(() => browsePage.Page_Unloaded(null, null));
+                        if (browsePage != null)
+                        {
+                            browsePage.Unloaded -= browsePage.Page_Unloaded;
+                            browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            browsePage = null;
+                        }
                     }
                     if (profilePage != null)
                     {
-                        profilePage.Page_Unloaded(null, null);
-                        profilePage = null;
+                        await Task.Run(() => profilePage.Page_Unloaded(null, null));
+                        if (profilePage != null)
+                        {
+                            profilePage.Unloaded -= profilePage.Page_Unloaded;
+                            profilePage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            profilePage = null;
+                        }
                     }
                     if (yourMusicPage != null)
                     {
-                        yourMusicPage.Page_Unloaded(null, null);
-                        yourMusicPage = null;
+                        await Task.Run(() => yourMusicPage.Page_Unloaded(null, null));
+                        if (yourMusicPage != null)
+                        {
+                            yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
+                            yourMusicPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            yourMusicPage = null;
+                        }
                     }
                     if (searchPage != null)
                     {
-                        searchPage.Page_Unloaded(null, null);
-                        searchPage = null;
+                        await Task.Run(() => searchPage.Page_Unloaded(null, null));
+                        if (searchPage != null)
+                        {
+                            searchPage.Unloaded -= searchPage.Page_Unloaded;
+                            searchPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            searchPage = null;
+                        }
                     }
                     if (settingsPage != null)
                     {
-                        settingsPage.Page_Unloaded(null, null);
-                        settingsPage = null;
+                        await Task.Run(() => settingsPage.Page_Unloaded(null, null));
+                        if (settingsPage != null)
+                        {
+                            settingsPage.Unloaded -= settingsPage.Page_Unloaded;
+                            settingsPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            settingsPage = null;
+                        }
                     }
 
                     // announcements
@@ -911,32 +1008,33 @@ namespace Boxify
                         if (announcement is Welcome)
                         {
                             Welcome welcome = announcement as Welcome;
+                            announcementItems.Remove(welcome);
                             welcome.UserControl_Unloaded(null, null);
                             welcome.Unloaded -= welcome.UserControl_Unloaded;
-                            announcementItems.Remove(welcome);
                             welcome = null;
                         }
                         if (announcement is PlaybackMode)
                         {
                             PlaybackMode playbackMode = announcement as PlaybackMode;
+                            announcementItems.Remove(playbackMode);
                             playbackMode.UserControl_Unloaded(null, null);
                             playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
-                            announcementItems.Remove(playbackMode);
                             playbackMode = null;
                         }
                         if (announcement is ThemeMode)
                         {
                             ThemeMode themeMode = announcement as ThemeMode;
+                            announcementItems.Remove(themeMode);
                             themeMode.UserControl_Unloaded(null, null);
                             themeMode.Unloaded -= themeMode.UserControl_Unloaded;
-                            announcementItems.Remove(themeMode);
                             themeMode = null;
                         }
                         if (announcement is TvMode)
                         {
                             TvMode tvMode = announcement as TvMode;
-                            tvMode.UserControl_Unloaded(null, null);
                             announcementItems.Remove(tvMode);
+                            tvMode.UserControl_Unloaded(null, null);
+                            tvMode.Unloaded -= tvMode.UserControl_Unloaded;
                             tvMode = null;
                         }
                     }
@@ -966,81 +1064,6 @@ namespace Boxify
 
                     BackgroundGrid = null;
                 });
-            }
-        }
-
-        /// <summary>
-        /// User wishes to close Announcements
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void CloseAnnouncements_Click(object sender, RoutedEventArgs e)
-        {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            roamingSettings.Values["AnnouncementsClosed"] = true;
-            closedAnnouncements = true;
-            AnnouncementsContainer.Visibility = Visibility.Collapsed;
-            announcementItems.Clear();
-            MainContentFrame.Focus(FocusState.Programmatic);
-        }
-
-        /// <summary>
-        /// User moves to the next announcement
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void NextAnnouncement_Click(object sender, RoutedEventArgs e)
-        {
-            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
-            if (currentIndex < announcementItems.Count - 1)
-            {
-                Announcements.Content = announcementItems[currentIndex + 1];
-                PreviousAnnouncement.Visibility = Visibility.Visible;
-                if (currentIndex + 1 == announcementItems.Count - 1)
-                {
-                    NextAnnouncement.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        /// <summary>
-        /// User moves to previous announcement
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void PreviousAnnouncement_Click(object sender, RoutedEventArgs e)
-        {
-            int currentIndex = announcementItems.IndexOf(Announcements.Content as UserControl);
-            if (currentIndex > 0)
-            {
-                Announcements.Content = announcementItems[currentIndex - 1];
-                NextAnnouncement.Visibility = Visibility.Visible;
-                if (currentIndex - 1 == 0)
-                {
-                    PreviousAnnouncement.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        /// <summary>
-        /// User clicks button in announcement popup
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AnnouncementsContainer_KeyUp(object sender, KeyRoutedEventArgs e)
-        {
-            e.Handled = true;
-            if (e.Key == VirtualKey.Escape)
-            {
-                CloseAnnouncements_Click(null, null);
-            }
-            if (e.Key == VirtualKey.GamepadRightShoulder)
-            {
-                NextAnnouncement_Click(null, null);
-            }
-            else if (e.Key == VirtualKey.GamepadLeftShoulder)
-            {
-                PreviousAnnouncement_Click(null, null);
             }
         }
     }

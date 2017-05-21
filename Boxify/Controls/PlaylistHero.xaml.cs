@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Boxify
+namespace Boxify.Controls
 {
     public sealed partial class PlaylistHero : UserControl
     {
@@ -52,7 +52,7 @@ namespace Boxify
         public void PopulateData()
         {
             Image.Source = playlist.image;
-            Name.Text = playlist.name;
+            DisplayName.Text = playlist.name;
             Description.Text = playlist.description;
             Tracks.Text = playlist.tracksCount.ToString();
         }
@@ -62,10 +62,12 @@ namespace Boxify
         /// </summary>
         public void Unload()
         {
+            playlist.Dispose();
             playlist = null;
 
+            Image.Source = null;
             Image = null;
-            Name = null;
+            DisplayName = null;
             Description = null;
             TracksLabel = null;
             Tracks = null;

@@ -19,10 +19,10 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 -->
 
 <Page
-    x:Class="Boxify.MainPage"
+    x:Class="Boxify.Frames.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Boxify"
+    xmlns:controls="using:Boxify.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -35,7 +35,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Frames/Styles.xaml"/>
+                <ResourceDictionary Source="/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -298,9 +298,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                    TextWrapping="Wrap"
                                    TextAlignment="Center"/>
 
-                        <local:CancelDialog x:Name="CancelDialog"
-                                            Grid.Row="1"
-                                            Margin="10,0,10,0"/>
+                        <controls:CancelDialog x:Name="CancelDialog"
+                                               Grid.Row="1"
+                                               Margin="10,0,10,0"/>
 
                     </Grid>
 
@@ -313,14 +313,14 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                            Margin="0,0,0,148"
                            XYFocusDown="{x:Bind PlaybackMenu}"/>
 
-                    <local:Playback x:Name="PlaybackMenu"
-                                    RelativePanel.AlignBottomWithPanel="True"
-                                    RelativePanel.AlignLeftWithPanel="True"
-                                    RelativePanel.AlignRightWithPanel="True"
-                                    Canvas.ZIndex="1"
-                                    Grid.Row="3"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="30,0,30,0"/>
+                    <controls:Playback x:Name="PlaybackMenu"
+                                       RelativePanel.AlignBottomWithPanel="True"
+                                       RelativePanel.AlignLeftWithPanel="True"
+                                       RelativePanel.AlignRightWithPanel="True"
+                                       Canvas.ZIndex="1"
+                                       Grid.Row="3"
+                                       HorizontalAlignment="Stretch"
+                                       Margin="30,0,30,0"/>
                 </RelativePanel>
 
             </SplitView.Content>

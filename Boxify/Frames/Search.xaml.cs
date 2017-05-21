@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Classes;
+using Boxify.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,7 +143,7 @@ namespace Boxify.Frames
                         }
                     }
                 }
-                
+
                 // track
                 else if (selectedString == "track")
                 {
@@ -242,9 +244,10 @@ namespace Boxify.Frames
             }
             else if (e.ClickedItem is PlaylistList)
             {
-                (e.ClickedItem as PlaylistList).Playlist.PlayTracks();
+                (e.ClickedItem as PlaylistList).playlist.PlayTracks();
             }
-            else if (e.ClickedItem is AlbumList) {
+            else if (e.ClickedItem is AlbumList)
+            {
                 (e.ClickedItem as AlbumList).album.PlayTracks();
             }
         }
@@ -278,6 +281,19 @@ namespace Boxify.Frames
                     Results.Items.Remove(albumList);
                     albumList = null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// user hits enter to search
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                SearchButton_Click(null, null);
             }
         }
 
