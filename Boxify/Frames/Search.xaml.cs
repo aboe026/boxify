@@ -282,6 +282,19 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// user hits enter to search
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                SearchButton_Click(null, null);
+            }
+        }
+
+        /// <summary>
         /// Used when freeing memory
         /// </summary>
         /// <param name="sender"></param>

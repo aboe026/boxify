@@ -47,7 +47,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                      RelativePanel.AlignVerticalCenterWithPanel="True"
                      Margin="10,0,200,0"
                      Style="{StaticResource TextBoxStyle}"
-                     PlaceholderText="Enter Search Text Here..."/>
+                     PlaceholderText="Enter Search Text Here..."
+                     KeyUp="SearchBox_KeyUp"/>
 
             <ComboBox Name="SearchType"
                       RelativePanel.RightOf="SearchBox"
