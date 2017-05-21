@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Boxify.Frames
         private static int playlistsTotal = 20;
         private static int playlistsCount = 0;
         public static bool refreshing = false;
-        public static List<Controls.PlaylistList> preEmptiveLoadPlaylists = new List<Controls.PlaylistList>();
+        public static List<PlaylistList> preEmptiveLoadPlaylists = new List<PlaylistList>();
 
         /// <summary>
         /// The main constructor
@@ -85,7 +86,7 @@ namespace Boxify.Frames
                 }
                 if (preEmptiveLoadPlaylists.Count > 0)
                 {
-                    foreach (Controls.PlaylistList playlist in preEmptiveLoadPlaylists)
+                    foreach (PlaylistList playlist in preEmptiveLoadPlaylists)
                     {
                         try
                         {
@@ -162,7 +163,7 @@ namespace Boxify.Frames
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    Controls.PlaylistList playlistList = new Controls.PlaylistList(playlist);
+                    PlaylistList playlistList = new PlaylistList(playlist);
                     Playlists.Items.Add(playlistList);
                     App.mainPage.SetSpotifyLoadingValue(Playlists.Items.Count);
                 }
@@ -215,7 +216,7 @@ namespace Boxify.Frames
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
-                    Controls.PlaylistList playlistList = new Controls.PlaylistList(playlist);
+                    PlaylistList playlistList = new PlaylistList(playlist);
                     preEmptiveLoadPlaylists.Add(playlistList);
                 }
             }
@@ -229,7 +230,7 @@ namespace Boxify.Frames
             playlistsOffset = 0;
             while (Playlists.Items.Count > 0)
             {
-                Controls.PlaylistList playlistList = Playlists.Items.ElementAt(0) as Controls.PlaylistList;
+                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
                 playlistList.Unload();
                 Playlists.Items.Remove(playlistList);
                 playlistList = null;
@@ -264,7 +265,7 @@ namespace Boxify.Frames
         /// <param name="e"></param>
         private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as Controls.PlaylistList).playlist.PlayTracks();
+            (e.ClickedItem as PlaylistList).playlist.PlayTracks();
         }
 
         /// <summary>
@@ -319,7 +320,7 @@ namespace Boxify.Frames
                     {
                         while (preEmptiveLoadPlaylists.Count > 0)
                         {
-                            Controls.PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as Controls.PlaylistList;
+                            PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as PlaylistList;
                             playlistList.Unload();
                             preEmptiveLoadPlaylists.Remove(playlistList);
                             playlistList = null;

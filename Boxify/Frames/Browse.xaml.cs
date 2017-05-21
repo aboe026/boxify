@@ -17,6 +17,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
 using Boxify.Classes;
+using Boxify.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,7 +114,7 @@ namespace Boxify.Frames
                             string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
                             await playlist.SetInfo(fullPlaylistString);
-                            Controls.PlaylistHero playlistHero = new Controls.PlaylistHero(playlist);
+                            PlaylistHero playlistHero = new PlaylistHero(playlist);
                             FeaturedPlaylists.Items.Add(playlistHero);
                             App.mainPage.SetSpotifyLoadingValue(FeaturedPlaylists.Items.Count);
                         }
@@ -143,7 +144,7 @@ namespace Boxify.Frames
             featuredPlaylistsOffset = 0;
             while (FeaturedPlaylists.Items.Count > 0)
             {
-                Controls.PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as Controls.PlaylistHero;
+                PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
                 playlistHero.Unload();
                 FeaturedPlaylists.Items.Remove(playlistHero);
                 playlistHero = null;
@@ -158,7 +159,7 @@ namespace Boxify.Frames
         /// <param name="e"></param>
         private void FeaturedPlaylists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as Controls.PlaylistHero).playlist.PlayTracks();
+            (e.ClickedItem as PlaylistHero).playlist.PlayTracks();
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace Boxify.Frames
 
                         while (FeaturedPlaylists.Items.Count > 0)
                         {
-                            Controls.PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as Controls.PlaylistHero;
+                            PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
                             FeaturedPlaylists.Items.Remove(playlistHero);
                             playlistHero.Unload();
                             playlistHero = null;
