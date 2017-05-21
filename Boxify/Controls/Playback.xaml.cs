@@ -541,6 +541,7 @@ namespace Boxify.Controls
                     }
 
                     LoadingTrack = null;
+                    AlbumArt.Source = null;
                     AlbumArt = null;
                     TrackName = null;
                     TrackArtist = null;

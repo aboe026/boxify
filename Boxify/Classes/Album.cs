@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -28,9 +29,10 @@ namespace Boxify
     /// <summary>
     /// An Album object
     /// </summary>
-    public class Album
+    public class Album : IDisposable
     {
-        private string id = "";
+        private bool disposed = false;
+        public string id = "";
         public string name = "";
         public List<Artist> artists = new List<Artist>();
         public BitmapImage image = new BitmapImage();
@@ -142,6 +144,37 @@ namespace Boxify
         public void PlayTracks()
         {
             App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id));
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            disposed = true;
+            if (disposing)
+            {
+                id = null;
+                name = null;
+                while (artists.Count > 0)
+                {
+                    Artist artist = artists.ElementAt(0);
+                    artists.Remove(artist);
+                    artist.Dispose();
+                    artist = null;
+                }
+                artists.Clear();
+                artists = null;
+                image.UriSource = null;
+                image = null;
+                imageUrl = null;
+            }
         }
     }
 }

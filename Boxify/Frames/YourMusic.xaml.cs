@@ -263,7 +263,7 @@ namespace Boxify.Frames
         /// <param name="e"></param>
         private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
         {
-            (e.ClickedItem as Controls.PlaylistList).Playlist.PlayTracks();
+            (e.ClickedItem as Controls.PlaylistList).playlist.PlayTracks();
         }
 
         /// <summary>

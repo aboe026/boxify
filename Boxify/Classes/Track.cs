@@ -28,8 +28,9 @@ namespace Boxify
     /// <summary>
     /// A Track object
     /// </summary>
-    public class Track
+    public class Track : IDisposable
     {
+        private bool disposed = false;
         public string id = "";
         public string href = "";
         public string name = "";
@@ -144,6 +145,41 @@ namespace Boxify
         public void PlayTrack()
         {
             App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Single, href);
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            disposed = true;
+            if (disposing)
+            {
+                id = null;
+                href = null;
+                name = null;
+                albumJson = null;
+                previewUrl = null;
+
+                album.Dispose();
+                album = null;
+                while (artists.Count > 0)
+                {
+                    Artist artist = artists.ElementAt(0);
+                    artists.Remove(artist);
+                    artist.Dispose();
+                    artist = null;
+                }
+                artists.Clear();
+                artists = null;
+                previewUrl = null;
+            }
         }
     }
 }

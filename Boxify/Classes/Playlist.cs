@@ -29,8 +29,9 @@ namespace Boxify
     /// <summary>
     /// A playlist object containing tracks
     /// </summary>
-    public class Playlist
+    public class Playlist : IDisposable
     {
+        private bool disposed = false;
         public string id = "";
         public string href = "";
         public string name = "";
@@ -112,7 +113,31 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, tracksHref); 
+            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Playlist, tracksHref);
+        }
+
+        /// <summary>
+        /// Free up memory
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            disposed = true;
+            if (disposing)
+            {
+                id = null;
+                href = null;
+                name = null;
+                description = null;
+                tracksHref = null;
+                image.UriSource = null;
+                image = null;
+            }
         }
     }
 }

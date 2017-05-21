@@ -242,7 +242,7 @@ namespace Boxify.Frames
             }
             else if (e.ClickedItem is Controls.PlaylistList)
             {
-                (e.ClickedItem as Controls.PlaylistList).Playlist.PlayTracks();
+                (e.ClickedItem as Controls.PlaylistList).playlist.PlayTracks();
             }
             else if (e.ClickedItem is Controls.AlbumList)
             {

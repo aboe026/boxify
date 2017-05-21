@@ -69,8 +69,10 @@ namespace Boxify.Controls
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
+                album.Dispose();
                 album = null;
 
+                Image.Source = null;
                 Image = null;
                 DisplayName = null;
                 ArtistLabel = null;
