@@ -56,7 +56,7 @@ namespace Boxify
         /// </summary>
         public void Dispose()
         {
-            Dispose();
+            Dispose(true);
         }
 
         protected virtual void Dispose(bool disposing)

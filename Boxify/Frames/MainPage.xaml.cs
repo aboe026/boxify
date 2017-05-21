@@ -949,43 +949,56 @@ namespace Boxify.Frames
                         PlaybackMenu = null;
                     }
 
-
-
                     // dependant pages
                     if (browsePage != null)
                     {
                         await Task.Run(() => browsePage.Page_Unloaded(null, null));
-                        browsePage.Unloaded -= browsePage.Page_Unloaded;
-                        browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        browsePage = null;
+                        if (browsePage != null)
+                        {
+                            browsePage.Unloaded -= browsePage.Page_Unloaded;
+                            browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            browsePage = null;
+                        }
                     }
                     if (profilePage != null)
                     {
                         await Task.Run(() => profilePage.Page_Unloaded(null, null));
-                        profilePage.Unloaded -= profilePage.Page_Unloaded;
-                        profilePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        profilePage = null;
+                        if (profilePage != null)
+                        {
+                            profilePage.Unloaded -= profilePage.Page_Unloaded;
+                            profilePage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            profilePage = null;
+                        }
                     }
                     if (yourMusicPage != null)
                     {
                         await Task.Run(() => yourMusicPage.Page_Unloaded(null, null));
-                        yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
-                        yourMusicPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        yourMusicPage = null;
+                        if (yourMusicPage != null)
+                        {
+                            yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
+                            yourMusicPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            yourMusicPage = null;
+                        }
                     }
                     if (searchPage != null)
                     {
                         await Task.Run(() => searchPage.Page_Unloaded(null, null));
-                        searchPage.Unloaded -= searchPage.Page_Unloaded;
-                        searchPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        searchPage = null;
+                        if (searchPage != null)
+                        {
+                            searchPage.Unloaded -= searchPage.Page_Unloaded;
+                            searchPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            searchPage = null;
+                        }
                     }
                     if (settingsPage != null)
                     {
                         await Task.Run(() => settingsPage.Page_Unloaded(null, null));
-                        settingsPage.Unloaded -= settingsPage.Page_Unloaded;
-                        settingsPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        settingsPage = null;
+                        if (settingsPage != null)
+                        {
+                            settingsPage.Unloaded -= settingsPage.Page_Unloaded;
+                            settingsPage.NavigationCacheMode = NavigationCacheMode.Disabled;
+                            settingsPage = null;
+                        }
                     }
 
                     // announcements

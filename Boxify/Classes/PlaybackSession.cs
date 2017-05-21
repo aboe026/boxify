@@ -40,7 +40,8 @@ namespace Boxify.Classes
     {
         public enum LoadDirection { Up, Down };
         public enum PlaybackType { Single, Album, Playlist };
-        
+
+        private bool disposed = false;
         private const string _videoUrlFormat = "http://www.youtube.com/watch?v={0}";
 
         public long localLock;
@@ -266,7 +267,7 @@ namespace Boxify.Classes
                 }
             }
 
-            if (successes != limit && end < totalTracks)
+            if (successes != limit && end < totalTracks - 1)
             {
                 return await LoadTracks(start + limit, start + limit + (limit - tracks.Count), true);
             }
@@ -730,24 +731,32 @@ namespace Boxify.Classes
         }
 
         /// <summary>
-        /// Destroy object for garbage cleanup
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing)
-            {
-                return;
-            }
-        }
-
-        /// <summary>
         /// Implemented method
         /// </summary>
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Destroy object for garbage cleanup
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            disposed = true;
+            if (!disposing)
+            {
+                playlistMediaIds.Clear();
+                playlistMediaIds = null;
+
+                prevRemoteAttempts.Clear();
+                prevRemoteAttempts = null;
+
+                nextRemoteAttempts.Clear();
+                nextRemoteAttempts = null;
+            }
         }
     }
 }
