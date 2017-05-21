@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -188,21 +189,24 @@ namespace Boxify.Frames
                     if (FeaturedPlaylists != null)
                     {
                         FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
+                        FeaturedPlaylists.ClearValue(XYFocusUpProperty);
 
                         while (FeaturedPlaylists.Items.Count > 0)
                         {
                             Controls.PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as Controls.PlaylistHero;
-                            playlistHero.Unload();
                             FeaturedPlaylists.Items.Remove(playlistHero);
+                            playlistHero.Unload();
                             playlistHero = null;
                         }
 
+                        FeaturedPlaylists.ItemsSource = null;
                         FeaturedPlaylists = null;
                     }
 
                     if (Refresh != null)
                     {
                         Refresh.Click -= Refresh_Click;
+                        Refresh.ClearValue(XYFocusRightProperty);
                         Refresh = null;
                     }
                     if (More != null)

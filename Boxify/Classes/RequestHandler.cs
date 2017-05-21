@@ -29,7 +29,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
 
-namespace Boxify
+namespace Boxify.Classes
 {
     /// <summary>
     /// A class to assist in making REST calls

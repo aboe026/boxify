@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,7 +144,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            App.playbackService.StartNewSession(Classes.PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id));
+            App.playbackService.StartNewSession(PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id));
         }
 
         /// <summary>
