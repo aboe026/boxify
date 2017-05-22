@@ -325,8 +325,6 @@ namespace Boxify.Frames
                             preEmptiveLoadPlaylists.Remove(playlistList);
                             playlistList = null;
                         }
-                        preEmptiveLoadPlaylists.Clear();
-                        preEmptiveLoadPlaylists = null;
                     }
 
                     Warning = null;
