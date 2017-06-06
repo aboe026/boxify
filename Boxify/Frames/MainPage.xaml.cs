@@ -230,6 +230,7 @@ namespace Boxify.Frames
                 }
 
                 PlaybackMenu.SetRepeat(Settings.repeatEnabled);
+                PlaybackMenu.SetShuffle(Settings.shuffleEnabled);
                 PlaybackMenu.SetVolume(Settings.volume);
 
                 PlaybackMenu.Visibility = Visibility.Visible;

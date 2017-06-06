@@ -56,6 +56,16 @@ namespace Boxify.Controls
         /// </summary>
         public async Task UpdateUI()
         {
+            if (Settings.repeatEnabled)
+            {
+                Repeat.Visibility = Visibility.Collapsed;
+                RepeatEnabled.Visibility = Visibility.Visible;
+            }
+            if (Settings.shuffleEnabled)
+            {
+                Shuffle.Visibility = Visibility.Collapsed;
+                ShuffleEnabled.Visibility = Visibility.Visible;
+            }
             if (App.playbackService.currentlyPlayingItem != null)
             {
                 MediaItemDisplayProperties displayProperties = App.playbackService.currentlyPlayingItem.GetDisplayProperties();
@@ -272,23 +282,13 @@ namespace Boxify.Controls
                 Repeat.Visibility = Visibility.Collapsed;
                 RepeatEnabled.Visibility = Visibility.Visible;
                 RepeatEnabled.Focus(FocusState.Programmatic);
-                Volume.SetValue(RelativePanel.AboveProperty, RepeatEnabled);
-                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
             }
             else
             {
                 Repeat.Visibility = Visibility.Visible;
                 RepeatEnabled.Visibility = Visibility.Collapsed;
                 Repeat.Focus(FocusState.Programmatic);
-                Volume.SetValue(RelativePanel.AboveProperty, Repeat);
-                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
-            Settings.repeatEnabled = repeatOn;
-            Settings.SaveSettings();
         }
 
         /// <summary>
@@ -303,10 +303,6 @@ namespace Boxify.Controls
                 Repeat.Visibility = Visibility.Collapsed;
                 RepeatEnabled.Visibility = Visibility.Visible;
                 RepeatEnabled.Focus(FocusState.Programmatic);
-                Volume.SetValue(RelativePanel.AboveProperty, RepeatEnabled);
-                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
             }
             else
             {
@@ -314,11 +310,78 @@ namespace Boxify.Controls
                 Repeat.Visibility = Visibility.Visible;
                 RepeatEnabled.Visibility = Visibility.Collapsed;
                 Repeat.Focus(FocusState.Programmatic);
-                Volume.SetValue(RelativePanel.AboveProperty, Repeat);
-                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
             }
+        }
+
+        /// <summary>
+        /// User selects to toggle shuffling of the playlist
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Shuffle_Click(object sender, RoutedEventArgs e)
+        {
+            bool shuffleOn = App.playbackService.ToggleShuffle();
+            if (shuffleOn)
+            {
+                Shuffle.Visibility = Visibility.Collapsed;
+                ShuffleEnabled.Visibility = Visibility.Visible;
+                ShuffleEnabled.Focus(FocusState.Programmatic);
+            }
+            else
+            {
+                Shuffle.Visibility = Visibility.Visible;
+                ShuffleEnabled.Visibility = Visibility.Collapsed;
+                Shuffle.Focus(FocusState.Programmatic);
+            }
+        }
+
+        /// <summary>
+        /// Sets whether or not the playlist automatically shuffles
+        /// </summary>
+        /// <param name="enabled">True to make the playlist automatically shuffle, false otherwise</param>
+        public void SetShuffle(bool enabled)
+        {
+            if (enabled)
+            {
+                Shuffle.Visibility = Visibility.Collapsed;
+                ShuffleEnabled.Visibility = Visibility.Visible;
+                ShuffleEnabled.Focus(FocusState.Programmatic);
+            }
+            else
+            {
+                Shuffle.Visibility = Visibility.Visible;
+                ShuffleEnabled.Visibility = Visibility.Collapsed;
+                Shuffle.Focus(FocusState.Programmatic);
+            }
+        }
+
+        /// <summary>
+        /// User selects to change volume
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Volume_Click(object sender, RoutedEventArgs e)
+        {
+            VolumeSlider.Value = App.playbackService.Player.Volume * 100;
+            Volume.Visibility = Visibility.Collapsed;
+            if (Settings.repeatEnabled)
+            {
+                RepeatEnabled.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Repeat.Visibility = Visibility.Collapsed;
+            }
+            if (Settings.shuffleEnabled)
+            {
+                ShuffleEnabled.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Shuffle.Visibility = Visibility.Collapsed;
+            }
+            VolumeSlider.Visibility = Visibility.Visible;
+            VolumeSlider.Focus(FocusState.Programmatic);
         }
 
         /// <summary>
@@ -348,30 +411,6 @@ namespace Boxify.Controls
         }
 
         /// <summary>
-        /// User selects to change volume
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Volume_Click(object sender, RoutedEventArgs e)
-        {
-            VolumeSlider.Value = App.playbackService.Player.Volume * 100;
-            Volume.Visibility = Visibility.Collapsed;
-            if (Settings.repeatEnabled)
-            {
-                RepeatEnabled.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                Repeat.Visibility = Visibility.Collapsed;
-            }
-            VolumeSlider.Visibility = Visibility.Visible;
-            TrackName.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
-            TrackArtist.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
-            Duration.SetValue(RelativePanel.LeftOfProperty, VolumeSlider);
-            VolumeSlider.Focus(FocusState.Programmatic);
-        }
-
-        /// <summary>
         /// User leaves the volume slider
         /// </summary>
         /// <param name="sender"></param>
@@ -380,19 +419,22 @@ namespace Boxify.Controls
         {
             Volume.Visibility = Visibility.Visible;
             VolumeSlider.Visibility = Visibility.Collapsed;
+            RepeatEnabled.Visibility = Visibility.Visible;
             if (Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Visible;
-                TrackName.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
-                Duration.SetValue(RelativePanel.LeftOfProperty, RepeatEnabled);
             }
             else
             {
                 Repeat.Visibility = Visibility.Visible;
-                TrackName.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                TrackArtist.SetValue(RelativePanel.LeftOfProperty, Repeat);
-                Duration.SetValue(RelativePanel.LeftOfProperty, Repeat);
+            }
+            if (Settings.shuffleEnabled)
+            {
+                ShuffleEnabled.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Shuffle.Visibility = Visibility.Visible;
             }
         }
 
@@ -461,6 +503,11 @@ namespace Boxify.Controls
                 Previous.Click -= Previous_Click;
                 Play.Click -= PlayPause_Click;
                 Pause.Click -= PlayPause_Click;
+                Volume.Click -= Volume_Click;
+                Shuffle.Click -= Shuffle_Click;
+                ShuffleEnabled.Click -= Shuffle_Click;
+                Repeat.Click -= Repeat_Click;
+                RepeatEnabled.Click -= Repeat_Click;
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
                 TrackName.Text = "";
@@ -479,6 +526,11 @@ namespace Boxify.Controls
                 Previous.Click += Previous_Click;
                 Play.Click += PlayPause_Click;
                 Pause.Click += PlayPause_Click;
+                Volume.Click += Volume_Click;
+                Shuffle.Click += Shuffle_Click;
+                ShuffleEnabled.Click += Shuffle_Click;
+                Repeat.Click += Repeat_Click;
+                RepeatEnabled.Click += Repeat_Click;
             }
         }
 

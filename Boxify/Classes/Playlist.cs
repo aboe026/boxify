@@ -114,7 +114,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            App.playbackService.StartNewSession(PlaybackSession.PlaybackType.Playlist, tracksHref);
+            App.playbackService.StartNewSession(PlaybackSession.PlaybackType.Playlist, tracksHref, tracksCount);
         }
 
         /// <summary>
