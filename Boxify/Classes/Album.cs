@@ -35,6 +35,7 @@ namespace Boxify
         private bool disposed = false;
         public string id = "";
         public string name = "";
+        public int tracksCount = 1;
         public List<Artist> artists = new List<Artist>();
         public BitmapImage image = new BitmapImage();
         public string imageUrl = "";
@@ -105,6 +106,30 @@ namespace Boxify
                     image = await RequestHandler.DownloadImage(url);
                 }
             }
+
+            // need extra request to get total tracks
+            UriBuilder tracksUriBuilder = new UriBuilder(string.Format(TRACKS_HREF, id));
+            List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("limit", "1")
+                };
+            string queryParamsString = RequestHandler.ConvertToQueryString(queryParams);
+            tracksUriBuilder.Query = queryParamsString;
+            string tracksString = await RequestHandler.SendCliGetRequest(tracksUriBuilder.Uri.ToString());
+            JsonObject tracksJson = new JsonObject();
+            try
+            {
+                tracksJson = JsonObject.Parse(tracksString);
+            }
+            catch (COMException)
+            {
+                return;
+            }
+
+            if (tracksJson.TryGetValue("total", out IJsonValue totalJson))
+            {
+                tracksCount = Convert.ToInt32(totalJson.GetNumber());
+            }
         }
 
         /// <summary>
@@ -114,7 +139,7 @@ namespace Boxify
         public async Task<List<Track>> GetTracks()
         {
             List<Track> tracks = new List<Track>();
-            string tracksString = await RequestHandler.SendCliGetRequest(TRACKS_HREF.Replace("{id}", id));
+            string tracksString = await RequestHandler.SendCliGetRequest(string.Format(TRACKS_HREF, id));
             JsonObject tracksJson = new JsonObject();
             try
             {
@@ -144,7 +169,7 @@ namespace Boxify
         /// <returns></returns>
         public void PlayTracks()
         {
-            App.playbackService.StartNewSession(PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id));
+            App.playbackService.StartNewSession(PlaybackSession.PlaybackType.Album, string.Format(TRACKS_HREF, id), tracksCount);
         }
 
         /// <summary>

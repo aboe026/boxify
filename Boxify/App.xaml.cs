@@ -171,6 +171,16 @@ namespace Boxify
                     Settings.repeatEnabled = false;
                 }
 
+                // shuffle
+                if (composite["ShuffleEnabled"] != null && composite["ShuffleEnabled"].ToString() == "True")
+                {
+                    Settings.shuffleEnabled = true;
+                }
+                else
+                {
+                    Settings.shuffleEnabled = false;
+                }
+
                 // volume
                 if (composite["Volume"] != null)
                 {
@@ -190,6 +200,9 @@ namespace Boxify
                 Settings.tvSafeArea = true;
                 Settings.theme = Settings.Theme.System;
                 Settings.playbackSource = Settings.Playbacksource.Spotify;
+                Settings.repeatEnabled = false;
+                Settings.shuffleEnabled = false;
+                Settings.volume = 100;
             }
 
             // Announcements

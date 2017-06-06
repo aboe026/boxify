@@ -43,6 +43,7 @@ namespace Boxify.Frames
         public static Theme theme = Theme.System;
         public static Playbacksource playbackSource = Playbacksource.Spotify;
         public static bool repeatEnabled = false;
+        public static bool shuffleEnabled = false;
         public static double volume = 100;
         public static string version = "";
 
@@ -275,6 +276,7 @@ namespace Boxify.Frames
                 ["Theme"] = theme.ToString(),
                 ["PlaybackSource"] = playbackSource.ToString(),
                 ["RepeatEnabled"] = repeatEnabled.ToString(),
+                ["ShuffleEnabled"] = shuffleEnabled.ToString(),
                 ["Volume"] = volume.ToString()
             };
             roamingSettings.Values["UserSettings"] = composite;

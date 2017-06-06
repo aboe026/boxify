@@ -102,7 +102,7 @@ namespace Boxify.Frames
                     return;
                 }
 
-                clearResults();
+                ClearResults();
                 Results.Visibility = Visibility.Visible;
 
                 // playlists
@@ -255,7 +255,7 @@ namespace Boxify.Frames
         /// <summary>
         /// Clears the search results objects to purge them from memory
         /// </summary>
-        private void clearResults()
+        private void ClearResults()
         {
             while (Results.Items.Count > 0)
             {
@@ -311,7 +311,7 @@ namespace Boxify.Frames
                     if (Results != null)
                     {
                         Results.ItemClick -= Results_ItemClick;
-                        clearResults();
+                        ClearResults();
                         Results = null;
                     }
                     if (SearchType != null)

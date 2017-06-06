@@ -123,6 +123,15 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         <Setter Property="Background" Value="Transparent"/>
     </Style>
 
+    <Style x:Key="PlaybackSmallerButtonStyle" TargetType="Button">
+        <Setter Property="Height" Value="33"/>
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="{ThemeResource PlaybackButtonForeground}"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
     <Style x:Key="PlaybackLargeButtonStyle" TargetType="Button">
         <Setter Property="Height" Value="60"/>
         <Setter Property="Width" Value="65"/>

@@ -58,7 +58,7 @@ namespace Boxify.Classes
         /// </summary>
         /// <param name="type">The type of playlist (single track, album, or simple playlist)</param>
         /// <param name="href">The uri to download tracks from</param>
-        public async void StartNewSession(PlaybackType type, string href)
+        public async void StartNewSession(PlaybackType type, string href, int totalTracks)
         {
             long currentLock = DateTime.Now.Ticks;
             GlobalLock = currentLock;
@@ -74,7 +74,7 @@ namespace Boxify.Classes
             {
                 currentSession.Dispose();
             }
-            currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, href);
+            currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, Settings.shuffleEnabled, href, totalTracks);
             queue.Items.Clear();
             Player.Source = queue;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
@@ -130,8 +130,10 @@ namespace Boxify.Classes
         {
             if (localLock == GlobalLock)
             {
+                queue.CurrentItemChanged -= CurrentItemChanged;
                 queue.MoveTo(0);
                 Player.Play();
+                queue.CurrentItemChanged += CurrentItemChanged;
             }
         }
 
@@ -158,7 +160,22 @@ namespace Boxify.Classes
         public bool ToggleRepeat()
         {
             queue.AutoRepeatEnabled = !queue.AutoRepeatEnabled;
+            Settings.repeatEnabled = queue.AutoRepeatEnabled;
+            currentSession.ToggleRepeat(Settings.repeatEnabled);
+            Settings.SaveSettings();
             return queue.AutoRepeatEnabled;
+        }
+
+        /// <summary>
+        /// Toggle shuffling of the playlist
+        /// </summary>
+        /// <returns></returns>
+        public bool ToggleShuffle()
+        {
+            Settings.shuffleEnabled = !Settings.shuffleEnabled;
+            currentSession.ToggleShuffle(Settings.shuffleEnabled);
+            Settings.SaveSettings();
+            return Settings.shuffleEnabled;
         }
 
         /// <summary>

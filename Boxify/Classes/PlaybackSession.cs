@@ -43,15 +43,19 @@ namespace Boxify.Classes
 
         private bool disposed = false;
         private const string _videoUrlFormat = "http://www.youtube.com/watch?v={0}";
+        private static Random rng = new Random();
 
         public long localLock;
         private Playbacksource source = Playbacksource.Spotify;
         private PlaybackType type;
+        private bool shuffling;
         private string tracksHref;
         private List<int> nextRemoteAttempts = new List<int>();
         private List<int> prevRemoteAttempts = new List<int>();
         private List<string> playlistMediaIds = new List<string>();
         private string currentlyPlaying = "";
+        private List<int> shufflePositionsAvailable = new List<int>();
+        public bool repeatOnShuffleMarker = false;
         private int totalTracks;
         private bool firstSongChange = true;  // the first song change is from playing the first track. Its not an actual "change"
         private bool loadLock = false;
@@ -65,19 +69,19 @@ namespace Boxify.Classes
         /// The main constructor
         /// </summary>
         /// <param name="currentLock">The global lock when the session was created, session dies when lock changes</param>
-        /// <param name="currentSource">The service to retrieve the song from</param>
-        /// <param name="playbackType">What kind of Spotify resource</param>
-        /// <param name="href">The reference to the download location for tracks</param>
-        public PlaybackSession(long currentLock, Playbacksource currentSource, PlaybackType playbackType, string href)
+        /// <param name="source">The service to retrieve the song from</param>
+        /// <param name="type">What kind of Spotify resource</param>
+        /// <param name="shuffle">Whether or not shuffling is enabled for session playback</param>
+        /// <param name="tracksHref">The reference to the download location for tracks</param>
+        /// <param name="totalTracks">The total number of tracks in the playback session</param>
+        public PlaybackSession(long currentLock, Playbacksource source, PlaybackType type, bool shuffle, string tracksHref, int totalTracks)
         {
             localLock = currentLock;
-            source = currentSource;
-            type = playbackType;
-            tracksHref = href;
-            if (type == PlaybackType.Single)
-            {
-                totalTracks = 1;
-            }
+            this.source = source;
+            this.type = type;
+            this.shuffling = shuffle;
+            this.tracksHref = tracksHref;
+            this.totalTracks = totalTracks;
             prevRemoteAttempts.Add(0);
             App.mainPage.SetYouTubeMessage("", localLock);
         }
@@ -118,30 +122,49 @@ namespace Boxify.Classes
             }
             loadLock = true;
             int successes = 0;
+            int limit;
 
-            if (totalTracks > 0 && end >= totalTracks)
+            if (shuffling)
             {
-                end = totalTracks - 1;
-            }
-            nextRemoteAttempts.Insert(0, end);
-            if (start == 0)
-            {
-                prevRemoteAttempts.Add(start + TRACKS_PER_REQUEST);
+                if (shufflePositionsAvailable.Count == 0)
+                {
+                    ReFillShufflePositionsAvailable();
+                }
+                if (shufflePositionsAvailable.Count < end - start)
+                {
+                    limit = shufflePositionsAvailable.Count;
+                }
+                else
+                {
+                    limit = end - start;
+                }
             }
             else
             {
-                prevRemoteAttempts.Add(start);
+                if (totalTracks > 0 && end >= totalTracks)
+                {
+                    end = totalTracks - 1;
+                }
+                nextRemoteAttempts.Insert(0, end);
+                if (start == 0)
+                {
+                    prevRemoteAttempts.Add(start + TRACKS_PER_REQUEST);
+                }
+                else
+                {
+                    prevRemoteAttempts.Add(start);
+                }
+
+                limit = end - start + 1;
             }
 
-            int limit = end - start + 1;
-
-            if (this.source == Playbacksource.Spotify)
+            if (source == Playbacksource.Spotify)
             {
                 App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
                 App.mainPage.SetSpotifyLoadingValue(0, localLock);
                 App.mainPage.BringUpSpotify(localLock);
             }
-            else if (this.source == Playbacksource.YouTube)
+            else if (source == Playbacksource.YouTube)
             {
                 App.mainPage.SetYouTubeValues(0, limit, localLock);
                 App.mainPage.BringUpYouTube(localLock);
@@ -149,16 +172,25 @@ namespace Boxify.Classes
 
             if (localLock != App.playbackService.GlobalLock) { return false; }
 
-            List<Track> tracks = await GetTracks(start, limit);
+            List<Track> tracks = new List<Track>();
+            
+            if (shuffling)
+            {
+                tracks = await GetTracksRandom(limit);
+            }
+            else
+            {
+                tracks = await GetTracksInRange(start, limit);
+            }
 
             if (tracks.Count == totalTracks)
             {
                 limit = totalTracks;
-                if (this.source == Playbacksource.Spotify)
+                if (source == Playbacksource.Spotify)
                 {
                     App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
                 }
-                else if (this.source == Playbacksource.YouTube)
+                else if (source == Playbacksource.YouTube)
                 {
                     App.mainPage.SetYouTubeValues(0, limit, localLock);
                 }
@@ -168,109 +200,118 @@ namespace Boxify.Classes
             {
                 UpdateFailuresCount(limit - tracks.Count);
             }
-            else
+
+            List<KeyValuePair<MediaSource, Track>> sources = new List<KeyValuePair<MediaSource, Track>>();
+
+            if (source == Playbacksource.Spotify)
             {
-                List<KeyValuePair<MediaSource, Track>> sources = new List<KeyValuePair<MediaSource, Track>>();
-
-                if (this.source == Playbacksource.Spotify)
+                for (int i = 0; i < tracks.Count; i++)
                 {
-                    for (int i = 0; i < tracks.Count; i++)
-                    {
-                        Track track = tracks[i];
-                        if (localLock == App.playbackService.GlobalLock)
-                        {
-                            if (track.previewUrl != "")
-                            {
-                                sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
-                            }
-                            else
-                            {
-                                UpdateFailuresCount(1);
-                            }
-                        }
-                        App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
-                    }
-                }
-                else if (this.source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
-                {
-                    for (int i = 0; i < tracks.Count; i++)
-                    {
-                        Track track = tracks[i];
-
-                        string videoId = "";
-                        if (localLock == App.playbackService.GlobalLock)
-                        {
-                            videoId = await SearchForVideoId(track);
-                        }
-
-                        if (localLock == App.playbackService.GlobalLock)
-                        {
-                            if (videoId == "")
-                            {
-                                UpdateFailuresCount(1);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.name), track));
-                                }
-                                catch (Exception)
-                                {
-                                    UpdateFailuresCount(1);
-                                }
-                            }
-                        }
-                        App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
-                    }
-                }
-
-                bool firstPlay = false;
-
-                for (int i = 0; i < sources.Count; i++)
-                {
-                    KeyValuePair<MediaSource, Track> pair = sources[i];
+                    Track track = tracks[i];
                     if (localLock == App.playbackService.GlobalLock)
                     {
-                        MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
-                        MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
-                        displayProperties.Type = MediaPlaybackType.Music;
-                        displayProperties.MusicProperties.Title = pair.Value.name;
-                        displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
-                        displayProperties.MusicProperties.Artist = pair.Value.GetMainArtistName();
-                        if (pair.Value.album.imageUrl != "")
+                        if (track.previewUrl != "")
                         {
-                            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
+                            sources.Add(new KeyValuePair<MediaSource, Track>(MediaSource.CreateFromUri(new Uri(track.previewUrl)), track));
                         }
-                        playbackItem.ApplyDisplayProperties(displayProperties);
-                        pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
-
-                        string id = GetMediaItemId(playbackItem);
-                        if (!playlistMediaIds.Contains(id))
+                        else
                         {
-                            App.playbackService.AddToQueue(playbackItem, localLock);
-                            playlistMediaIds.Add(id);
-                            successes++;
-                        }
-
-                        if (currentlyPlaying == "")
-                        {
-                            firstPlay = true;
-                            currentlyPlaying = GetMediaItemId(playbackItem);
+                            UpdateFailuresCount(1);
                         }
                     }
-                }
-
-                if (firstPlay)
-                {
-                    App.playbackService.PlayFromBeginning(localLock);
+                    App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
                 }
             }
-
-            if (successes != limit && end < totalTracks - 1)
+            else if (source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
             {
-                return await LoadTracks(start + limit, start + limit + (limit - tracks.Count), true);
+                for (int i = 0; i < tracks.Count; i++)
+                {
+                    Track track = tracks[i];
+
+                    string videoId = "";
+                    if (localLock == App.playbackService.GlobalLock)
+                    {
+                        videoId = await SearchForVideoId(track);
+                    }
+
+                    if (localLock == App.playbackService.GlobalLock)
+                    {
+                        if (videoId == "")
+                        {
+                            UpdateFailuresCount(1);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                sources.Add(new KeyValuePair<MediaSource, Track>(await GetAudioAsync(videoId, track.name), track));
+                            }
+                            catch (Exception)
+                            {
+                                UpdateFailuresCount(1);
+                            }
+                        }
+                    }
+                    App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
+                }
             }
+
+            bool firstPlay = false;
+
+            for (int i = 0; i < sources.Count; i++)
+            {
+                KeyValuePair<MediaSource, Track> pair = sources[i];
+                if (localLock == App.playbackService.GlobalLock)
+                {
+                    MediaPlaybackItem playbackItem = new MediaPlaybackItem(pair.Key);
+                    MediaItemDisplayProperties displayProperties = playbackItem.GetDisplayProperties();
+                    displayProperties.Type = MediaPlaybackType.Music;
+                    displayProperties.MusicProperties.Title = pair.Value.name;
+                    displayProperties.MusicProperties.AlbumTitle = pair.Value.album.name;
+                    displayProperties.MusicProperties.Artist = pair.Value.GetMainArtistName();
+                    if (pair.Value.album.imageUrl != "")
+                    {
+                        displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromUri(new Uri(pair.Value.album.imageUrl));
+                    }
+                    playbackItem.ApplyDisplayProperties(displayProperties);
+                    pair.Key.CustomProperties["mediaItemId"] = pair.Value.id;
+
+                    string id = GetMediaItemId(playbackItem);
+                    if (!playlistMediaIds.Contains(id))
+                    {
+                        App.playbackService.AddToQueue(playbackItem, localLock);
+                        playlistMediaIds.Add(id);
+                        successes++;
+                    }
+
+                    if (currentlyPlaying == "")
+                    {
+                        firstPlay = true;
+                        currentlyPlaying = GetMediaItemId(playbackItem);
+                    }
+                }
+            }
+
+            if (firstPlay)
+            {
+                App.playbackService.PlayFromBeginning(localLock);
+            }
+
+            if (shuffling)
+            {
+                if (successes != limit && shufflePositionsAvailable.Count > 0)
+                {
+                    return await LoadTracks(0, limit - successes, true);
+                }
+            }
+            else
+            {
+                if (successes != limit && end < totalTracks - 1)
+                {
+                    return await LoadTracks(start + limit, start + limit + (limit - tracks.Count), true);
+                }
+            }
+            
             loadLock = false;
             return tracks.Count == limit;
         }
@@ -325,7 +366,7 @@ namespace Boxify.Classes
 
             if (localLock != App.playbackService.GlobalLock) { return false; }
 
-            List<Track> tracks = await GetTracks(start, limit);
+            List<Track> tracks = await GetTracksInRange(start, limit);
             if (tracks.Count != limit)
             {
                 UpdateFailuresCount(limit - tracks.Count);
@@ -447,67 +488,179 @@ namespace Boxify.Classes
 
                 currentlyPlaying = newId;
 
-                int indexToLoadNext = nextRemoteAttempts[0];
-                int indexToLoadPrev = prevRemoteAttempts[0];
+                if (shuffling)
+                {
+                    // towards end of local tracks and more to load remote
+                    if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && shufflePositionsAvailable.Count > 0)
+                    {
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                        {
+                            bool success = await LoadTracks(0, TRACKS_PER_REQUEST);
+                            if (success && index > BUFFER_FROM_LOAD)
+                            {
+                                int deleteUpTo = index - BUFFER_FROM_LOAD;
+                                for (int i = 0; i < deleteUpTo; i++)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                    playlistMediaIds.RemoveAt(0);
+                                }
+                            }
+                        });
+                    }
+                    // toward end of local tracks and no more ahead on remote, go back to beginning
+                    else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && App.playbackService.queue.AutoRepeatEnabled && shufflePositionsAvailable.Count == 0)
+                    {
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                        {
+                            bool success = await LoadTracks(0, TRACKS_PER_REQUEST - 1);
+                            if (success && index > BUFFER_FROM_LOAD)
+                            {
+                                int deleteUpTo = index - BUFFER_FROM_LOAD;
+                                for (int i = 0; i < deleteUpTo; i++)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                    playlistMediaIds.RemoveAt(0);
+                                }
+                            }
+                        });
+                    }
+                    // towards end of local tracks and no more ahead on remote and not repeating
+                    else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && !App.playbackService.queue.AutoRepeatEnabled && shufflePositionsAvailable.Count == 0)
+                    {
+                        repeatOnShuffleMarker = true;
+                    }
+                    // towards beginning of local tracks and more to load remote
+                    else if (index < BUFFER_FROM_LOAD && shufflePositionsAvailable.Count < totalTracks - INITIAL_TRACKS_REQUEST && !repeatOnShuffleMarker)
+                    {
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                        {
+                            bool success = await LoadTracksReverse(0, TRACKS_PER_REQUEST);
+                            if (success && index < BUFFER_FROM_LOAD)
+                            {
+                                int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
+                                for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
+                                    playlistMediaIds.RemoveAt(playlistMediaIds.Count - 1);
+                                }
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    int indexToLoadNext = nextRemoteAttempts[0];
+                    int indexToLoadPrev = prevRemoteAttempts[0];
 
-                // towards end of local tracks and more to load remote
-                if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && indexToLoadNext < totalTracks - 1)
-                {
-                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    // towards end of local tracks and more to load remote
+                    if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && indexToLoadNext < totalTracks - 1)
                     {
-                        bool success = await LoadTracks(indexToLoadNext + 1, indexToLoadNext + TRACKS_PER_REQUEST);
-                        if (success && index > BUFFER_FROM_LOAD)
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                         {
-                            prevRemoteAttempts.RemoveAt(0);
-                            int deleteUpTo = index - BUFFER_FROM_LOAD;
-                            for (int i = 0; i < deleteUpTo; i++)
+                            bool success = await LoadTracks(indexToLoadNext + 1, indexToLoadNext + TRACKS_PER_REQUEST);
+                            if (success && index > BUFFER_FROM_LOAD)
                             {
-                                App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                playlistMediaIds.RemoveAt(0);
+                                prevRemoteAttempts.RemoveAt(0);
+                                int deleteUpTo = index - BUFFER_FROM_LOAD;
+                                for (int i = 0; i < deleteUpTo; i++)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                    playlistMediaIds.RemoveAt(0);
+                                }
                             }
                         }
+                        );
                     }
-                    );
-                }
-                // toward end of local tracks and no more ahead on remote, go back to beginning
-                else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && App.playbackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
-                {
-                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    // toward end of local tracks and no more ahead on remote, go back to beginning
+                    else if (index >= playlistMediaIds.Count - BUFFER_FROM_LOAD && App.playbackService.queue.AutoRepeatEnabled && indexToLoadNext >= totalTracks - 1)
                     {
-                        bool success = await LoadTracks(0, TRACKS_PER_REQUEST - 1);
-                        if (success && index > BUFFER_FROM_LOAD)
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                         {
-                            prevRemoteAttempts.RemoveAt(0);
-                            int deleteUpTo = index - BUFFER_FROM_LOAD;
-                            for (int i = 0; i < deleteUpTo; i++)
+                            bool success = await LoadTracks(0, TRACKS_PER_REQUEST - 1);
+                            if (success && index > BUFFER_FROM_LOAD)
                             {
-                                App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                playlistMediaIds.RemoveAt(0);
+                                prevRemoteAttempts.RemoveAt(0);
+                                int deleteUpTo = index - BUFFER_FROM_LOAD;
+                                for (int i = 0; i < deleteUpTo; i++)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
+                                    playlistMediaIds.RemoveAt(0);
+                                }
                             }
-                        }
+                        });
                     }
-                    );
-                }
-                // towards beginning of local tracks and more to load remote
-                else if (index < BUFFER_FROM_LOAD && indexToLoadPrev != 0)
-                {
-                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    // towards beginning of local tracks and more to load remote
+                    else if (index < BUFFER_FROM_LOAD && indexToLoadPrev != 0)
                     {
-                        bool success = await LoadTracksReverse(indexToLoadPrev - TRACKS_PER_REQUEST, indexToLoadPrev - 1);
-                        if (success && index < BUFFER_FROM_LOAD)
+                        await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                         {
-                            nextRemoteAttempts.RemoveAt(0);
-                            int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
-                            for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
+                            bool success = await LoadTracksReverse(indexToLoadPrev - TRACKS_PER_REQUEST, indexToLoadPrev - 1);
+                            if (success && index < BUFFER_FROM_LOAD)
                             {
-                                App.playbackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
-                                playlistMediaIds.RemoveAt(playlistMediaIds.Count - 1);
+                                nextRemoteAttempts.RemoveAt(0);
+                                int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
+                                for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
+                                {
+                                    App.playbackService.RemoveFromQueue(playlistMediaIds.Last(), localLock);
+                                    playlistMediaIds.RemoveAt(playlistMediaIds.Count - 1);
+                                }
                             }
-                        }
+                        });
                     }
-                    );
                 }
             }
+        }
+
+        /// <summary>
+        /// When repeat is toggled, ensure block on shuffling repeat is lifted
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void ToggleRepeat(bool enabled)
+        {
+            repeatOnShuffleMarker = false;
+        }
+
+        /// <summary>
+        /// Toggle whether or not the playlist plays in order or shuffles playist songs
+        /// </summary>
+        public async void ToggleShuffle(bool enabled)
+        {
+            if (type != PlaybackType.Single)
+            {
+                App.playbackService.queue.Items.Clear();
+                App.playbackService.Player.Source = App.playbackService.queue;
+                App.mainPage.GetPlaybackMenu().SetLoadingActive(true);
+                App.mainPage.SetYouTubeMessage("", localLock);
+                playlistMediaIds.Clear();
+                prevRemoteAttempts.Clear();
+                nextRemoteAttempts.Clear();
+                shufflePositionsAvailable.Clear();
+                currentlyPlaying = "";
+                shuffling = enabled;
+                if (enabled)
+                {
+                    ReFillShufflePositionsAvailable();
+                    await LoadTracks(0, INITIAL_TRACKS_REQUEST);
+                }
+                else
+                {
+                    await LoadTracks(0, INITIAL_TRACKS_REQUEST);
+                }
+                App.mainPage.GetPlaybackMenu().SetLoadingActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Refills the list of avaliable tracks in random order
+        /// </summary>
+        private void ReFillShufflePositionsAvailable()
+        {
+            shufflePositionsAvailable.Clear();
+            for (int i = 0; i < totalTracks; i++)
+            {
+                shufflePositionsAvailable.Add(i);
+            }
+            Shuffle(shufflePositionsAvailable);
         }
 
         /// <summary>
@@ -541,7 +694,7 @@ namespace Boxify.Classes
         /// <param name="start">The first track to get in the remote playlist</param>
         /// <param name="limit">The number of tracks to get after the first track in the remote playlist</param>
         /// <returns>The tracks in the specified range from the remote playlist</returns>
-        private async Task<List<Track>> GetTracks(int start, int limit)
+        private async Task<List<Track>> GetTracksInRange(int start, int limit)
         {
             List<Track> tracks = new List<Track>();
 
@@ -608,9 +761,80 @@ namespace Boxify.Classes
                         }
                     }
                 }
-                if (tracksJson.TryGetValue("total", out IJsonValue totalJson))
+            }
+
+            return tracks;
+        }
+
+        /// <summary>
+        /// Gets the tracks of the playlist in random order
+        /// </summary>
+        /// <param name="limit">The number of random tracks to get from remote</param>
+        /// <returns>The tracks in the specified positions from the remote playlist</returns>
+        private async Task<List<Track>> GetTracksRandom(int limit)
+        {
+            List<Track> tracks = new List<Track>();
+
+            for (int i = 0; i < limit && shufflePositionsAvailable.Count > 0; i++)
+            {
+                int position = shufflePositionsAvailable.ElementAt(0);
+                shufflePositionsAvailable.RemoveAt(0);
+                string trackUrl = "";
+                UriBuilder tracksBuilder = new UriBuilder(tracksHref);
+                List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
                 {
-                    totalTracks = Convert.ToInt32(totalJson.GetNumber());
+                    new KeyValuePair<string, string>("limit", "1"),
+                    new KeyValuePair<string, string>("offset", position.ToString())
+                };
+                tracksBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
+                trackUrl = tracksBuilder.Uri.ToString();
+
+                string tracksString = await RequestHandler.SendCliGetRequest(trackUrl);
+
+                if (localLock != App.playbackService.GlobalLock) { return tracks; }
+
+                JsonObject tracksJson = new JsonObject();
+                try
+                {
+                    tracksJson = JsonObject.Parse(tracksString);
+                }
+                catch (COMException) { return tracks; }
+
+                if (localLock != App.playbackService.GlobalLock) { return tracks; }
+
+                if (type == PlaybackType.Single)
+                {
+                    Track track = new Track();
+                    await track.SetInfoDirect(tracksJson.Stringify());
+                    tracks.Add(track);
+                    totalTracks = 1;
+                }
+                else
+                {
+                    if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+                    {
+                        JsonArray tracksArray = itemsJson.GetArray();
+                        if (tracksArray.Count > 0)
+                        {
+                            foreach (IJsonValue trackJson in tracksArray)
+                            {
+                                Track track = new Track();
+                                if (type == PlaybackType.Album)
+                                {
+                                    if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
+                                    {
+                                        string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
+                                        await track.SetInfoDirect(fullTrackString);
+                                    }
+                                }
+                                else
+                                {
+                                    await track.SetInfo(trackJson.GetObject().Stringify());
+                                }
+                                tracks.Add(track);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -728,6 +952,23 @@ namespace Boxify.Classes
                 }
             }
             return MediaSource.CreateFromUri(new Uri(""));
+        }
+
+        /// <summary>
+        /// Shuffles list randomly
+        /// </summary>
+        /// <param name="list">The list to randomly shuffle</param>
+        public static void Shuffle(List<int> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                int value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
 
         /// <summary>
