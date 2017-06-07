@@ -960,7 +960,13 @@ namespace Boxify.Frames
                     // dependant pages
                     if (browsePage != null)
                     {
-                        await Task.Run(() => browsePage.Page_Unloaded(null, null));
+                        await Task.Run(() =>
+                        {
+                            if (browsePage != null)
+                            {
+                                browsePage.Page_Unloaded(null, null);
+                            }
+                        });
                         if (browsePage != null)
                         {
                             browsePage.Unloaded -= browsePage.Page_Unloaded;
@@ -970,7 +976,13 @@ namespace Boxify.Frames
                     }
                     if (profilePage != null)
                     {
-                        await Task.Run(() => profilePage.Page_Unloaded(null, null));
+                        await Task.Run(() =>
+                        {
+                            if (profilePage != null)
+                            {
+                                profilePage.Page_Unloaded(null, null);
+                            }
+                        });
                         if (profilePage != null)
                         {
                             profilePage.Unloaded -= profilePage.Page_Unloaded;
@@ -980,7 +992,13 @@ namespace Boxify.Frames
                     }
                     if (yourMusicPage != null)
                     {
-                        await Task.Run(() => yourMusicPage.Page_Unloaded(null, null));
+                        await Task.Run(() =>
+                        {
+                            if (yourMusicPage != null)
+                            {
+                                yourMusicPage.Page_Unloaded(null, null);
+                            }
+                        });
                         if (yourMusicPage != null)
                         {
                             yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
@@ -990,7 +1008,13 @@ namespace Boxify.Frames
                     }
                     if (searchPage != null)
                     {
-                        await Task.Run(() => searchPage.Page_Unloaded(null, null));
+                        await Task.Run(() =>
+                        {
+                            if (searchPage != null)
+                            {
+                                searchPage.Page_Unloaded(null, null);
+                            }
+                        });
                         if (searchPage != null)
                         {
                             searchPage.Unloaded -= searchPage.Page_Unloaded;
