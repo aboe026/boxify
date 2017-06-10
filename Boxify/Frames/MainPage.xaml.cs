@@ -114,7 +114,7 @@ namespace Boxify.Frames
             SpotifyLoading.Visibility = Visibility.Collapsed;
             YouTubeLogo.Visibility = Visibility.Collapsed;
             YouTubeLoading.Visibility = Visibility.Collapsed;
-            YouTubeMessage.Visibility = Visibility.Collapsed;
+            LoadersMessage.Visibility = Visibility.Collapsed;
 
             SelectHamburgerOption(App.hamburgerOptionToLoadTo, true);
             if (App.hamburgerOptionToLoadTo == "SettingsItem")
@@ -664,7 +664,12 @@ namespace Boxify.Frames
         {
             YouTubeLogo.Visibility = Visibility.Collapsed;
             YouTubeLoading.Visibility = Visibility.Collapsed;
-            YouTubeMessage.Visibility = Visibility.Collapsed;
+            LoadersMessage.SetValue(RelativePanel.AboveProperty, SpotifyLoading);
+            if (LoadersMessage.Visibility == Visibility.Collapsed)
+            {
+                LoadersMessage.Visibility = Visibility.Visible;
+                LoadersMessage.Text = "";
+            }
             SpotifyLogo.Visibility = Visibility.Visible;
             SpotifyLoading.Visibility = Visibility.Visible;
             UserName.SetValue(RelativePanel.RightOfProperty, SpotifyLoading);
@@ -730,16 +735,17 @@ namespace Boxify.Frames
         /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
         public void BringUpYouTube()
         {
-            if (SpotifyLogo != null && SpotifyLoading != null && YouTubeLogo != null && YouTubeLoading != null && YouTubeMessage != null)
+            if (SpotifyLogo != null && SpotifyLoading != null && YouTubeLogo != null && YouTubeLoading != null && LoadersMessage != null)
             {
                 SpotifyLogo.Visibility = Visibility.Collapsed;
                 SpotifyLoading.Visibility = Visibility.Collapsed;
                 YouTubeLogo.Visibility = Visibility.Visible;
                 YouTubeLoading.Visibility = Visibility.Visible;
-                if (YouTubeMessage.Visibility == Visibility.Collapsed)
+                LoadersMessage.SetValue(RelativePanel.AboveProperty, YouTubeLoading);
+                if (LoadersMessage.Visibility == Visibility.Collapsed)
                 {
-                    YouTubeMessage.Visibility = Visibility.Visible;
-                    YouTubeMessage.Text = "";
+                    LoadersMessage.Visibility = Visibility.Visible;
+                    LoadersMessage.Text = "";
                 }
                 UserName.SetValue(RelativePanel.RightOfProperty, YouTubeLoading);
             }
@@ -778,13 +784,14 @@ namespace Boxify.Frames
         /// Set the message displayed under the YouTube logo
         /// </summary>
         /// <param name="message"></param>
-        public async void SetYouTubeMessage(String message, long localLock)
+        public async void SetLoadersMessage(String message, long localLock)
         {
-            if (YouTubeMessage != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
+            if (LoadersMessage != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    YouTubeMessage.Text = message;
+                    LoadersMessage.Text = message;
+                    LoadersMessage.Visibility = Visibility.Visible;
                 });
             }
         }
@@ -910,7 +917,7 @@ namespace Boxify.Frames
                     SpotifyLoading = null;
                     YouTubeLogo = null;
                     YouTubeLoading = null;
-                    YouTubeMessage = null;
+                    LoadersMessage = null;
                     Header = null;
                     NavLeftBorder = null;
                     RightMainBackground = null;

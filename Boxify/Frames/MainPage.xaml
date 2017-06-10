@@ -166,7 +166,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                          Foreground="#e52d27"
                          Background="#000000"/>
 
-            <TextBlock Name="YouTubeMessage"
+            <TextBlock Name="LoadersMessage"
                        RelativePanel.Above="YouTubeLoading"
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        Text="X tracks failed to match"
@@ -232,7 +232,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                    OpenPaneLength="250"
                    Canvas.ZIndex="2"
                    CompactPaneLength="66">
-            
+
             <SplitView.Pane>
                 <ListView Name="HamburgerOptions"
                           Margin="0,0,0,48"

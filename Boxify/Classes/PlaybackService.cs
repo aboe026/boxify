@@ -160,10 +160,36 @@ namespace Boxify.Classes
         public bool ToggleRepeat()
         {
             queue.AutoRepeatEnabled = !queue.AutoRepeatEnabled;
-            Settings.repeatEnabled = queue.AutoRepeatEnabled;
-            currentSession.ToggleRepeat(Settings.repeatEnabled);
-            Settings.SaveSettings();
+            if (MainPage.settingsPage != null)
+            {
+                MainPage.settingsPage.SetRepeatUI(queue.AutoRepeatEnabled);
+            }
+            else
+            {
+                Settings.SetRepeat(queue.AutoRepeatEnabled);
+            }
+            if (currentSession != null)
+            {
+                currentSession.ToggleRepeat(queue.AutoRepeatEnabled);
+            }
             return queue.AutoRepeatEnabled;
+        }
+
+        /// <summary>
+        /// Update the playback session and playback menu whether or not repeat is enabled
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetRepeat(bool enabled)
+        {
+            queue.AutoRepeatEnabled = enabled;
+            if (currentSession != null)
+            {
+                currentSession.ToggleRepeat(enabled);
+            }
+            if (App.mainPage != null && App.mainPage.GetPlaybackMenu() != null)
+            {
+                App.mainPage.GetPlaybackMenu().SetRepeat(enabled);
+            }
         }
 
         /// <summary>
@@ -172,10 +198,35 @@ namespace Boxify.Classes
         /// <returns></returns>
         public bool ToggleShuffle()
         {
-            Settings.shuffleEnabled = !Settings.shuffleEnabled;
-            currentSession.ToggleShuffle(Settings.shuffleEnabled);
-            Settings.SaveSettings();
+            if (MainPage.settingsPage != null)
+            {
+                MainPage.settingsPage.SetShuffleUI(!Settings.shuffleEnabled);
+            }
+            else
+            {
+                Settings.SetShuffle(!Settings.shuffleEnabled);
+            }
+            if (currentSession != null)
+            {
+                currentSession.ToggleShuffle(Settings.shuffleEnabled);
+            }
             return Settings.shuffleEnabled;
+        }
+
+        /// <summary>
+        /// Update the playback session and playback menu whether or not shuffle is enabled
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetShuffle(bool enabled)
+        {
+            if (currentSession != null)
+            {
+                currentSession.ToggleShuffle(enabled);
+            }
+            if (App.mainPage != null && App.mainPage.GetPlaybackMenu() != null)
+            {
+                App.mainPage.GetPlaybackMenu().SetShuffle(enabled);
+            }
         }
 
         /// <summary>

@@ -299,17 +299,13 @@ namespace Boxify.Controls
         {
             if (enabled)
             {
-                App.playbackService.queue.AutoRepeatEnabled = true;
                 Repeat.Visibility = Visibility.Collapsed;
                 RepeatEnabled.Visibility = Visibility.Visible;
-                RepeatEnabled.Focus(FocusState.Programmatic);
             }
             else
             {
-                App.playbackService.queue.AutoRepeatEnabled = false;
                 Repeat.Visibility = Visibility.Visible;
                 RepeatEnabled.Visibility = Visibility.Collapsed;
-                Repeat.Focus(FocusState.Programmatic);
             }
         }
 
@@ -345,13 +341,11 @@ namespace Boxify.Controls
             {
                 Shuffle.Visibility = Visibility.Collapsed;
                 ShuffleEnabled.Visibility = Visibility.Visible;
-                ShuffleEnabled.Focus(FocusState.Programmatic);
             }
             else
             {
                 Shuffle.Visibility = Visibility.Visible;
                 ShuffleEnabled.Visibility = Visibility.Collapsed;
-                Shuffle.Focus(FocusState.Programmatic);
             }
         }
 
@@ -423,18 +417,22 @@ namespace Boxify.Controls
             if (Settings.repeatEnabled)
             {
                 RepeatEnabled.Visibility = Visibility.Visible;
+                Repeat.Visibility = Visibility.Collapsed;
             }
             else
             {
                 Repeat.Visibility = Visibility.Visible;
+                RepeatEnabled.Visibility = Visibility.Collapsed;
             }
             if (Settings.shuffleEnabled)
             {
                 ShuffleEnabled.Visibility = Visibility.Visible;
+                Shuffle.Visibility = Visibility.Collapsed;
             }
             else
             {
                 Shuffle.Visibility = Visibility.Visible;
+                ShuffleEnabled.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -516,6 +514,15 @@ namespace Boxify.Controls
                 CurrentTime.Text = "00:00";
                 Duration.Text = "00:00";
                 AlbumArt.Source = new BitmapImage();
+
+                if (MainPage.settingsPage != null)
+                {
+                    MainPage.settingsPage.LockUIForLoading(active);
+                }
+                else
+                {
+                    Settings.uiLocked = active;
+                }
             }
             else
             {
@@ -531,6 +538,14 @@ namespace Boxify.Controls
                 ShuffleEnabled.Click += Shuffle_Click;
                 Repeat.Click += Repeat_Click;
                 RepeatEnabled.Click += Repeat_Click;
+                if (MainPage.settingsPage != null)
+                {
+                    MainPage.settingsPage.LockUIForLoading(active);
+                }
+                else
+                {
+                    Settings.uiLocked = active;
+                }
             }
         }
 
