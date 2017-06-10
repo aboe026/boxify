@@ -335,14 +335,21 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                        Text="Announcements"
                                        Style="{StaticResource TitleTextBlockStyle}"/>
 
-                            <Button Name="Announcement1000"
-                                    Grid.Row="3"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    Content="Welcome and Configuration"
-                                    Style="{StaticResource ButtonStyle}"
-                                    Click="Announcement1000_Click"/>                            
+                            <RelativePanel Grid.Row="3"
+                                           Grid.Column="2">
+
+                                <Button Name="WelcomeConfigure"
+                                        Margin="0,0,0,10"
+                                        Content="Welcome and Configuration"
+                                        Style="{StaticResource ButtonStyle}"
+                                        Click="WelcomeConfigure_Click"/>
+
+                                <Button Name="Shuffle"
+                                        RelativePanel.Below="WelcomeConfigure"
+                                        Content="Shuffle"
+                                        Style="{StaticResource ButtonStyle}" Click="Shuffle_Click"/>
+
+                            </RelativePanel>
 
                             <TextBlock Name="RateLabel"
                                        Grid.Row="5"

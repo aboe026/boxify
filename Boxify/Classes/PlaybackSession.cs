@@ -47,16 +47,16 @@ namespace Boxify.Classes
 
         public long localLock;
         private Playbacksource source = Playbacksource.Spotify;
-        private PlaybackType type;
+        public PlaybackType type;
         private bool shuffling;
-        private string tracksHref;
+        public string tracksHref;
         private List<int> nextRemoteAttempts = new List<int>();
         private List<int> prevRemoteAttempts = new List<int>();
         private List<string> playlistMediaIds = new List<string>();
         private string currentlyPlaying = "";
         private List<int> shufflePositionsAvailable = new List<int>();
         public bool repeatOnShuffleMarker = false;
-        private int totalTracks;
+        public int totalTracks;
         private bool firstSongChange = true;  // the first song change is from playing the first track. Its not an actual "change"
         private bool loadLock = false;
         private int failuresCount = 0;
@@ -642,36 +642,6 @@ namespace Boxify.Classes
         public void ToggleRepeat(bool enabled)
         {
             repeatOnShuffleMarker = false;
-        }
-
-        /// <summary>
-        /// Toggle whether or not the playlist plays in order or shuffles playist songs
-        /// </summary>
-        public async void ToggleShuffle(bool enabled)
-        {
-            if (type != PlaybackType.Single)
-            {
-                App.playbackService.queue.Items.Clear();
-                App.playbackService.Player.Source = App.playbackService.queue;
-                App.mainPage.GetPlaybackMenu().SetLoadingActive(true);
-                App.mainPage.SetLoadersMessage("", localLock);
-                playlistMediaIds.Clear();
-                prevRemoteAttempts.Clear();
-                nextRemoteAttempts.Clear();
-                shufflePositionsAvailable.Clear();
-                currentlyPlaying = "";
-                shuffling = enabled;
-                if (enabled)
-                {
-                    ReFillShufflePositionsAvailable();
-                    await LoadTracks(0, INITIAL_TRACKS_REQUEST);
-                }
-                else
-                {
-                    await LoadTracks(0, INITIAL_TRACKS_REQUEST);
-                }
-                App.mainPage.GetPlaybackMenu().SetLoadingActive(false);
-            }
         }
 
         /// <summary>
