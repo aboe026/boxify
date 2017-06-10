@@ -596,7 +596,30 @@ namespace Boxify.Classes
                 {
                     extraInfo = "\nEnsure Spotify clienId and clientSecret are correct.";
                 }
-                MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                else
+                {
+                    JsonObject errorJson = new JsonObject();
+                    try
+                    {
+                        errorJson = JsonObject.Parse(httpResponse.Content.ToString());
+                        if (errorJson.TryGetValue("error", out IJsonValue errorValue))
+                        {
+                            if (errorValue.GetObject().TryGetValue("message", out IJsonValue errorMessageValue))
+                            {
+                                extraInfo = errorMessageValue.GetString();
+                            }
+                        }
+                    }
+                    catch (COMException) { }
+                }
+                if (App.mainPage != null)
+                {
+                    App.mainPage.SetErrorMessage(String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo));
+                }
+                else
+                {
+                    MainPage.errorMessage = String.Format("Error with REST endpoint {0}: {1}{2}", tokenBase, ex.Message.Replace(Environment.NewLine, ""), extraInfo);
+                }
                 httpResponseBody = "Error: " + ex.HResult.ToString("X") + " Message: " + ex.Message;
                 return "";
             }

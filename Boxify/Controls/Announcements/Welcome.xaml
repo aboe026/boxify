@@ -51,7 +51,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        RelativePanel.Below="Header"
                        Margin="0,10,0,30"
-                       Text="Thank you for trying Boxify. Prepare to hear your favorite music from Spotify on Xbox. Enjoy :)"
+                       Text="Thank you for choosing Boxify. Prepare to hear your favorite music from Spotify on Xbox. Enjoy :)"
                        Style="{StaticResource TitleTextBlockStyle}"
                        TextWrapping="WrapWholeWords"
                        TextAlignment="Center"/>

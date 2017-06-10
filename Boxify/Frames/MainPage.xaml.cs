@@ -618,7 +618,11 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    SetErrorMessage(message);
+                    if (ErrorMessage != null)
+                    {
+                        ErrorMessage.Visibility = Visibility.Visible;
+                        ErrorMessage.Text = message;
+                    }
                 });
             }
         }

@@ -1,7 +1,7 @@
 # boxify ![Boxify Logo](Boxify/Assets/BoxifyLogo-Dark.png?raw=true "Boxify Logo")
 ![Boxify Screenshot](DesktopScreenshot.png?raw=true "Boxify Screenshot")
 
-A Spotify client for the Xbox One featuring background music support. This project is GPL 3.0 licensed.
+A Spotify client for the Xbox One featuring background music support. This project is GPL 3.0 licensed. Proudly featured in [Project Pegasus](https://github.com/wiired24/ProjectPegasus).
 
 ## Build
 You must pull down and build the [libvideo project](https://github.com/aboe026/libvideo) and add it as a reference in Visual Studio.
