@@ -168,6 +168,7 @@ namespace Boxify.Frames
         /// <param name="announcements"></param>
         public void ShowAnnouncements(List<UserControl> announcements)
         {
+            closedAnnouncements = false;
             announcementItems = announcements;
             Announcements.Content = announcementItems[0];
             PreviousAnnouncement.Visibility = Visibility.Collapsed;
@@ -811,7 +812,7 @@ namespace Boxify.Frames
             roamingSettings.Values["AnnouncementsClosed"] = true;
             closedAnnouncements = true;
             AnnouncementsContainer.Visibility = Visibility.Collapsed;
-            announcementItems.Clear();
+            UnloadAnnouncements();
             MainContentFrame.Focus(FocusState.Programmatic);
         }
 
@@ -872,6 +873,65 @@ namespace Boxify.Frames
             else if (e.Key == VirtualKey.GamepadLeftShoulder)
             {
                 PreviousAnnouncement_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// Free up memory from announcements
+        /// </summary>
+        private void UnloadAnnouncements()
+        {
+            while (announcementItems.Count > 0)
+            {
+                UserControl announcement = announcementItems.ElementAt(0);
+                if (announcement is Welcome)
+                {
+                    Welcome welcome = announcement as Welcome;
+                    announcementItems.Remove(welcome);
+                    welcome.UserControl_Unloaded(null, null);
+                    welcome.Unloaded -= welcome.UserControl_Unloaded;
+                    welcome = null;
+                }
+                if (announcement is PlaybackMode)
+                {
+                    PlaybackMode playbackMode = announcement as PlaybackMode;
+                    announcementItems.Remove(playbackMode);
+                    playbackMode.UserControl_Unloaded(null, null);
+                    playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
+                    playbackMode = null;
+                }
+                if (announcement is ThemeMode)
+                {
+                    ThemeMode themeMode = announcement as ThemeMode;
+                    announcementItems.Remove(themeMode);
+                    themeMode.UserControl_Unloaded(null, null);
+                    themeMode.Unloaded -= themeMode.UserControl_Unloaded;
+                    themeMode = null;
+                }
+                if (announcement is TvMode)
+                {
+                    TvMode tvMode = announcement as TvMode;
+                    announcementItems.Remove(tvMode);
+                    tvMode.UserControl_Unloaded(null, null);
+                    tvMode.Unloaded -= tvMode.UserControl_Unloaded;
+                    tvMode = null;
+                }
+                if (announcement is PlaybackOptions)
+                {
+                    PlaybackOptions playbackOptions = announcement as PlaybackOptions;
+                    announcementItems.Remove(playbackOptions);
+                    playbackOptions.UserControl_Unloaded(null, null);
+                    playbackOptions.Unloaded -= playbackOptions.UserControl_Unloaded;
+                    playbackOptions = null;
+                }
+                if (announcement is Shuffle)
+                {
+                    Shuffle shuffle = announcement as Shuffle;
+                    announcementItems.Remove(shuffle);
+                    shuffle.UserControl_Unloaded(null, null);
+                    shuffle.Unloaded -= shuffle.UserControl_Unloaded;
+                    shuffle = null;
+                }
             }
         }
 
@@ -1038,42 +1098,7 @@ namespace Boxify.Frames
                     }
 
                     // announcements
-                    while (announcementItems.Count > 0)
-                    {
-                        UserControl announcement = announcementItems.ElementAt(0);
-                        if (announcement is Welcome)
-                        {
-                            Welcome welcome = announcement as Welcome;
-                            announcementItems.Remove(welcome);
-                            welcome.UserControl_Unloaded(null, null);
-                            welcome.Unloaded -= welcome.UserControl_Unloaded;
-                            welcome = null;
-                        }
-                        if (announcement is PlaybackMode)
-                        {
-                            PlaybackMode playbackMode = announcement as PlaybackMode;
-                            announcementItems.Remove(playbackMode);
-                            playbackMode.UserControl_Unloaded(null, null);
-                            playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
-                            playbackMode = null;
-                        }
-                        if (announcement is ThemeMode)
-                        {
-                            ThemeMode themeMode = announcement as ThemeMode;
-                            announcementItems.Remove(themeMode);
-                            themeMode.UserControl_Unloaded(null, null);
-                            themeMode.Unloaded -= themeMode.UserControl_Unloaded;
-                            themeMode = null;
-                        }
-                        if (announcement is TvMode)
-                        {
-                            TvMode tvMode = announcement as TvMode;
-                            announcementItems.Remove(tvMode);
-                            tvMode.UserControl_Unloaded(null, null);
-                            tvMode.Unloaded -= tvMode.UserControl_Unloaded;
-                            tvMode = null;
-                        }
-                    }
+                    UnloadAnnouncements();
                     Announcements = null;
                     AnnouncementsBackground = null;
 

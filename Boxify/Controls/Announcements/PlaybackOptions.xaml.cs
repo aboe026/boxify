@@ -88,30 +88,33 @@ namespace Boxify.Controls.Announcements
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
             {
-                if (RepeatSwitch != null)
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    RepeatSwitch.Toggled -= RepeatSwitch_Toggled;
-                    RepeatSwitch = null;
-                }
-                if (ShuffleSwitch != null)
-                {
-                    ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
-                    ShuffleSwitch = null;
-                }
+                    if (RepeatSwitch != null)
+                    {
+                        RepeatSwitch.Toggled -= RepeatSwitch_Toggled;
+                        RepeatSwitch = null;
+                    }
+                    if (ShuffleSwitch != null)
+                    {
+                        ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
+                        ShuffleSwitch = null;
+                    }
 
-                RepeatLabel = null;
-                ShuffleLabel = null;
-                ToggleGrid = null;
+                    RepeatLabel = null;
+                    ShuffleLabel = null;
+                    ToggleGrid = null;
 
-                Message = null;
-                Header = null;
+                    Message = null;
+                    Header = null;
 
-                CenteredPanel = null;
-            });
+                    CenteredPanel = null;
+                });
+            }
         }
     }
 }
