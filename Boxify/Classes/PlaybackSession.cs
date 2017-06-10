@@ -705,6 +705,11 @@ namespace Boxify.Classes
                     new KeyValuePair<string, string>("limit", limit.ToString()),
                     new KeyValuePair<string, string>("offset", start.ToString())
                 };
+                // For some reason Spotify only has the fields parameter on the Getting a Playlists Tracks endpoint
+                if (type == PlaybackType.Playlist)
+                {
+                    queryParams.Add(new KeyValuePair<string, string>("fields", "items(track(id,href,name,preview_url,duration_ms,album(id,name,images,artists(name)),artists(name)))"));
+                }
                 tracksBuilder.Query = RequestHandler.ConvertToQueryString(queryParams);
                 trackUrl = tracksBuilder.Uri.ToString();
             }
