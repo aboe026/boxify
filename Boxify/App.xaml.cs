@@ -222,6 +222,14 @@ namespace Boxify
                     MainPage.announcementItems.Add(new TvMode(Settings.tvSafeArea));
                     MainPage.announcementItems.Add(new ThemeMode(Settings.theme));
                     MainPage.announcementItems.Add(new PlaybackMode(Settings.playbackSource));
+                    MainPage.announcementItems.Add(new PlaybackOptions(Settings.repeatEnabled, Settings.shuffleEnabled));
+                }
+                else
+                {
+                    if (VersionGreaterThan(previousVersion, "1.1.0.0"))
+                    {
+                        MainPage.announcementItems.Add(new Shuffle(Settings.shuffleEnabled));
+                    }
                 }
             }
             roamingSettings.Values["Announcements"] = Settings.version.ToString();

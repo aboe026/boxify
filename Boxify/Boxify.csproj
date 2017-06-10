@@ -124,6 +124,12 @@
     <Compile Include="Controls\Announcements\PlaybackMode.xaml.cs">
       <DependentUpon>PlaybackMode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Announcements\PlaybackOptions.xaml.cs">
+      <DependentUpon>PlaybackOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Announcements\Shuffle.xaml.cs">
+      <DependentUpon>Shuffle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Announcements\ThemeMode.xaml.cs">
       <DependentUpon>ThemeMode.xaml</DependentUpon>
     </Compile>
@@ -239,6 +245,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Announcements\PlaybackMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\PlaybackOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\Shuffle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

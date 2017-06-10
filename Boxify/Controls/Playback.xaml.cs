@@ -501,11 +501,6 @@ namespace Boxify.Controls
                 Previous.Click -= Previous_Click;
                 Play.Click -= PlayPause_Click;
                 Pause.Click -= PlayPause_Click;
-                Volume.Click -= Volume_Click;
-                Shuffle.Click -= Shuffle_Click;
-                ShuffleEnabled.Click -= Shuffle_Click;
-                Repeat.Click -= Repeat_Click;
-                RepeatEnabled.Click -= Repeat_Click;
                 Play.Visibility = Visibility.Visible;
                 Pause.Visibility = Visibility.Collapsed;
                 TrackName.Text = "";
@@ -514,15 +509,6 @@ namespace Boxify.Controls
                 CurrentTime.Text = "00:00";
                 Duration.Text = "00:00";
                 AlbumArt.Source = new BitmapImage();
-
-                if (MainPage.settingsPage != null)
-                {
-                    MainPage.settingsPage.LockUIForLoading(active);
-                }
-                else
-                {
-                    Settings.uiLocked = active;
-                }
             }
             else
             {
@@ -533,19 +519,6 @@ namespace Boxify.Controls
                 Previous.Click += Previous_Click;
                 Play.Click += PlayPause_Click;
                 Pause.Click += PlayPause_Click;
-                Volume.Click += Volume_Click;
-                Shuffle.Click += Shuffle_Click;
-                ShuffleEnabled.Click += Shuffle_Click;
-                Repeat.Click += Repeat_Click;
-                RepeatEnabled.Click += Repeat_Click;
-                if (MainPage.settingsPage != null)
-                {
-                    MainPage.settingsPage.LockUIForLoading(active);
-                }
-                else
-                {
-                    Settings.uiLocked = active;
-                }
             }
         }
 

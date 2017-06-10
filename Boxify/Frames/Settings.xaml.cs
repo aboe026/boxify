@@ -46,7 +46,6 @@ namespace Boxify.Frames
         public static bool shuffleEnabled = false;
         public static double volume = 100;
         public static string version = "";
-        public static bool uiLocked = false;
 
         /// <summary>
         /// Main constructor
@@ -95,9 +94,6 @@ namespace Boxify.Frames
 
             // version
             Version.Text = version;
-
-            RepeatToggle.IsEnabled = !uiLocked;
-            ShuffleToggle.IsEnabled = !uiLocked;
         }
 
         /// <summary>
@@ -311,6 +307,14 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Change the UI and call to playback
+        /// </summary>
+        public void ToggleRepeat()
+        {
+            RepeatToggle.IsOn = !RepeatToggle.IsOn;
+        }
+
+        /// <summary>
         /// Change whether or not playback is shuffled
         /// </summary>
         /// <param name="sender"></param>
@@ -347,13 +351,11 @@ namespace Boxify.Frames
         }
 
         /// <summary>
-        /// Make certain UI elements not respond to user input while loading is occurring
+        /// Change the UI and call to playback
         /// </summary>
-        /// <param name="loading"></param>
-        public void LockUIForLoading(bool loading)
+        public void ToggleShuffle()
         {
-            RepeatToggle.IsEnabled = !loading;
-            ShuffleToggle.IsEnabled = !loading;
+            ShuffleToggle.IsOn = !ShuffleToggle.IsOn;
         }
 
         /// <summary>
@@ -406,18 +408,33 @@ namespace Boxify.Frames
         }
 
         /// <summary>
-        /// Show announcements for the 1.0.0.0 version
+        /// Show announcements for first time users
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Announcement1000_Click(object sender, RoutedEventArgs e)
+        private void WelcomeConfigure_Click(object sender, RoutedEventArgs e)
         {
             List<UserControl> announcements = new List<UserControl>
             {
                 new Welcome(),
                 new TvMode(tvSafeArea),
                 new ThemeMode(theme),
-                new PlaybackMode(playbackSource)
+                new PlaybackMode(playbackSource),
+                new PlaybackOptions(repeatEnabled, shuffleEnabled)
+            };
+            App.mainPage.ShowAnnouncements(announcements, this);
+        }
+
+        /// <summary>
+        /// Show announcement for new shuffle feature 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Shuffle_Click(object sender, RoutedEventArgs e)
+        {
+            List<UserControl> announcements = new List<UserControl>
+            {
+                new Shuffle(shuffleEnabled)
             };
             App.mainPage.ShowAnnouncements(announcements, this);
         }
@@ -446,42 +463,57 @@ namespace Boxify.Frames
                     if (TvSafeArea != null)
                     {
                         TvSafeArea.Toggled -= TvSafe_Toggled;
+                        TvSafeArea = null;
                     }
                     if (System != null)
                     {
                         System.Click -= ThemeColor_Click;
+                        System = null;
                     }
                     if (Light != null)
                     {
                         Light.Click -= ThemeColor_Click;
+                        Light = null;
                     }
                     if (Dark != null)
                     {
                         Dark.Click -= ThemeColor_Click;
+                        Dark = null;
                     }
                     if (Spotify != null)
                     {
                         Spotify.Click -= Playbacksource_Click;
+                        Spotify = null;
                     }
                     if (YouTube != null)
                     {
                         YouTube.Click -= Playbacksource_Click;
+                        YouTube = null;
                     }
-                    if (Announcement1000 != null)
+                    if (WelcomeConfigure != null)
                     {
-                        Announcement1000.Click -= Announcement1000_Click;
+                        WelcomeConfigure.Click -= WelcomeConfigure_Click;
+                        WelcomeConfigure = null;
+                    }
+                    if (Shuffle != null)
+                    {
+                        Shuffle.Click -= Shuffle_Click;
+                        Shuffle = null;
                     }
                     if (RateButton != null)
                     {
                         RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
+                        RateButton = null;
                     }
                     if (Repo != null)
                     {
                         Repo.Click -= Repo_Click;
+                        Repo = null;
                     }
                     if (PrivacyButton != null)
                     {
                         PrivacyButton.Click -= PrivacyButton_Click;
+                        PrivacyButton = null;
                     }
                 });
             }

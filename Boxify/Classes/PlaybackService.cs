@@ -208,7 +208,7 @@ namespace Boxify.Classes
             }
             if (currentSession != null)
             {
-                currentSession.ToggleShuffle(Settings.shuffleEnabled);
+                StartNewSession(currentSession.type, currentSession.tracksHref, currentSession.totalTracks);
             }
             return Settings.shuffleEnabled;
         }
@@ -221,7 +221,7 @@ namespace Boxify.Classes
         {
             if (currentSession != null)
             {
-                currentSession.ToggleShuffle(enabled);
+                StartNewSession(currentSession.type, currentSession.tracksHref, currentSession.totalTracks);
             }
             if (App.mainPage != null && App.mainPage.GetPlaybackMenu() != null)
             {
