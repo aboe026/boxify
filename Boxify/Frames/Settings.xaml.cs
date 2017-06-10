@@ -46,6 +46,7 @@ namespace Boxify.Frames
         public static bool shuffleEnabled = false;
         public static double volume = 100;
         public static string version = "";
+        public static bool uiLocked = false;
 
         /// <summary>
         /// Main constructor
@@ -54,6 +55,9 @@ namespace Boxify.Frames
         {
             this.InitializeComponent();
             MainPage.settingsPage = this;
+
+            // tv safe area
+            TvSafeArea.IsOn = tvSafeArea;
 
             // color theme
             if (theme == Theme.Light)
@@ -69,9 +73,6 @@ namespace Boxify.Frames
                 System.IsChecked = true;
             }
 
-            // tv safe area
-            TvSafeArea.IsOn = tvSafeArea;
-
             // playback source
             if (playbackSource == Playbacksource.YouTube)
             {
@@ -82,8 +83,21 @@ namespace Boxify.Frames
                 Spotify.IsChecked = true;
             }
 
+            // repeat
+            RepeatToggle.Toggled -= RepeatToggle_Toggled;
+            RepeatToggle.IsOn = repeatEnabled;
+            RepeatToggle.Toggled += RepeatToggle_Toggled;
+
+            // shuffle
+            ShuffleToggle.Toggled -= ShuffleToggle_Toggled;
+            ShuffleToggle.IsOn = shuffleEnabled;
+            ShuffleToggle.Toggled += ShuffleToggle_Toggled;
+
             // version
             Version.Text = version;
+
+            RepeatToggle.IsEnabled = !uiLocked;
+            ShuffleToggle.IsEnabled = !uiLocked;
         }
 
         /// <summary>
@@ -114,7 +128,7 @@ namespace Boxify.Frames
         /// <param name="enabled">True to enable the TV Safe Area, false to disable it</param>
         public void SetTvSafeUI(bool enabled)
         {
-            tvSafeArea = enabled;
+            SetTvSafe(enabled);
             TvSafeArea.IsOn = enabled;
             if (enabled)
             {
@@ -130,7 +144,6 @@ namespace Boxify.Frames
                     App.mainPage.SafeAreaOff();
                 }
             }
-            SaveSettings();
         }
 
         /// <summary>
@@ -181,7 +194,7 @@ namespace Boxify.Frames
         /// <param name="newTheme">The theme to set the UI to</param>
         public void SetThemeUI(Theme newTheme)
         {
-            theme = newTheme;
+            SetTheme(newTheme);
             if (theme == Theme.System && App.mainPage != null)
             {
                 System.IsChecked = true;
@@ -204,7 +217,6 @@ namespace Boxify.Frames
                 Dark.IsChecked = true;
                 App.mainPage.RequestedTheme = ElementTheme.Dark;
             }
-            SaveSettings();
         }
 
         /// <summary>
@@ -241,7 +253,7 @@ namespace Boxify.Frames
         /// <param name="source">The source to get tracks from</param>
         public void SetPlaybackSourceUI(Playbacksource source)
         {
-            playbackSource = source;
+            SetPlaybackSource(source);
             if (source == Playbacksource.Spotify)
             {
                 Spotify.IsChecked = true;
@@ -250,7 +262,6 @@ namespace Boxify.Frames
             {
                 YouTube.IsChecked = true;
             }
-            SaveSettings();
         }
 
         /// <summary>
@@ -261,6 +272,88 @@ namespace Boxify.Frames
         {
             playbackSource = source;
             SaveSettings();
+        }
+
+        /// <summary>
+        /// Change whether or not playback is repeated
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RepeatToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggleSwitch)
+            {
+                SetRepeat(!repeatEnabled);
+                App.playbackService.SetRepeat(repeatEnabled);
+            }
+        }
+
+        /// <summary>
+        /// Update the Repeat setting
+        /// </summary>
+        /// <param name="enabled"></param>
+        public static void SetRepeat(bool enabled)
+        {
+            repeatEnabled = enabled;
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Update settings (including UI) with new Repeat value
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetRepeatUI(bool enabled)
+        {
+            SetRepeat(enabled);
+            RepeatToggle.Toggled -= RepeatToggle_Toggled;
+            RepeatToggle.IsOn = enabled;
+            RepeatToggle.Toggled += RepeatToggle_Toggled;
+        }
+
+        /// <summary>
+        /// Change whether or not playback is shuffled
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShuffleToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggleSwitch)
+            {
+                SetShuffle(!shuffleEnabled);
+                App.playbackService.SetShuffle(shuffleEnabled);
+            }
+        }
+
+        /// <summary>
+        /// Set the Shuffle setting
+        /// </summary>
+        /// <param name="enabled"></param>
+        public static void SetShuffle(bool enabled)
+        {
+            shuffleEnabled = enabled;
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Set the Shuffle settingand update the UI
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void SetShuffleUI(bool enabled)
+        {
+            SetShuffle(enabled);
+            ShuffleToggle.Toggled -= ShuffleToggle_Toggled;
+            ShuffleToggle.IsOn = enabled;
+            ShuffleToggle.Toggled += ShuffleToggle_Toggled;
+        }
+
+        /// <summary>
+        /// Make certain UI elements not respond to user input while loading is occurring
+        /// </summary>
+        /// <param name="loading"></param>
+        public void LockUIForLoading(bool loading)
+        {
+            RepeatToggle.IsEnabled = !loading;
+            ShuffleToggle.IsEnabled = !loading;
         }
 
         /// <summary>

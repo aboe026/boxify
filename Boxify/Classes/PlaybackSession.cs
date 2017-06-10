@@ -83,7 +83,10 @@ namespace Boxify.Classes
             this.tracksHref = tracksHref;
             this.totalTracks = totalTracks;
             prevRemoteAttempts.Add(0);
-            App.mainPage.SetYouTubeMessage("", localLock);
+            if (App.mainPage != null)
+            {
+                App.mainPage.SetLoadersMessage("", localLock);
+            }
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace Boxify.Classes
         private void UpdateFailuresCount(int increment)
         {
             failuresCount += increment;
-            App.mainPage.SetYouTubeMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
+            App.mainPage.SetLoadersMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
         }
 
         /// <summary>
@@ -502,7 +505,10 @@ namespace Boxify.Classes
                                 for (int i = 0; i < deleteUpTo; i++)
                                 {
                                     App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                    playlistMediaIds.RemoveAt(0);
+                                    if (playlistMediaIds.Count > 0)
+                                    {
+                                        playlistMediaIds.RemoveAt(0);
+                                    }
                                 }
                             }
                         });
@@ -519,7 +525,10 @@ namespace Boxify.Classes
                                 for (int i = 0; i < deleteUpTo; i++)
                                 {
                                     App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                    playlistMediaIds.RemoveAt(0);
+                                    if (playlistMediaIds.Count > 0)
+                                    {
+                                        playlistMediaIds.RemoveAt(0);
+                                    }
                                 }
                             }
                         });
@@ -560,12 +569,18 @@ namespace Boxify.Classes
                             bool success = await LoadTracks(indexToLoadNext + 1, indexToLoadNext + TRACKS_PER_REQUEST);
                             if (success && index > BUFFER_FROM_LOAD)
                             {
-                                prevRemoteAttempts.RemoveAt(0);
+                                if (prevRemoteAttempts.Count > 0)
+                                {
+                                    prevRemoteAttempts.RemoveAt(0);
+                                }
                                 int deleteUpTo = index - BUFFER_FROM_LOAD;
                                 for (int i = 0; i < deleteUpTo; i++)
                                 {
                                     App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                    playlistMediaIds.RemoveAt(0);
+                                    if (playlistMediaIds.Count > 0)
+                                    {
+                                        playlistMediaIds.RemoveAt(0);
+                                    }
                                 }
                             }
                         }
@@ -579,12 +594,18 @@ namespace Boxify.Classes
                             bool success = await LoadTracks(0, TRACKS_PER_REQUEST - 1);
                             if (success && index > BUFFER_FROM_LOAD)
                             {
-                                prevRemoteAttempts.RemoveAt(0);
+                                if (prevRemoteAttempts.Count > 0)
+                                {
+                                    prevRemoteAttempts.RemoveAt(0);
+                                }
                                 int deleteUpTo = index - BUFFER_FROM_LOAD;
                                 for (int i = 0; i < deleteUpTo; i++)
                                 {
                                     App.playbackService.RemoveFromQueue(playlistMediaIds.First(), localLock);
-                                    playlistMediaIds.RemoveAt(0);
+                                    if (playlistMediaIds.Count > 0)
+                                    {
+                                        playlistMediaIds.RemoveAt(0);
+                                    }
                                 }
                             }
                         });
@@ -597,7 +618,10 @@ namespace Boxify.Classes
                             bool success = await LoadTracksReverse(indexToLoadPrev - TRACKS_PER_REQUEST, indexToLoadPrev - 1);
                             if (success && index < BUFFER_FROM_LOAD)
                             {
-                                nextRemoteAttempts.RemoveAt(0);
+                                if (nextRemoteAttempts.Count > 0)
+                                {
+                                    nextRemoteAttempts.RemoveAt(0);
+                                }
                                 int deleteUpTo = playlistMediaIds.Count - BUFFER_FROM_LOAD - 1;
                                 for (int i = playlistMediaIds.Count - 1; i > deleteUpTo; i--)
                                 {
@@ -630,7 +654,7 @@ namespace Boxify.Classes
                 App.playbackService.queue.Items.Clear();
                 App.playbackService.Player.Source = App.playbackService.queue;
                 App.mainPage.GetPlaybackMenu().SetLoadingActive(true);
-                App.mainPage.SetYouTubeMessage("", localLock);
+                App.mainPage.SetLoadersMessage("", localLock);
                 playlistMediaIds.Clear();
                 prevRemoteAttempts.Clear();
                 nextRemoteAttempts.Clear();
