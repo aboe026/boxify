@@ -25,6 +25,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -101,6 +102,10 @@ namespace Boxify
                 titleBar.ButtonForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
                 titleBar.ButtonInactiveForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
             }
+
+            // System color overrides
+            App.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(Colors.Transparent);
+            App.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(Colors.Transparent);
 
             // settings
             LoadSettings();
