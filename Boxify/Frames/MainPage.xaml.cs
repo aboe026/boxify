@@ -45,6 +45,11 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private const double TV_SAFE_HORIZONTAL_MARGINS = 48;
+        private const double TV_SAFE_VERTICAL_MARGINS = 27;
+        private double ogRightMainBackgroundLeftMarginLeft;
+        private double ogMainContentFrameMarginBottom;
+
         public static ListViewItem currentNavSelection = new ListViewItem();
         public static bool returningFromMemoryReduction = false;
         public static string errorMessage = "";
@@ -71,6 +76,9 @@ namespace Boxify.Frames
         /// <param name="e">The navigation event arguments</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            ogRightMainBackgroundLeftMarginLeft = RightMainBackground.Margin.Left;
+            ogMainContentFrameMarginBottom = MainContentFrame.Margin.Bottom;
+
             // announcements
             if (announcementItems.Count > 0 && !closedAnnouncements)
             {
@@ -223,11 +231,11 @@ namespace Boxify.Frames
             {
                 if (Settings.tvSafeArea)
                 {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
+                    MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom + TV_SAFE_HORIZONTAL_MARGINS);
                 }
                 else
                 {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
+                    MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom);
                 }
 
                 PlaybackMenu.SetRepeat(Settings.repeatEnabled);
@@ -326,20 +334,22 @@ namespace Boxify.Frames
         /// <param name="option"></param>
         public void SelectHamburgerOption(string option, Boolean setFocus)
         {
+            BrowseItemHighlight.Visibility = Visibility.Collapsed;
+            YourMusicItemHighlight.Visibility = Visibility.Collapsed;
+            ProfileItemHighlight.Visibility = Visibility.Collapsed;
+            SearchItemHighlight.Visibility = Visibility.Collapsed;
+            SettingsItemHighlight.Visibility = Visibility.Collapsed;
+
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
-                SettingsItem.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
+                SettingsItemHighlight.Visibility = Visibility.Visible;
                 if (setFocus)
                 {
                     SettingsItem.Focus(FocusState.Programmatic);
                 }
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
-            }
-            else
-            {
-                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
             }
             for (int i = 0; i < HamburgerOptions.Items.Count; i++)
             {
@@ -348,6 +358,23 @@ namespace Boxify.Frames
                 {
                     item.IsSelected = true;
                     HamburgerOptions.SelectedItem = item;
+                    currentNavSelection = item;
+                    if (item.Name == "BrowseItem")
+                    {
+                        BrowseItemHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "YourMusicItem")
+                    {
+                        YourMusicItemHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "ProfileItem")
+                    {
+                        ProfileItemHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "SearchItem")
+                    {
+                        SearchItemHighlight.Visibility = Visibility.Visible;
+                    }
                     if (setFocus)
                     {
                         item.Focus(FocusState.Programmatic);
@@ -376,7 +403,6 @@ namespace Boxify.Frames
                 {
                     return;
                 }
-                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
                 currentNavSelection = selectedItem;
                 currentNavSelection.Focus(FocusState.Programmatic);
                 foreach (ListViewItem item in HamburgerOptions.Items)
@@ -386,25 +412,34 @@ namespace Boxify.Frames
                         item.IsSelected = false;
                     }
                 }
+                BrowseItemHighlight.Visibility = Visibility.Collapsed;
+                YourMusicItemHighlight.Visibility = Visibility.Collapsed;
+                ProfileItemHighlight.Visibility = Visibility.Collapsed;
+                SearchItemHighlight.Visibility = Visibility.Collapsed;
+                SettingsItemHighlight.Visibility = Visibility.Collapsed;
                 if (BrowseItem.IsSelected)
                 {
+                    BrowseItemHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Browse));
                     Title.Text = "Browse";
                 }
                 else if (YourMusicItem.IsSelected)
                 {
+                    YourMusicItemHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(YourMusic));
                     Title.Text = "Your Music";
                 }
-                else if (SearchItem.IsSelected)
-                {
-                    NavigateToPage(typeof(Search));
-                    Title.Text = "Search";
-                }
                 else if (ProfileItem.IsSelected)
                 {
+                    ProfileItemHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Profile));
                     Title.Text = "Profile";
+                }
+                else if (SearchItem.IsSelected)
+                {
+                    SearchItemHighlight.Visibility = Visibility.Visible;
+                    NavigateToPage(typeof(Search));
+                    Title.Text = "Search";
                 }
             }
             else if (e.RemovedItems.Count > 0)
@@ -450,13 +485,14 @@ namespace Boxify.Frames
         public void SafeAreaOff()
         {
             NavLeftBorder.Visibility = Visibility.Collapsed;
+            NavLeftBorderHamburgerExtension.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
             MainSplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
-            RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
+            RightMainBackground.Margin = new Thickness(ogRightMainBackgroundLeftMarginLeft, 0, 0, 0);
             if (App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
+                MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom);
             }
             else
             {
@@ -471,13 +507,14 @@ namespace Boxify.Frames
         public void SafeAreaOn()
         {
             NavLeftBorder.Visibility = Visibility.Visible;
-            Header.Margin = new Thickness(48, 27, 48, 0);
-            MainSplitView.Margin = new Thickness(48, 0, 48, 0);
-            HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
-            RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
+            NavLeftBorderHamburgerExtension.Visibility = Visibility.Visible;
+            Header.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, TV_SAFE_VERTICAL_MARGINS, TV_SAFE_HORIZONTAL_MARGINS, 0);
+            MainSplitView.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, 0, TV_SAFE_HORIZONTAL_MARGINS, 0);
+            HamburgerOptions.Margin = new Thickness(0, 0, 0, TV_SAFE_HORIZONTAL_MARGINS);
+            RightMainBackground.Margin = new Thickness(ogRightMainBackgroundLeftMarginLeft + TV_SAFE_HORIZONTAL_MARGINS, 0, 0, 0);
             if (App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
+                MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom + TV_SAFE_HORIZONTAL_MARGINS);
             }
             else
             {
@@ -984,6 +1021,7 @@ namespace Boxify.Frames
                     LoadersMessage = null;
                     Header = null;
                     NavLeftBorder = null;
+                    NavLeftBorderHamburgerExtension = null;
                     RightMainBackground = null;
                     UserPic = null;
 
@@ -999,9 +1037,17 @@ namespace Boxify.Frames
                     }
 
                     BrowseItem = null;
+                    BrowseItemHighlight = null;
+                    BrowseItemIcon = null;
                     YourMusicItem = null;
+                    YourMusicItemHighlight = null;
+                    YourMusicItemIcon = null;
                     ProfileItem = null;
+                    ProfileItemHighlight = null;
+                    ProfileItemIcon = null;
                     SearchItem = null;
+                    SearchItemHighlight = null;
+                    SearchItemIcon = null;
 
                     if (CancelDialog != null)
                     {

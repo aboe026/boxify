@@ -22,6 +22,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- ######################################################################### -->
+    <!--                                  TEXT                                     -->
+    <!-- ######################################################################### -->
     <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -71,13 +74,35 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         <Setter Property="FontWeight" Value="Normal"/>
     </Style>
 
-    <Style x:Key="NavOptionTextBlockStyle" TargetType="TextBlock"
-       BasedOn="{StaticResource SubheaderTextBlockStyle}">
+    <!-- ######################################################################### -->
+    <!--                                 CONTROLS                                  -->
+    <!-- ######################################################################### -->
+    <Style x:Key="NavButtonStyle" TargetType="Button">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="NavItemIconTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Margin" Value="1,0,0,0"/>
+    </Style>
+    
+    <Style x:Key="NavItemTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <Setter Property="Margin" Value="22,0,0,0"/>
     </Style>
 
-    <Style x:Key="NavOptionListViewItemStyle" TargetType="ListViewItem">
-        <Setter Property="Height" Value="67"/>
+    <Style x:Key="NavItemHighlightCanvasStyle" TargetType="Canvas">
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="Width" Value="6"/>
+        <Setter Property="Margin" Value="-18,0,0,0"/>
+        <Setter Property="Background" Value="{ThemeResource AppTitleBarBackground}"/>
+    </Style>
+
+    <Style x:Key="NavListViewItemStyle" TargetType="ListViewItem">
+        <Setter Property="Height" Value="48"/>
     </Style>
 
     <Style x:Key="ButtonStyle" TargetType="Button">
@@ -275,11 +300,16 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     </ControlTemplate>
 
     <!-- ######################################################################### -->
+    <!--                                 COLORS                                    -->
+    <!-- ######################################################################### -->
+    <SolidColorBrush x:Key="SpotifyGreen" Color="#FF1DB954"/>
+    <SolidColorBrush x:Key="YouTubeRed" Color="#e52d27"/>
+
+    <!-- ######################################################################### -->
     <!--                             THEME RESOURCES                               -->
     <!-- ######################################################################### -->
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="NavBarBackground" Color="#171717"/>
             <SolidColorBrush x:Key="AppButtonBorder" Color="White"/>
             <SolidColorBrush x:Key="AppTitleBarBackground" Color="{ThemeResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="AppTitleBarForeground" Color="White"/>
@@ -298,7 +328,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             </LinearGradientBrush>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="NavBarBackground" Color="#F2F2F2"/>
             <SolidColorBrush x:Key="AppButtonBorder" Color="Black"/>
             <SolidColorBrush x:Key="AppTitleBarBackground" Color="{ThemeResource SystemAccentColorLight1}"/>
             <SolidColorBrush x:Key="AppTitleBarForeground" Color="Black"/>
