@@ -233,7 +233,6 @@ namespace Boxify.Frames
                 PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
                 playlistList.Unload();
                 Playlists.Items.Remove(playlistList);
-                playlistList = null;
             }
         }
 
@@ -294,41 +293,19 @@ namespace Boxify.Frames
                 {
                     Bindings.StopTracking();
 
-                    if (Playlists != null)
-                    {
-                        Playlists.ItemClick -= Playlists_ItemClick;
-                        clearPlaylists();
-                        Playlists = null;
-                    }
+                    Playlists.ItemClick -= Playlists_ItemClick;
+                    clearPlaylists();
 
-                    if (LogIn != null)
-                    {
-                        LogIn.Click -= LogIn_Click;
-                        LogIn = null;
-                    }
-                    if (Refresh != null)
-                    {
-                        Refresh.Click -= Refresh_Click;
-                        Refresh = null;
-                    }
-                    if (More != null)
-                    {
-                        More.Click -= More_Click;
-                        More = null;
-                    }
-                    if (preEmptiveLoadPlaylists != null)
-                    {
-                        while (preEmptiveLoadPlaylists.Count > 0)
-                        {
-                            PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as PlaylistList;
-                            playlistList.Unload();
-                            preEmptiveLoadPlaylists.Remove(playlistList);
-                            playlistList = null;
-                        }
-                    }
+                    LogIn.Click -= LogIn_Click;
+                    Refresh.Click -= Refresh_Click;
+                    More.Click -= More_Click;
 
-                    Warning = null;
-                    PlaylistsLabel = null;
+                    while (preEmptiveLoadPlaylists.Count > 0)
+                    {
+                        PlaylistList playlistList = preEmptiveLoadPlaylists.ElementAt(0) as PlaylistList;
+                        playlistList.Unload();
+                        preEmptiveLoadPlaylists.Remove(playlistList);
+                    }
                 });
             }
         }

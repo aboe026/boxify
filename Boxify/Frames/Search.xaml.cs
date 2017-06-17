@@ -253,6 +253,19 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// user hits enter to search
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                SearchButton_Click(null, null);
+            }
+        }
+
+        /// <summary>
         /// Clears the search results objects to purge them from memory
         /// </summary>
         private void ClearResults()
@@ -265,35 +278,19 @@ namespace Boxify.Frames
                     PlaylistList playlistList = listItem as PlaylistList;
                     playlistList.Unload();
                     Results.Items.Remove(playlistList);
-                    playlistList = null;
                 }
                 else if (listItem is TrackList)
                 {
                     TrackList trackList = listItem as TrackList;
                     trackList.Unload();
                     Results.Items.Remove(trackList);
-                    trackList = null;
                 }
                 else if (listItem is AlbumList)
                 {
                     AlbumList albumList = listItem as AlbumList;
                     albumList.Unload();
                     Results.Items.Remove(albumList);
-                    albumList = null;
                 }
-            }
-        }
-
-        /// <summary>
-        /// user hits enter to search
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                SearchButton_Click(null, null);
             }
         }
 
@@ -308,25 +305,11 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (Results != null)
-                    {
-                        Results.ItemClick -= Results_ItemClick;
-                        ClearResults();
-                        Results = null;
-                    }
-                    if (SearchType != null)
-                    {
-                        SearchType.SelectionChanged -= SearchButton_Click;
-                        SearchType = null;
-                    }
-                    if (SearchButton != null)
-                    {
-                        SearchButton.Click -= SearchButton_Click;
-                        SearchButton = null;
-                    }
+                    Results.ItemClick -= Results_ItemClick;
+                    ClearResults();
 
-                    SearchBox = null;
-                    Feedback = null;
+                    SearchType.SelectionChanged -= SearchButton_Click;
+                    SearchButton.Click -= SearchButton_Click;
                 });
             }
         }

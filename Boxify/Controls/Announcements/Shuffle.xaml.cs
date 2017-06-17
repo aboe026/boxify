@@ -87,22 +87,11 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
+            if (MainPage.closedAnnouncements || (App.isInBackgroundMode && MainPage.closedAnnouncements))
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (ShuffleSwitch != null)
-                    {
-                        ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
-                        ShuffleSwitch = null;
-                    }
-
-                    ShuffleIcon = null;
-                    Message = null;
-                    Header = null;
-                    Version = null;
-
-                    CenteredPanel = null;
+                    ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
                 });
             }
         }

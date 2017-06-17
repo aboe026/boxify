@@ -460,61 +460,17 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (TvSafeArea != null)
-                    {
-                        TvSafeArea.Toggled -= TvSafe_Toggled;
-                        TvSafeArea = null;
-                    }
-                    if (System != null)
-                    {
-                        System.Click -= ThemeColor_Click;
-                        System = null;
-                    }
-                    if (Light != null)
-                    {
-                        Light.Click -= ThemeColor_Click;
-                        Light = null;
-                    }
-                    if (Dark != null)
-                    {
-                        Dark.Click -= ThemeColor_Click;
-                        Dark = null;
-                    }
-                    if (Spotify != null)
-                    {
-                        Spotify.Click -= Playbacksource_Click;
-                        Spotify = null;
-                    }
-                    if (YouTube != null)
-                    {
-                        YouTube.Click -= Playbacksource_Click;
-                        YouTube = null;
-                    }
-                    if (WelcomeConfigure != null)
-                    {
-                        WelcomeConfigure.Click -= WelcomeConfigure_Click;
-                        WelcomeConfigure = null;
-                    }
-                    if (Shuffle != null)
-                    {
-                        Shuffle.Click -= Shuffle_Click;
-                        Shuffle = null;
-                    }
-                    if (RateButton != null)
-                    {
-                        RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
-                        RateButton = null;
-                    }
-                    if (Repo != null)
-                    {
-                        Repo.Click -= Repo_Click;
-                        Repo = null;
-                    }
-                    if (PrivacyButton != null)
-                    {
-                        PrivacyButton.Click -= PrivacyButton_Click;
-                        PrivacyButton = null;
-                    }
+                    TvSafeArea.Toggled -= TvSafe_Toggled;
+                    System.Click -= ThemeColor_Click;
+                    Light.Click -= ThemeColor_Click;
+                    Dark.Click -= ThemeColor_Click;
+                    Spotify.Click -= Playbacksource_Click;
+                    YouTube.Click -= Playbacksource_Click;
+                    WelcomeConfigure.Click -= WelcomeConfigure_Click;
+                    Shuffle.Click -= Shuffle_Click;
+                    RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
+                    Repo.Click -= Repo_Click;
+                    PrivacyButton.Click -= PrivacyButton_Click;
                 });
             }
         }

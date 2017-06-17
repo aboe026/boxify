@@ -186,20 +186,15 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-                id = null;
-                name = null;
                 while (artists.Count > 0)
                 {
                     Artist artist = artists.ElementAt(0);
                     artists.Remove(artist);
                     artist.Dispose();
-                    artist = null;
                 }
                 artists.Clear();
-                artists = null;
-                image.UriSource = null;
-                image = null;
-                imageUrl = null;
+
+                image.ClearValue(BitmapImage.UriSourceProperty);
             }
         }
     }
