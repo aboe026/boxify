@@ -65,13 +65,8 @@ namespace Boxify.Controls
         public void Unload()
         {
             playlist.Dispose();
-            playlist = null;
 
-            Image.Source = null;
-            Image = null;
-            DisplayName = null;
-            Tracks = null;
-            TracksLabel = null;
+            Image.ClearValue(Image.SourceProperty);
         }
     }
 }

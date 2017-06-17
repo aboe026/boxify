@@ -118,7 +118,6 @@ namespace Boxify.Classes
             {
                 MediaPlaybackItem item = queue.Items.First(kvp => kvp.Source.CustomProperties["mediaItemId"].ToString() == mediaId);
                 queue.Items.Remove(item);
-                item = null;
             }
         }
 

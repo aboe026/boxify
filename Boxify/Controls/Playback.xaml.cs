@@ -533,65 +533,16 @@ namespace Boxify.Controls
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (uiUpdateTimer != null)
-                    {
-                        uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
-                        uiUpdateTimer = null;
-                    }
-
-                    if (Repeat != null)
-                    {
-                        Repeat.Click -= Repeat_Click;
-                        Repeat = null;
-                    }
-                    if (RepeatEnabled != null)
-                    {
-                        RepeatEnabled.Click -= Repeat_Click;
-                        RepeatEnabled = null;
-                    }
-                    if (Volume != null)
-                    {
-                        Volume.Click -= Volume_Click;
-                        Volume = null;
-                    }
-                    if (VolumeSlider != null)
-                    {
-                        VolumeSlider.LostFocus -= VolumeSlider_LostFocus;
-                        VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
-                        VolumeSlider = null;
-                    }
-                    if (Play != null)
-                    {
-                        Play.Click -= PlayPause_Click;
-                        Play = null;
-                    }
-                    if (Pause != null)
-                    {
-                        Pause.Click -= PlayPause_Click;
-                        Pause = null;
-                    }
-                    if (Previous != null)
-                    {
-                        Previous.Click -= Previous_Click;
-                        Previous = null;
-                    }
-                    if (Next != null)
-                    {
-                        Next.Click -= Next_Click;
-                        Next = null;
-                    }
-
-                    LoadingTrack = null;
-                    AlbumArt.Source = null;
-                    AlbumArt = null;
-                    TrackName = null;
-                    TrackArtist = null;
-                    CurrentTime = null;
-                    Progress = null;
-                    Duration = null;
-
-                    MainPanel = null;
-                    MainGrid = null;
+                    uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
+                    Repeat.Click -= Repeat_Click;
+                    RepeatEnabled.Click -= Repeat_Click;
+                    Volume.Click -= Volume_Click;
+                    VolumeSlider.LostFocus -= VolumeSlider_LostFocus;
+                    VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
+                    Play.Click -= PlayPause_Click;
+                    Pause.Click -= PlayPause_Click;
+                    Previous.Click -= Previous_Click;
+                    Next.Click -= Next_Click;
                 });
             }
         }

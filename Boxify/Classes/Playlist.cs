@@ -131,13 +131,7 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-                id = null;
-                href = null;
-                name = null;
-                description = null;
-                tracksHref = null;
-                image.UriSource = null;
-                image = null;
+                image.ClearValue(BitmapImage.UriSourceProperty);
             }
         }
     }

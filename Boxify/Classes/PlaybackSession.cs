@@ -989,13 +989,10 @@ namespace Boxify.Classes
             if (!disposing)
             {
                 playlistMediaIds.Clear();
-                playlistMediaIds = null;
 
                 prevRemoteAttempts.Clear();
-                prevRemoteAttempts = null;
 
                 nextRemoteAttempts.Clear();
-                nextRemoteAttempts = null;
             }
         }
     }

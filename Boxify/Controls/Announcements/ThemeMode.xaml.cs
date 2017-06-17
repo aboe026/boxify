@@ -121,30 +121,13 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
+            if (MainPage.closedAnnouncements || (App.isInBackgroundMode && MainPage.closedAnnouncements))
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (System != null)
-                    {
-                        System.Click -= ThemeMode_Click;
-                        System = null;
-                    }
-                    if (Light != null)
-                    {
-                        Light.Click -= ThemeMode_Click;
-                        Light = null;
-                    }
-                    if (Dark != null)
-                    {
-                        Dark.Click -= ThemeMode_Click;
-                        Dark = null;
-                    }
-
-                    Header = null;
-                    Message = null;
-
-                    CenteredPanel = null;
+                    System.Click -= ThemeMode_Click;
+                    Light.Click -= ThemeMode_Click;
+                    Dark.Click -= ThemeMode_Click;
                 });
             }
         }

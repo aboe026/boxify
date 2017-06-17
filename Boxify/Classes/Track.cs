@@ -162,24 +162,15 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-                id = null;
-                href = null;
-                name = null;
-                albumJson = null;
-                previewUrl = null;
 
                 album.Dispose();
-                album = null;
                 while (artists.Count > 0)
                 {
                     Artist artist = artists.ElementAt(0);
                     artists.Remove(artist);
                     artist.Dispose();
-                    artist = null;
                 }
                 artists.Clear();
-                artists = null;
-                previewUrl = null;
             }
         }
     }

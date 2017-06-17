@@ -94,25 +94,12 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
+            if (MainPage.closedAnnouncements || (App.isInBackgroundMode && MainPage.closedAnnouncements))
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (Spotify != null)
-                    {
-                        Spotify.Click -= PlaybackMode_Click;
-                        Spotify = null;
-                    }
-                    if (YouTube != null)
-                    {
-                        YouTube.Click -= PlaybackMode_Click;
-                        YouTube = null;
-                    }
-
-                    Header = null;
-                    Message = null;
-
-                    CenteredPanel = null;
+                    Spotify.Click -= PlaybackMode_Click;
+                    YouTube.Click -= PlaybackMode_Click;
                 });
             }
         }

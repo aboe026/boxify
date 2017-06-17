@@ -65,7 +65,7 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-               name = null;
+               
             }
         }
     }

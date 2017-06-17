@@ -927,7 +927,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(welcome);
                     welcome.UserControl_Unloaded(null, null);
                     welcome.Unloaded -= welcome.UserControl_Unloaded;
-                    welcome = null;
                 }
                 if (announcement is PlaybackMode)
                 {
@@ -935,7 +934,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(playbackMode);
                     playbackMode.UserControl_Unloaded(null, null);
                     playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
-                    playbackMode = null;
                 }
                 if (announcement is ThemeMode)
                 {
@@ -943,7 +941,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(themeMode);
                     themeMode.UserControl_Unloaded(null, null);
                     themeMode.Unloaded -= themeMode.UserControl_Unloaded;
-                    themeMode = null;
                 }
                 if (announcement is TvMode)
                 {
@@ -951,7 +948,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(tvMode);
                     tvMode.UserControl_Unloaded(null, null);
                     tvMode.Unloaded -= tvMode.UserControl_Unloaded;
-                    tvMode = null;
                 }
                 if (announcement is PlaybackOptions)
                 {
@@ -959,7 +955,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(playbackOptions);
                     playbackOptions.UserControl_Unloaded(null, null);
                     playbackOptions.Unloaded -= playbackOptions.UserControl_Unloaded;
-                    playbackOptions = null;
                 }
                 if (announcement is Shuffle)
                 {
@@ -967,7 +962,6 @@ namespace Boxify.Frames
                     announcementItems.Remove(shuffle);
                     shuffle.UserControl_Unloaded(null, null);
                     shuffle.Unloaded -= shuffle.UserControl_Unloaded;
-                    shuffle = null;
                 }
             }
         }
@@ -988,188 +982,69 @@ namespace Boxify.Frames
                     currentNavSelection = null;
 
                     // direct elements
-                    if (UserName != null)
-                    {
-                        UserName.PointerReleased -= UserElement_PointerReleased;
-                        UserName = null;
-                    }
-                    if (UserPicContainer != null)
-                    {
-                        UserPicContainer.PointerReleased -= UserElement_PointerReleased;
-                        UserPicContainer = null;
-                    }
-                    if (BlankUser != null)
-                    {
-                        BlankUser.PointerReleased -= UserElement_PointerReleased;
-                        BlankUser = null;
-                    }
-                    if (Hamburger != null)
-                    {
-                        Hamburger.Click -= Hamburger_Click;
-                        Hamburger = null;
-                    }
-                    if (Back != null)
-                    {
-                        Back.Click -= Back_Click;
-                        Back = null;
-                    }
-                    Title = null;
-                    SpotifyLogo = null;
-                    SpotifyLoading = null;
-                    YouTubeLogo = null;
-                    YouTubeLoading = null;
-                    LoadersMessage = null;
-                    Header = null;
-                    NavLeftBorder = null;
-                    NavLeftBorderHamburgerExtension = null;
-                    RightMainBackground = null;
-                    UserPic = null;
+                    UserName.PointerReleased -= UserElement_PointerReleased;
+                    UserPicContainer.PointerReleased -= UserElement_PointerReleased;
+                    BlankUser.PointerReleased -= UserElement_PointerReleased;
+                    Hamburger.Click -= Hamburger_Click;
+                    Back.Click -= Back_Click;
+                    HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
+                    SettingsItem.Click -= SettingsItem_Click;
 
-                    if (HamburgerOptions != null)
-                    {
-                        HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
-                        HamburgerOptions = null;
-                    }
-                    if (SettingsItem != null)
-                    {
-                        SettingsItem.Click -= SettingsItem_Click;
-                        SettingsItem = null;
-                    }
-
-                    BrowseItem = null;
-                    BrowseItemHighlight = null;
-                    BrowseItemIcon = null;
-                    YourMusicItem = null;
-                    YourMusicItemHighlight = null;
-                    YourMusicItemIcon = null;
-                    ProfileItem = null;
-                    ProfileItemHighlight = null;
-                    ProfileItemIcon = null;
-                    SearchItem = null;
-                    SearchItemHighlight = null;
-                    SearchItemIcon = null;
-
-                    if (CancelDialog != null)
-                    {
-                        CancelDialog.Unload();
-                        CancelDialog = null;
-                    }
-                    ErrorMessage = null;
-                    ErrorMessageGrid = null;
-
-                    MainContentFrame = null;
-                    MainSplitView = null;
-
-                    if (PlaybackMenu != null)
-                    {
-                        PlaybackMenu.UserControl_Unloaded(null, null);
-                        PlaybackMenu.Unloaded -= PlaybackMenu.UserControl_Unloaded;
-                        PlaybackMenu = null;
-                    }
+                    CancelDialog.Unload();
+                    PlaybackMenu.UserControl_Unloaded(null, null);
+                    PlaybackMenu.Unloaded -= PlaybackMenu.UserControl_Unloaded;
 
                     // dependant pages
-                    if (browsePage != null)
+                    await Task.Run(() =>
                     {
-                        await Task.Run(() =>
-                        {
-                            if (browsePage != null)
-                            {
-                                browsePage.Page_Unloaded(null, null);
-                            }
-                        });
                         if (browsePage != null)
                         {
-                            browsePage.Unloaded -= browsePage.Page_Unloaded;
-                            browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            browsePage = null;
+                            browsePage.Page_Unloaded(null, null);
                         }
+                        if (profilePage != null)
+                        {
+                            profilePage.Page_Unloaded(null, null);
+                        }
+                        if (yourMusicPage != null)
+                        {
+                            yourMusicPage.Page_Unloaded(null, null);
+                        }
+                        if (searchPage != null)
+                        {
+                            searchPage.Page_Unloaded(null, null);
+                        }
+                        if (settingsPage != null)
+                        {
+                            settingsPage.Page_Unloaded(null, null);
+                        }                        
+                    });
+                    if (browsePage != null)
+                    {
+                        browsePage.Unloaded -= browsePage.Page_Unloaded;
                     }
                     if (profilePage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (profilePage != null)
-                            {
-                                profilePage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (profilePage != null)
-                        {
-                            profilePage.Unloaded -= profilePage.Page_Unloaded;
-                            profilePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            profilePage = null;
-                        }
+                        profilePage.Unloaded -= profilePage.Page_Unloaded;
                     }
                     if (yourMusicPage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (yourMusicPage != null)
-                            {
-                                yourMusicPage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (yourMusicPage != null)
-                        {
-                            yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
-                            yourMusicPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            yourMusicPage = null;
-                        }
+                        yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
                     }
                     if (searchPage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (searchPage != null)
-                            {
-                                searchPage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (searchPage != null)
-                        {
-                            searchPage.Unloaded -= searchPage.Page_Unloaded;
-                            searchPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            searchPage = null;
-                        }
+                        searchPage.Unloaded -= searchPage.Page_Unloaded;
                     }
                     if (settingsPage != null)
                     {
-                        await Task.Run(() => settingsPage.Page_Unloaded(null, null));
-                        if (settingsPage != null)
-                        {
-                            settingsPage.Unloaded -= settingsPage.Page_Unloaded;
-                            settingsPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            settingsPage = null;
-                        }
+                        settingsPage.Unloaded -= settingsPage.Page_Unloaded;
                     }
 
                     // announcements
-                    UnloadAnnouncements();
-                    Announcements = null;
-                    AnnouncementsBackground = null;
-
-                    if (PreviousAnnouncement != null)
-                    {
-                        PreviousAnnouncement.Click -= PreviousAnnouncement_Click;
-                        PreviousAnnouncement = null;
-                    }
-                    if (NextAnnouncement != null)
-                    {
-                        NextAnnouncement.Click -= NextAnnouncement_Click;
-                        NextAnnouncement = null;
-                    }
-                    if (CloseAnnouncements != null)
-                    {
-                        CloseAnnouncements.Click -= CloseAnnouncements_Click;
-                        CloseAnnouncements = null;
-                    }
-                    if (AnnouncementsContainer != null)
-                    {
-                        AnnouncementsContainer.KeyUp -= AnnouncementsContainer_KeyUp;
-                        AnnouncementsContainer = null;
-                    }
-
-                    BackgroundGrid = null;
+                    Announcements.Content = null;
+                    PreviousAnnouncement.Click -= PreviousAnnouncement_Click;
+                    NextAnnouncement.Click -= NextAnnouncement_Click;
+                    CloseAnnouncements.Click -= CloseAnnouncements_Click;
+                    AnnouncementsContainer.KeyUp -= AnnouncementsContainer_KeyUp;
                 });
             }
         }

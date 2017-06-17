@@ -147,7 +147,6 @@ namespace Boxify.Frames
                 PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
                 playlistHero.Unload();
                 FeaturedPlaylists.Items.Remove(playlistHero);
-                playlistHero = null;
             }
             await LoadFeaturedPlaylists();
         }
@@ -187,37 +186,19 @@ namespace Boxify.Frames
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     Bindings.StopTracking();
-                    if (FeaturedPlaylists != null)
+
+                    FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
+                    FeaturedPlaylists.ClearValue(XYFocusUpProperty);
+
+                    while (FeaturedPlaylists.Items.Count > 0)
                     {
-                        FeaturedPlaylists.ItemClick -= FeaturedPlaylists_ItemClick;
-                        FeaturedPlaylists.ClearValue(XYFocusUpProperty);
-
-                        while (FeaturedPlaylists.Items.Count > 0)
-                        {
-                            PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
-                            FeaturedPlaylists.Items.Remove(playlistHero);
-                            playlistHero.Unload();
-                            playlistHero = null;
-                        }
-
-                        FeaturedPlaylists.ItemsSource = null;
-                        FeaturedPlaylists = null;
+                        PlaylistHero playlistHero = FeaturedPlaylists.Items.ElementAt(0) as PlaylistHero;
+                        FeaturedPlaylists.Items.Remove(playlistHero);
+                        playlistHero.Unload();
                     }
 
-                    if (Refresh != null)
-                    {
-                        Refresh.Click -= Refresh_Click;
-                        Refresh.ClearValue(XYFocusRightProperty);
-                        Refresh = null;
-                    }
-                    if (More != null)
-                    {
-                        More.Click -= More_Click;
-                        More = null;
-                    }
-
-                    FeaturedPlaylistLabel = null;
-                    FeaturedPlaylistMessage = null;
+                    Refresh.Click -= Refresh_Click;
+                    More.Click -= More_Click;
                 });
             }
         }
