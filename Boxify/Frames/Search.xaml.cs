@@ -27,6 +27,7 @@ using Windows.Data.Json;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using static Boxify.Frames.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -120,9 +121,9 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, playlistsArray.Count, loadingKey);
                                 foreach (JsonValue playlistJson in playlistsArray)
                                 {
 
@@ -137,8 +138,9 @@ namespace Boxify.Frames
                                         }
                                     }
                                     catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
+                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, playlistsArray.Count, loadingKey);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }
@@ -159,9 +161,9 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(tracksArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, tracksArray.Count, loadingKey);
                                 foreach (JsonValue trackJson in tracksArray)
                                 {
                                     Track track = new Track();
@@ -175,8 +177,9 @@ namespace Boxify.Frames
                                         }
                                     }
                                     catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
+                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, tracksArray.Count, loadingKey);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }
@@ -197,9 +200,9 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(albumsArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, albumsArray.Count, loadingKey);
                                 foreach (JsonValue albumJson in albumsArray)
                                 {
                                     Album album = new Album();
@@ -213,8 +216,9 @@ namespace Boxify.Frames
                                         }
                                     }
                                     catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
+                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, albumsArray.Count, loadingKey);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }

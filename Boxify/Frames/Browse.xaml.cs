@@ -29,6 +29,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using static Boxify.Frames.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -71,10 +72,11 @@ namespace Boxify.Frames
         /// <returns></returns>
         private async Task LoadFeaturedPlaylists()
         {
+            long loadingKey = DateTime.Now.Ticks;
+            MainPage.AddLoadingLock(loadingKey);
             More.IsEnabled = false;
             Refresh.IsEnabled = false;
-            App.mainPage.SetSpotifyLoadingValue(0);
-            App.mainPage.BringUpSpotify();
+            App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, 1, loadingKey);
             UriBuilder featuredPlaylistsBuilder = new UriBuilder(featuredPlaylistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
             {
@@ -106,7 +108,6 @@ namespace Boxify.Frames
                 if (playlists.TryGetValue("items", out IJsonValue itemsJson))
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
-                    App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
                         if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
@@ -116,7 +117,7 @@ namespace Boxify.Frames
                             await playlist.SetInfo(fullPlaylistString);
                             PlaylistHero playlistHero = new PlaylistHero(playlist);
                             FeaturedPlaylists.Items.Add(playlistHero);
-                            App.mainPage.SetSpotifyLoadingValue(FeaturedPlaylists.Items.Count);
+                            App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, FeaturedPlaylists.Items.Count, playlistsArray.Count, loadingKey);
                         }
                     }
                 }
@@ -132,6 +133,8 @@ namespace Boxify.Frames
                 More.Content = "More...";
                 More.IsEnabled = true;
             }
+
+            MainPage.RemoveLoadingLock(loadingKey);
         }
 
         /// <summary>

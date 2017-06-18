@@ -29,6 +29,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Boxify.Classes;
+using static Boxify.Frames.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -73,16 +74,16 @@ namespace Boxify.Frames
                 if (refreshing)
                 {
                     Refresh.Visibility = Visibility.Collapsed;
-                    App.mainPage.SetSpotifyLoadingMaximum(playlistsCount);
-                    App.mainPage.SetSpotifyLoadingValue(0);
-                    App.mainPage.BringUpSpotify();
+                    long loadingKey = DateTime.Now.Ticks;
+                    MainPage.AddLoadingLock(loadingKey);
+                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, playlistsCount, loadingKey);
                     while (refreshing)
                     {
-                        App.mainPage.SetSpotifyLoadingMaximum(playlistsCount);
-                        App.mainPage.SetSpotifyLoadingValue(preEmptiveLoadPlaylists.Count);
+                        App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, preEmptiveLoadPlaylists.Count, playlistsCount, loadingKey);
                         await Task.Delay(TimeSpan.FromMilliseconds(100));
                     }
-                    App.mainPage.SetSpotifyLoadingValue(playlistsCount);
+                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, playlistsCount, playlistsCount, loadingKey);
+                    MainPage.RemoveLoadingLock(loadingKey);
                 }
                 if (preEmptiveLoadPlaylists.Count > 0)
                 {
@@ -131,8 +132,9 @@ namespace Boxify.Frames
         {
             More.IsEnabled = false;
             Refresh.IsEnabled = false;
-            App.mainPage.SetSpotifyLoadingValue(0);
-            App.mainPage.BringUpSpotify();
+            long loadingKey = DateTime.Now.Ticks;
+            MainPage.AddLoadingLock(loadingKey);
+            App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, 1, loadingKey);
 
             UriBuilder playlistsBuilder = new UriBuilder(playlistsHref);
             List<KeyValuePair<string, string>> queryParams = new List<KeyValuePair<string, string>>
@@ -158,14 +160,13 @@ namespace Boxify.Frames
             if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
                     Playlist playlist = new Playlist();
                     await playlist.SetInfo(playlistJson.Stringify());
                     PlaylistList playlistList = new PlaylistList(playlist);
                     Playlists.Items.Add(playlistList);
-                    App.mainPage.SetSpotifyLoadingValue(Playlists.Items.Count);
+                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Playlists.Items.Count, playlistsArray.Count, loadingKey);
                 }
             }
             Refresh.IsEnabled = true;
@@ -179,6 +180,8 @@ namespace Boxify.Frames
                 More.Content = "More...";
                 More.IsEnabled = true;
             }
+
+            MainPage.RemoveLoadingLock(loadingKey);
         }
 
         /// <summary>
@@ -225,7 +228,7 @@ namespace Boxify.Frames
         /// <summary>
         /// Clears UI playlists
         /// </summary>
-        public void clearPlaylists()
+        public void ClearPlaylists()
         {
             playlistsOffset = 0;
             while (Playlists.Items.Count > 0)
@@ -253,7 +256,7 @@ namespace Boxify.Frames
         /// <param name="e">The routed event arguments</param>
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            clearPlaylists();
+            ClearPlaylists();
             await LoadPlaylists();
         }
 
@@ -294,7 +297,7 @@ namespace Boxify.Frames
                     Bindings.StopTracking();
 
                     Playlists.ItemClick -= Playlists_ItemClick;
-                    clearPlaylists();
+                    ClearPlaylists();
 
                     LogIn.Click -= LogIn_Click;
                     Refresh.Click -= Refresh_Click;

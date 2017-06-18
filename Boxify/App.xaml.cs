@@ -159,11 +159,11 @@ namespace Boxify
                 // playback source
                 if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
                 {
-                    Settings.playbackSource = Settings.Playbacksource.YouTube;
+                    Settings.playbackSource = Settings.PlaybackSource.YouTube;
                 }
                 else
                 {
-                    Settings.playbackSource = Settings.Playbacksource.Spotify;
+                    Settings.playbackSource = Settings.PlaybackSource.Spotify;
                 }
 
                 // repeat
@@ -204,7 +204,7 @@ namespace Boxify
                 // Defaults
                 Settings.tvSafeArea = true;
                 Settings.theme = Settings.Theme.System;
-                Settings.playbackSource = Settings.Playbacksource.Spotify;
+                Settings.playbackSource = Settings.PlaybackSource.Spotify;
                 Settings.repeatEnabled = false;
                 Settings.shuffleEnabled = false;
                 Settings.volume = 100;

@@ -45,15 +45,15 @@ namespace Boxify.Controls.Announcements
         /// Construct the object with a pre-defined source
         /// </summary>
         /// <param name="source">The current source of the app</param>
-        public PlaybackMode(Playbacksource source) : this()
+        public PlaybackMode(PlaybackSource source) : this()
         {
             YouTube.Click -= PlaybackMode_Click;
             Spotify.Click -= PlaybackMode_Click;
-            if (source == Playbacksource.Spotify)
+            if (source == PlaybackSource.Spotify)
             {
                 Spotify.IsChecked = true;
             }
-            else if (source == Playbacksource.YouTube)
+            else if (source == PlaybackSource.YouTube)
             {
                 YouTube.IsChecked = true;
             }
@@ -68,14 +68,14 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         private void PlaybackMode_Click(object sender, RoutedEventArgs e)
         {
-            Playbacksource source = Playbacksource.Spotify;
+            PlaybackSource source = PlaybackSource.Spotify;
             if (Spotify.IsChecked == true)
             {
-                source = Playbacksource.Spotify;
+                source = PlaybackSource.Spotify;
             }
             else if (YouTube.IsChecked == true)
             {
-                source = Playbacksource.YouTube;
+                source = PlaybackSource.YouTube;
             }
             if (MainPage.settingsPage != null)
             {
