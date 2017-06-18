@@ -37,11 +37,11 @@ namespace Boxify.Frames
     public sealed partial class Settings : Page
     {
         public enum Theme { System, Light, Dark }
-        public enum Playbacksource { Spotify, YouTube }
+        public enum PlaybackSource { Spotify, YouTube }
 
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
-        public static Playbacksource playbackSource = Playbacksource.Spotify;
+        public static PlaybackSource playbackSource = PlaybackSource.Spotify;
         public static bool repeatEnabled = false;
         public static bool shuffleEnabled = false;
         public static double volume = 100;
@@ -73,7 +73,7 @@ namespace Boxify.Frames
             }
 
             // playback source
-            if (playbackSource == Playbacksource.YouTube)
+            if (playbackSource == PlaybackSource.YouTube)
             {
                 YouTube.IsChecked = true;
             }
@@ -234,11 +234,11 @@ namespace Boxify.Frames
         {
             if (((RadioButton)sender).Name == "Spotify")
             {
-                playbackSource = Playbacksource.Spotify;
+                playbackSource = PlaybackSource.Spotify;
             }
             else if (((RadioButton)sender).Name == "YouTube")
             {
-                playbackSource = Playbacksource.YouTube;
+                playbackSource = PlaybackSource.YouTube;
             }
             SaveSettings();
         }
@@ -247,14 +247,14 @@ namespace Boxify.Frames
         /// Change the playback type and update the UI
         /// </summary>
         /// <param name="source">The source to get tracks from</param>
-        public void SetPlaybackSourceUI(Playbacksource source)
+        public void SetPlaybackSourceUI(PlaybackSource source)
         {
             SetPlaybackSource(source);
-            if (source == Playbacksource.Spotify)
+            if (source == PlaybackSource.Spotify)
             {
                 Spotify.IsChecked = true;
             }
-            else if (source == Playbacksource.YouTube)
+            else if (source == PlaybackSource.YouTube)
             {
                 YouTube.IsChecked = true;
             }
@@ -264,7 +264,7 @@ namespace Boxify.Frames
         /// Change the playback type
         /// </summary>
         /// <param name="source"></param>
-        public static void SetPlaybackSource(Playbacksource source)
+        public static void SetPlaybackSource(PlaybackSource source)
         {
             playbackSource = source;
             SaveSettings();
