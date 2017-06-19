@@ -54,7 +54,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.Below="Warning"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     Margin="0,10,0,0"
-                    Style="{StaticResource ButtonStyle}"
+                    Style="{StaticResource TextButtonStyle}"
                     Click="LogIn_Click" />
             
             <TextBlock Name="PlaylistsLabel"
@@ -80,7 +80,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignVerticalCenterWith="PlaylistsLabel"
                     Margin="20,-15,0,0"
                     Content="More..."
-                    Style="{StaticResource ButtonStyle}"
+                    Style="{StaticResource TextButtonStyle}"
                     Click="More_Click"/>
 
             <ListView Name="Playlists"

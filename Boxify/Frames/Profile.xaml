@@ -91,7 +91,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Margin="0,10,0,0"
                     Content="Log In"
                     Click="Login_Click"
-                    Style="{StaticResource ButtonStyle}"/>
+                    Style="{StaticResource TextButtonStyle}"/>
         </RelativePanel>
 
     </Grid>

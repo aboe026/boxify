@@ -118,6 +118,9 @@
     </Compile>
     <Compile Include="Classes\Artist.cs" />
     <Compile Include="Classes\PlaybackSession.cs" />
+    <Compile Include="Controls\AlbumHero.xaml.cs">
+      <DependentUpon>AlbumHero.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\AlbumList.xaml.cs">
       <DependentUpon>AlbumList.xaml</DependentUpon>
     </Compile>
@@ -239,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\AlbumHero.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\AlbumList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -341,13 +341,13 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                 <Button Name="WelcomeConfigure"
                                         Margin="0,0,0,10"
                                         Content="Welcome and Configuration"
-                                        Style="{StaticResource ButtonStyle}"
+                                        Style="{StaticResource TextButtonStyle}"
                                         Click="WelcomeConfigure_Click"/>
 
                                 <Button Name="Shuffle"
                                         RelativePanel.Below="WelcomeConfigure"
                                         Content="Shuffle"
-                                        Style="{StaticResource ButtonStyle}" Click="Shuffle_Click"/>
+                                        Style="{StaticResource TextButtonStyle}" Click="Shuffle_Click"/>
 
                             </RelativePanel>
 
@@ -374,7 +374,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                         RelativePanel.Below="RateMessage"
                                         RelativePanel.AlignLeftWithPanel="True"
                                         Content="Got to Store"
-                                        Style="{StaticResource ButtonStyle}"
+                                        Style="{StaticResource TextButtonStyle}"
                                         Click="Rate_Click"/>
 
                             </RelativePanel>
@@ -405,7 +405,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                         RelativePanel.AlignLeftWithPanel="True"
                                         RelativePanel.Below="ContactMessage"
                                         Content="Boxify GitHub"
-                                        Style="{StaticResource ButtonStyle}"
+                                        Style="{StaticResource TextButtonStyle}"
                                         Click="Repo_Click"/>
 
                             </RelativePanel>
@@ -436,7 +436,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                         RelativePanel.AlignLeftWithPanel="True"
                                         RelativePanel.Below="SpotifyExplanationMessage"
                                         Content="Spotify GitHub Issue"
-                                        Style="{StaticResource ButtonStyle}"
+                                        Style="{StaticResource TextButtonStyle}"
                                         Click="SpotifyGitHub_Click"/>
 
                             </RelativePanel>
@@ -464,7 +464,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                                         RelativePanel.Below="PrivacyMessage"
                                         RelativePanel.AlignLeftWithPanel="True"
                                         Content="View in Browser"
-                                        Style="{StaticResource ButtonStyle}" Click="PrivacyButton_Click"/>
+                                        Style="{StaticResource TextButtonStyle}" Click="PrivacyButton_Click"/>
 
                             </RelativePanel>
 

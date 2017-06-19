@@ -44,6 +44,7 @@ namespace Boxify.Controls
         public Playback()
         {
             this.InitializeComponent();
+            TvSafeBottomBorder.Height = MainPage.TV_SAFE_VERTICAL_MARGINS;
             uiUpdateTimer = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromMilliseconds(100)
@@ -164,8 +165,7 @@ namespace Boxify.Controls
         /// </summary>
         public void SafeAreaOff()
         {
-            MainPanel.Margin = new Thickness(0, 0, 0, 0);
-            MainGrid.Height = 100;
+            TvSafeBottomBorder.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -173,8 +173,7 @@ namespace Boxify.Controls
         /// </summary>
         public void SafeAreaOn()
         {
-            MainPanel.Margin = new Thickness(0, 0, 0, 48);
-            MainGrid.Height = 148;
+            TvSafeBottomBorder.Visibility = Visibility.Visible;
         }
 
         /// <summary>
