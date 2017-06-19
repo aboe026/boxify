@@ -56,7 +56,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         RelativePanel.AlignRightWithPanel="True"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         Content="Cancel Download"
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource TextButtonStyle}"
                         FontSize="15"
                         Click="Cancel_Click"/>
 

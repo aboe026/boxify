@@ -68,8 +68,9 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.RightOf="SearchType"
                     RelativePanel.AlignVerticalCenterWith="SearchBox"
                     Margin="-80,0,0,0"
+                    Style="{StaticResource TextButtonStyle}"
+                    FontSize="20"
                     Content="Search"
-                    Style="{StaticResource ButtonStyle}"
                     Click="SearchButton_Click"/>
 
             <TextBlock Name="Feedback"

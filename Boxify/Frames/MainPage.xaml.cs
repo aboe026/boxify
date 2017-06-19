@@ -44,10 +44,8 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private const double TV_SAFE_HORIZONTAL_MARGINS = 48;
-        private const double TV_SAFE_VERTICAL_MARGINS = 27;
-        private double ogRightMainBackgroundLeftMarginLeft;
-        private double ogMainContentFrameMarginBottom;
+        public const double TV_SAFE_HORIZONTAL_MARGINS = 48;
+        public const double TV_SAFE_VERTICAL_MARGINS = 27;
 
         public static ListViewItem currentNavSelection = new ListViewItem();
         public static bool returningFromMemoryReduction = false;
@@ -76,9 +74,6 @@ namespace Boxify.Frames
         /// <param name="e">The navigation event arguments</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            ogRightMainBackgroundLeftMarginLeft = RightMainBackground.Margin.Left;
-            ogMainContentFrameMarginBottom = MainContentFrame.Margin.Bottom;
-
             // announcements
             if (announcementItems.Count > 0 && !closedAnnouncements)
             {
@@ -133,7 +128,6 @@ namespace Boxify.Frames
             
             if (App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 PlaybackMenu.Visibility = Visibility.Visible;
                 if (returningFromMemoryReduction)
                 {
@@ -143,7 +137,6 @@ namespace Boxify.Frames
             }
             else
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
                 PlaybackMenu.Visibility = Visibility.Collapsed;
             }
 
@@ -229,15 +222,7 @@ namespace Boxify.Frames
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (Settings.tvSafeArea)
-                {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom + TV_SAFE_HORIZONTAL_MARGINS);
-                }
-                else
-                {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom);
-                }
-
+                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
                 PlaybackMenu.SetRepeat(Settings.repeatEnabled);
                 PlaybackMenu.SetShuffle(Settings.shuffleEnabled);
                 PlaybackMenu.SetVolume(Settings.volume);
@@ -489,15 +474,7 @@ namespace Boxify.Frames
             Header.Margin = new Thickness(0, 0, 0, 0);
             MainSplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
-            RightMainBackground.Margin = new Thickness(ogRightMainBackgroundLeftMarginLeft, 0, 0, 0);
-            if (App.playbackService.showing)
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom);
-            }
-            else
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
-            }
+            MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
             PlaybackMenu.SafeAreaOff();
         }
 
@@ -510,15 +487,10 @@ namespace Boxify.Frames
             NavLeftBorderHamburgerExtension.Visibility = Visibility.Visible;
             Header.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, TV_SAFE_VERTICAL_MARGINS, TV_SAFE_HORIZONTAL_MARGINS, 0);
             MainSplitView.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, 0, TV_SAFE_HORIZONTAL_MARGINS, 0);
-            HamburgerOptions.Margin = new Thickness(0, 0, 0, TV_SAFE_HORIZONTAL_MARGINS);
-            RightMainBackground.Margin = new Thickness(ogRightMainBackgroundLeftMarginLeft + TV_SAFE_HORIZONTAL_MARGINS, 0, 0, 0);
-            if (App.playbackService.showing)
+            HamburgerOptions.Margin = new Thickness(0, 0, 0, TV_SAFE_VERTICAL_MARGINS);
+            if (!App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, ogMainContentFrameMarginBottom + TV_SAFE_HORIZONTAL_MARGINS);
-            }
-            else
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
+                MainContentFrame.Margin = new Thickness(0, 0, 0, TV_SAFE_VERTICAL_MARGINS);
             }
             PlaybackMenu.SafeAreaOn();
         }
