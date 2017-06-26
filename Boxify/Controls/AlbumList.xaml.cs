@@ -60,6 +60,16 @@ namespace Boxify.Controls
             Image.Source = album.image;
             DisplayName.Text = album.name;
             Artist.Text = album.GetMainArtistName();
+            ReleaseDate.Text = album.releaseDate;
+            Tracks.Text = album.tracksCount.ToString();
+        }
+
+        /// <summary>
+        /// Sets light background for odd/even row distinguishability
+        /// </summary>
+        public void TurnOffOpaqueBackground()
+        {
+            Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>

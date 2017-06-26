@@ -56,7 +56,17 @@ namespace Boxify.Controls
         {
             Image.Source = playlist.image;
             DisplayName.Text = playlist.name;
+            DisplayDesc.Text = playlist.description;
+            DisplayOwner.Text = playlist.owner;
             Tracks.Text = playlist.tracksCount.ToString();
+        }
+
+        /// <summary>
+        /// Sets light background for odd/even row distinguishability
+        /// </summary>
+        public void TurnOffOpaqueBackground()
+        {
+            Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>

@@ -35,10 +35,12 @@ namespace Boxify
         private bool disposed = false;
         public string id = "";
         public string name = "";
+        public string releaseDate = "";
         public int tracksCount = 1;
         public List<Artist> artists = new List<Artist>();
         public BitmapImage image = new BitmapImage();
         public string imageUrl = "";
+        public string href;
         private const string TRACKS_HREF = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
@@ -85,6 +87,28 @@ namespace Boxify
             if (albumJson.TryGetValue("name", out IJsonValue nameJson))
             {
                 name = nameJson.GetString();
+            }
+            if (albumJson.TryGetValue("href", out IJsonValue hrefJson))
+            {
+                href = hrefJson.GetString();
+
+                // extra request to get release date
+                UriBuilder fullUriBuilder = new UriBuilder(href);
+                string fullString = await RequestHandler.SendCliGetRequest(fullUriBuilder.Uri.ToString());
+                JsonObject fullJson = new JsonObject();
+                try
+                {
+                    fullJson = JsonObject.Parse(fullString);
+                }
+                catch (COMException)
+                {
+                    return;
+                }
+
+                if (fullJson.TryGetValue("release_date", out IJsonValue releaseJson) && releaseJson.ValueType == JsonValueType.String)
+                {
+                    releaseDate = releaseJson.GetString();
+                }
             }
             if (albumJson.TryGetValue("artists", out IJsonValue artistsJson)) {
                 JsonArray artistsArray = artistsJson.GetArray();

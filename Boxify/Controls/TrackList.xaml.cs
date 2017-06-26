@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using System;
 using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -57,6 +58,16 @@ namespace Boxify.Controls
             Image.Source = track.album.image;
             DisplayName.Text = track.name;
             Artist.Text = track.GetMainArtistName();
+            Album.Text = track.album.GetMainArtistName();
+            Duration.Text = (TimeSpan.FromSeconds(Convert.ToDouble(track.duration) / 1000)).ToString(@"mm\:ss");
+        }
+
+        /// <summary>
+        /// Sets light background for odd/even row distinguishability
+        /// </summary>
+        public void TurnOffOpaqueBackground()
+        {
+            Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>

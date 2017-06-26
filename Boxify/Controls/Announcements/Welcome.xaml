@@ -69,15 +69,17 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                 <Button Name="Close"
                         Grid.Column="0"
                         HorizontalAlignment="Center"
-                        Content="Dive in"
                         Style="{StaticResource TextButtonStyle}"
+                        FontSize="20"
+                        Content="Dive in"
                         Click="Close_Click"/>
 
                 <Button Name="Settings"
                         Grid.Column="1"
                         HorizontalAlignment="Center"
-                        Content="Configure"
                         Style="{StaticResource TextButtonStyle}"
+                        FontSize="20"
+                        Content="Configure"
                         Click="Settings_Click"/>
 
             </Grid>

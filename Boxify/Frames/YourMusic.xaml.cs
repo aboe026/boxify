@@ -54,6 +54,7 @@ namespace Boxify.Frames
         public YourMusic()
         {
             this.InitializeComponent();
+            MainPage.yourMusicPage = this;
         }
 
         /// <summary>
@@ -62,18 +63,18 @@ namespace Boxify.Frames
         /// <param name="e">The navigation event arguments</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            MainPage.yourMusicPage = this;
+            PlaylistsHeader.Visibility = Visibility.Collapsed;
+            EmptyMessage.Visibility = Visibility.Collapsed;
             if (UserProfile.IsLoggedIn())
             {
-                More.IsEnabled = false;
+                PlaylistsRefresh.IsEnabled = false;
+                PlaylistsMore.IsEnabled = false;
                 Warning.Visibility = Visibility.Collapsed;
                 LogIn.Visibility = Visibility.Collapsed;
-                More.Visibility = Visibility.Visible;
-                PlaylistsLabel.Visibility = Visibility.Visible;
-                Refresh.Visibility = Visibility.Visible;
+                MainPivot.Visibility = Visibility.Visible;
                 if (refreshing)
                 {
-                    Refresh.Visibility = Visibility.Collapsed;
+                    PlaylistsHeader.Visibility = Visibility.Visible;
                     long loadingKey = DateTime.Now.Ticks;
                     MainPage.AddLoadingLock(loadingKey);
                     App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, playlistsCount, loadingKey);
@@ -87,41 +88,50 @@ namespace Boxify.Frames
                 }
                 if (preEmptiveLoadPlaylists.Count > 0)
                 {
+                    PlaylistsHeader.Visibility = Visibility.Visible;
                     foreach (PlaylistList playlist in preEmptiveLoadPlaylists)
                     {
                         try
                         {
-                            Playlists.Items.Add(playlist);
+                            PlaylistsView.Items.Add(playlist);
                         }
                         catch (COMException) { }
                     }
-                    Refresh.Visibility = Visibility.Visible;
                     preEmptiveLoadPlaylists.Clear();
                 }
-                else if (Playlists.Items.Count == 0)
+                else if (PlaylistsView.Items.Count == 0)
                 {
                     await LoadPlaylists();
                 }
 
+                PlaylistsRefresh.IsEnabled = true;
                 if (playlistsOffset + playlistLimit >= playlistsTotal)
                 {
-                    More.Content = "No More";
-                    More.IsEnabled = false;
+                    PlaylistsMore.Content = "No More";
+                    PlaylistsMore.IsEnabled = false;
                 }
                 else
                 {
-                    More.Content = "More...";
-                    More.IsEnabled = true;
+                    PlaylistsMore.Content = "More";
+                    PlaylistsMore.IsEnabled = true;
                 }
             }
             else
             {
-                More.Visibility = Visibility.Collapsed;
-                PlaylistsLabel.Visibility = Visibility.Collapsed;
-                Refresh.Visibility = Visibility.Collapsed;
+                MainPivot.Visibility = Visibility.Collapsed;
                 Warning.Visibility = Visibility.Visible;
                 LogIn.Visibility = Visibility.Visible;
             }
+        }
+
+        /// <summary>
+        /// User changes tab being viewed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
 
         /// <summary>
@@ -130,8 +140,10 @@ namespace Boxify.Frames
         /// <returns></returns>
         public async Task LoadPlaylists()
         {
-            More.IsEnabled = false;
-            Refresh.IsEnabled = false;
+            PlaylistsHeader.Visibility = Visibility.Collapsed;
+            EmptyMessage.Visibility = Visibility.Collapsed;
+            PlaylistsMore.IsEnabled = false;
+            PlaylistsRefresh.IsEnabled = false;
             long loadingKey = DateTime.Now.Ticks;
             MainPage.AddLoadingLock(loadingKey);
             App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, 1, loadingKey);
@@ -160,25 +172,43 @@ namespace Boxify.Frames
             if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
-                foreach (JsonValue playlistJson in playlistsArray)
+                if (playlistsArray.Count == 0)
                 {
-                    Playlist playlist = new Playlist();
-                    await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist);
-                    Playlists.Items.Add(playlistList);
-                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Playlists.Items.Count, playlistsArray.Count, loadingKey);
+                    PlaylistsHeader.Visibility = Visibility.Collapsed;
+                    EmptyMessage.Visibility = Visibility.Visible;
+                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 1, 1, loadingKey);
+                }
+                else
+                {
+                    PlaylistsHeader.Visibility = Visibility.Visible;
+                    foreach (JsonValue playlistJson in playlistsArray)
+                    {
+                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                        {
+                            string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
+                            Playlist playlist = new Playlist();
+                            await playlist.SetInfo(fullPlaylistString);
+                            PlaylistList playlistList = new PlaylistList(playlist);
+                            PlaylistsView.Items.Add(playlistList);
+                            if (PlaylistsView.Items.IndexOf(playlistList) % 2 == 1)
+                            {
+                                playlistList.TurnOffOpaqueBackground();
+                            }
+                            App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, PlaylistsView.Items.Count, playlistsArray.Count, loadingKey);
+                        }
+                    }
                 }
             }
-            Refresh.IsEnabled = true;
+            PlaylistsRefresh.IsEnabled = true;
             if (playlistsOffset + playlistLimit >= playlistsTotal)
             {
-                More.Content = "No More";
-                More.IsEnabled = false;
+                PlaylistsMore.Content = "No More";
+                PlaylistsMore.IsEnabled = false;
             }
             else
             {
-                More.Content = "More...";
-                More.IsEnabled = true;
+                PlaylistsMore.Content = "More";
+                PlaylistsMore.IsEnabled = true;
             }
 
             MainPage.RemoveLoadingLock(loadingKey);
@@ -217,10 +247,18 @@ namespace Boxify.Frames
                 playlistsCount = playlistsArray.Count;
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
-                    Playlist playlist = new Playlist();
-                    await playlist.SetInfo(playlistJson.Stringify());
-                    PlaylistList playlistList = new PlaylistList(playlist);
-                    preEmptiveLoadPlaylists.Add(playlistList);
+                    if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                    {
+                        string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
+                        Playlist playlist = new Playlist();
+                        await playlist.SetInfo(fullPlaylistString);
+                        PlaylistList playlistList = new PlaylistList(playlist);
+                        preEmptiveLoadPlaylists.Add(playlistList);
+                        if (preEmptiveLoadPlaylists.IndexOf(playlistList) % 2 == 1)
+                        {
+                            playlistList.TurnOffOpaqueBackground();
+                        }
+                    }
                 }
             }
         }
@@ -231,11 +269,11 @@ namespace Boxify.Frames
         public void ClearPlaylists()
         {
             playlistsOffset = 0;
-            while (Playlists.Items.Count > 0)
+            while (PlaylistsView.Items.Count > 0)
             {
-                PlaylistList playlistList = Playlists.Items.ElementAt(0) as PlaylistList;
+                PlaylistList playlistList = PlaylistsView.Items.ElementAt(0) as PlaylistList;
                 playlistList.Unload();
-                Playlists.Items.Remove(playlistList);
+                PlaylistsView.Items.Remove(playlistList);
             }
         }
 
@@ -254,7 +292,7 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="sender">The refresh button</param>
         /// <param name="e">The routed event arguments</param>
-        private async void Refresh_Click(object sender, RoutedEventArgs e)
+        private async void PlaylistsRefresh_Click(object sender, RoutedEventArgs e)
         {
             ClearPlaylists();
             await LoadPlaylists();
@@ -265,7 +303,7 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Playlists_ItemClick(object sender, ItemClickEventArgs e)
+        private void PlaylistsView_ItemClick(object sender, ItemClickEventArgs e)
         {
             (e.ClickedItem as PlaylistList).playlist.PlayTracks();
         }
@@ -275,7 +313,7 @@ namespace Boxify.Frames
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void More_Click(object sender, RoutedEventArgs e)
+        private async void PlaylistsMore_Click(object sender, RoutedEventArgs e)
         {
             Playlists.Focus(FocusState.Programmatic);
             playlistsOffset += playlistLimit;
@@ -296,12 +334,12 @@ namespace Boxify.Frames
                 {
                     Bindings.StopTracking();
 
-                    Playlists.ItemClick -= Playlists_ItemClick;
+                    PlaylistsView.ItemClick -= PlaylistsView_ItemClick;
                     ClearPlaylists();
 
                     LogIn.Click -= LogIn_Click;
-                    Refresh.Click -= Refresh_Click;
-                    More.Click -= More_Click;
+                    PlaylistsRefresh.Click -= PlaylistsRefresh_Click;
+                    PlaylistsMore.Click -= PlaylistsMore_Click;
 
                     while (preEmptiveLoadPlaylists.Count > 0)
                     {

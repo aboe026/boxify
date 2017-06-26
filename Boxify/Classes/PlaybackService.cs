@@ -51,6 +51,7 @@ namespace Boxify.Classes
             queue.CurrentItemChanged += CurrentItemChanged;
             queue.ItemFailed += ItemFailed;
             Player.PlaybackSession.PlaybackStateChanged += PlayStateChanges;
+            Player.AudioCategory = MediaPlayerAudioCategory.Media;
         }
 
         /// <summary>
