@@ -60,32 +60,32 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignTopWithPanel="True"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignRightWithPanel="True"
-                    Margin="40,0,40,10">
-
-                    <Button
-                        Name="FeaturedRefresh" 
-                        RelativePanel.AlignLeftWithPanel="True"
-                        RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Style="{StaticResource IconButtonStyle}"
-                        Content="&#xE72C;"
-                        ToolTipService.ToolTip="Refresh"
-                        Click="FeaturedRefresh_Click"
-                        XYFocusRight="{x:Bind FeaturedMore}"/>
+                    Margin="40,-10,40,10">
 
                     <TextBlock
                         Name="FeaturedMessage"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        RelativePanel.RightOf="FeaturedRefresh"
-                        RelativePanel.LeftOf="FeaturedMore"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="What others are listending to now..."
                         TextAlignment="Center"
-                        TextTrimming="CharacterEllipsis"/>
+                        TextTrimming="CharacterEllipsis"
+                        Text="What others are listending to now..."/>
+
+                    <Button
+                        Name="FeaturedRefresh" 
+                        RelativePanel.LeftOf="FeaturedMore"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Margin="0,-50,0,0"
+                        Style="{StaticResource IconButtonStyle}"
+                        Content="&#xE72C;"
+                        ToolTipService.ToolTip="Refresh"
+                        Click="FeaturedRefresh_Click"/>
 
                     <Button
                         Name="FeaturedMore"
                         RelativePanel.AlignRightWithPanel="True"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Margin="0,-50,0,0"
                         Style="{StaticResource TextButtonStyle}"
                         Content="More"
                         ToolTipService.ToolTip="Load More"
@@ -100,8 +100,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignBottomWithPanel="True"
                     IsItemClickEnabled="True"
-                    ItemClick="FeaturedPlaylist_ItemClick"
-                    XYFocusUp="{x:Bind FeaturedRefresh}">
+                    ItemClick="FeaturedPlaylist_ItemClick">
 
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -151,32 +150,32 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignTopWithPanel="True"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignRightWithPanel="True"
-                    Margin="40,0,40,10">
-
-                    <Button
-                        Name="NewReleasesRefresh" 
-                        RelativePanel.AlignLeftWithPanel="True"
-                        RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Style="{StaticResource IconButtonStyle}"
-                        Content="&#xE72C;"
-                        ToolTipService.ToolTip="Refresh"
-                        Click="NewReleasesRefresh_Click"
-                        XYFocusRight="{x:Bind NewReleasesMore}"/>
+                    Margin="40,-10,40,10">
 
                     <TextBlock
                         Name="NewReleasesMessage"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        RelativePanel.RightOf="NewReleasesRefresh"
-                        RelativePanel.LeftOf="NewReleasesMore"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                         Style="{StaticResource SubtitleTextBlockStyle}"
-                        Text="New Albums and Singles"
                         TextAlignment="Center"
-                        TextTrimming="WordEllipsis"/>
+                        TextTrimming="WordEllipsis"
+                        Text="New Albums and Singles"/>
+
+                    <Button
+                        Name="NewReleasesRefresh" 
+                        RelativePanel.LeftOf="NewReleasesMore"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Margin="0,-50,0,0"
+                        Style="{StaticResource IconButtonStyle}"
+                        Content="&#xE72C;"
+                        ToolTipService.ToolTip="Refresh"
+                        Click="NewReleasesRefresh_Click"/>
 
                     <Button
                         Name="NewReleasesMore"
                         RelativePanel.AlignRightWithPanel="True"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Margin="0,-50,0,0"
                         Style="{StaticResource TextButtonStyle}"
                         Content="More"
                         ToolTipService.ToolTip="Load More"
@@ -191,7 +190,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignRightWithPanel="True"
                     RelativePanel.AlignBottomWithPanel="True"
                     IsItemClickEnabled="True"
-                    XYFocusUp="{x:Bind NewReleasesRefresh}"
                     ItemClick="NewReleasesAlbums_ItemClick">
 
                     <GridView.ItemsPanel>

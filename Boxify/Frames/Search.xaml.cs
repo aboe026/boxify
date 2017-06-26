@@ -47,6 +47,7 @@ namespace Boxify.Frames
             this.InitializeComponent();
             MainPage.searchPage = this;
             Feedback.Text = "";
+            ResultsHeaderContainer.Visibility = Visibility.Collapsed;
 
             if (searchSave != null)
             {
@@ -72,6 +73,10 @@ namespace Boxify.Frames
             }
             Feedback.Text = "";
             feedbackMessage = "";
+            PlaylistHeader.Visibility = Visibility.Collapsed;
+            TracklistHeader.Visibility = Visibility.Collapsed;
+            AlbumlistHeader.Visibility = Visibility.Collapsed;
+            ResultsHeaderContainer.Visibility = Visibility.Collapsed;
             if (SearchBox.Text == "")
             {
                 feedbackMessage = "Please enter text to search for (I can't read your mind...yet)";
@@ -80,6 +85,7 @@ namespace Boxify.Frames
             {
                 searchSave = SearchBox.Text;
                 searchTypeSave = SearchType.SelectedIndex;
+                MainPanel.SetValue(MarginProperty, new Thickness(0,10,0,0));
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 ComboBoxItem selected = SearchType.SelectedValue as ComboBoxItem;
                 String selectedString = selected.Content.ToString().ToLower();
@@ -121,24 +127,33 @@ namespace Boxify.Frames
                             }
                             else
                             {
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                PlaylistHeader.Visibility = Visibility.Visible;
                                 long loadingKey = DateTime.Now.Ticks;
                                 MainPage.AddLoadingLock(loadingKey);
                                 App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, playlistsArray.Count, loadingKey);
                                 foreach (JsonValue playlistJson in playlistsArray)
                                 {
-
-                                    Playlist playlist = new Playlist();
-                                    await playlist.SetInfo(playlistJson.Stringify());
-                                    PlaylistList playlistList = new PlaylistList(playlist);
-                                    try
+                                    if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
                                     {
-                                        if (!App.isInBackgroundMode)
+                                        string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
+                                        Playlist playlist = new Playlist();
+                                        await playlist.SetInfo(fullPlaylistString);
+                                        PlaylistList playlistList = new PlaylistList(playlist);
+                                        try
                                         {
-                                            Results.Items.Add(playlistList);
+                                            if (!App.isInBackgroundMode)
+                                            {
+                                                Results.Items.Add(playlistList);
+                                                if (Results.Items.IndexOf(playlistList) % 2 == 1)
+                                                {
+                                                    playlistList.TurnOffOpaqueBackground();
+                                                }
+                                            }
                                         }
+                                        catch (COMException) { }
+                                        App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, playlistsArray.Count, loadingKey);
                                     }
-                                    catch (COMException) { }
-                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, playlistsArray.Count, loadingKey);
                                 }
                                 MainPage.RemoveLoadingLock(loadingKey);
                             }
@@ -161,6 +176,8 @@ namespace Boxify.Frames
                             }
                             else
                             {
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                TracklistHeader.Visibility = Visibility.Visible;
                                 long loadingKey = DateTime.Now.Ticks;
                                 MainPage.AddLoadingLock(loadingKey);
                                 App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, tracksArray.Count, loadingKey);
@@ -174,6 +191,10 @@ namespace Boxify.Frames
                                         if (!App.isInBackgroundMode)
                                         {
                                             Results.Items.Add(trackList);
+                                            if (Results.Items.IndexOf(trackList) % 2 == 1)
+                                            {
+                                                trackList.TurnOffOpaqueBackground();
+                                            }
                                         }
                                     }
                                     catch (COMException) { }
@@ -200,6 +221,8 @@ namespace Boxify.Frames
                             }
                             else
                             {
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                AlbumlistHeader.Visibility = Visibility.Visible;
                                 long loadingKey = DateTime.Now.Ticks;
                                 MainPage.AddLoadingLock(loadingKey);
                                 App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, albumsArray.Count, loadingKey);
@@ -213,6 +236,10 @@ namespace Boxify.Frames
                                         if (!App.isInBackgroundMode)
                                         {
                                             Results.Items.Add(albumList);
+                                            if (Results.Items.IndexOf(albumList) % 2 == 1)
+                                            {
+                                                albumList.TurnOffOpaqueBackground();
+                                            }
                                         }
                                     }
                                     catch (COMException) { }

@@ -122,9 +122,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <Button Name="Hamburger"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
-                    Height="56"
-                    Width="48"
-                    Style="{StaticResource NavButtonStyle}"
+                    Style="{StaticResource NavButtonHeaderStyle}"
                     BorderBrush="{ThemeResource SystemChromeLowColor}"
                     BorderThickness="4"
                     Content="&#xE700;"
@@ -134,8 +132,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <Button Name="Back"
                     RelativePanel.RightOf="Hamburger"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
-                    Margin="10,0,0,0"
-                    Style="{StaticResource NavButtonStyle}"
+                    Style="{StaticResource NavButtonHeaderStyle}"
                     Content="&#xE0C4;"
                     Click="Back_Click"/>
 

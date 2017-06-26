@@ -36,6 +36,7 @@ namespace Boxify
         public string id = "";
         public string href = "";
         public string name = "";
+        public string owner = "";
         public string description = "";
         public string tracksHref = "";
         private const int maxTracksPerRequest = 100;
@@ -78,7 +79,14 @@ namespace Boxify
             {
                 name = nameJson.GetString();
             }
-            if (playlistJson.TryGetValue("description", out IJsonValue descriptionJson))
+            if (playlistJson.TryGetValue("owner", out IJsonValue ownerJson) && ownerJson.ValueType == JsonValueType.Object)
+            {
+                if (ownerJson.GetObject().TryGetValue("id", out IJsonValue ownerIdJson))
+                {
+                    owner = ownerIdJson.GetString();
+                }
+            }
+            if (playlistJson.TryGetValue("description", out IJsonValue descriptionJson) && descriptionJson.ValueType == JsonValueType.String)
             {
                 description = Regex.Replace(descriptionJson.GetString(), "<.+?>", string.Empty);
             }

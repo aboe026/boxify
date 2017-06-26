@@ -146,6 +146,10 @@ namespace Boxify.Frames
                 Status.Text = loggedOutText;
                 Login.Content = "Log In";
                 RequestHandler.ClearTokens();
+                if (MainPage.yourMusicPage != null)
+                {
+                    MainPage.yourMusicPage.ClearPlaylists();
+                }
             }
             if (App.mainPage != null)
             {

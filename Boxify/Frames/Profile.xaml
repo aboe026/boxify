@@ -55,8 +55,8 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         <RelativePanel Grid.Row="1">
             <Ellipse Name="UserPicContainer"
                      RelativePanel.AlignHorizontalCenterWithPanel="True"
-                     Height="120"
-                     Width="120"
+                     Height="100"
+                     Width="100"
                      Stroke="{ThemeResource AppButtonBorder}"
                      StrokeThickness="2">
 
@@ -70,7 +70,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        RelativePanel.AlignHorizontalCenterWithPanel="True"
                        RelativePanel.AlignVerticalCenterWith="UserPicContainer"
                        FontFamily="Segoe MDl2 Assets" 
-                       FontSize="60"
+                       FontSize="48"
                        Text="&#xE77B;"/>
 
             <TextBlock Name="Status"
@@ -78,20 +78,20 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                        RelativePanel.AlignLeftWithPanel="True"
                        RelativePanel.AlignRightWithPanel="True"
                        Margin="0,20,0,0"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
                        TextAlignment="Center"
                        TextWrapping="Wrap"
                        Width="Auto"
-                       Text="You are currently not logged in. Select the button to fix that."
-                       Style="{StaticResource TitleTextBlockStyle}"/>
+                       Text="You are currently not logged in. Select the button to fix that."/>
 
             <Button Name="Login"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
                     RelativePanel.Below="Status"
                     Margin="0,10,0,0"
+                    Style="{StaticResource TextButtonStyle}"
                     Content="Log In"
-                    Click="Login_Click"
-                    Style="{StaticResource TextButtonStyle}"/>
+                    Click="Login_Click"/>
         </RelativePanel>
 
     </Grid>

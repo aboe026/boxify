@@ -318,7 +318,6 @@ namespace Boxify.Frames
                 newReleasesOffset = 0;
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    Bindings.StopTracking();
                     MainPivot.SelectionChanged -= MainPivot_SelectionChanged;
 
                     FeaturedPlaylists.ItemClick -= FeaturedPlaylist_ItemClick;

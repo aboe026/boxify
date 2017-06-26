@@ -38,35 +38,53 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
     <Grid>
 
-        <RelativePanel Margin="10,0,10,0">
-            
-            <Image Name="Image"
-                   RelativePanel.AlignLeftWithPanel="True"
-                   RelativePanel.AlignVerticalCenterWithPanel="True"
-                   Width="30"
-                   Height="30"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="12"/>
+        </Grid.ColumnDefinitions>
 
-            <TextBlock Name="DisplayName"
-                       RelativePanel.RightOf="Image"
-                       RelativePanel.LeftOf="ArtistLabel"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Width="Auto"
-                       Margin="20,0,0,0"
-                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+        <Canvas
+            Name="Background"
+            Grid.Column="0"
+            Grid.ColumnSpan="11"
+            Background="{ThemeResource SystemBaseLowColor}"
+            Opacity="0.3"/>
 
-            <TextBlock Name="ArtistLabel"
-                       Text="Artist: "
-                       RelativePanel.LeftOf="Artist"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Margin="0,0,10,0"
-                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+        <Image
+            Name="Image"
+            Grid.Column="1"
+            Width="30"
+            Height="30"/>
 
-            <TextBlock Name="Artist"
-                       RelativePanel.AlignRightWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Width="Auto"
-                       Style="{StaticResource SubtitleTextBlockStyle}"/>
-        </RelativePanel>
+        <TextBlock
+            Name="DisplayName"
+            Grid.Column="3"
+            Style="{StaticResource TableRowTextBlockStyle}"/>
+
+        <TextBlock
+            Name="Artist"
+            Grid.Column="5"
+            Style="{StaticResource TableRowTextBlockStyle}"/>
+
+        <TextBlock
+            Name="Album"
+            Grid.Column="7"
+            Style="{StaticResource TableRowTextBlockStyle}"/>
+
+        <TextBlock
+            Name="Duration"
+            Grid.Column="9"
+            Style="{StaticResource TableRowTextBlockStyle}"
+            TextAlignment="Right"/>
 
     </Grid>
 </UserControl>
