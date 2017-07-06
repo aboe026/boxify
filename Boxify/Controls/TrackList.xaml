@@ -48,7 +48,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="12"/>
         </Grid.ColumnDefinitions>
 

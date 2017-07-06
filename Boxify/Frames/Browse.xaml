@@ -48,7 +48,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
             <PivotItem.Header>
                 <TextBlock
-                    Margin="10,0,0,0"
                     Style="{StaticResource TitleTextBlockStyle}"
                     Text="Featured"/>
             </PivotItem.Header>
@@ -60,7 +59,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignTopWithPanel="True"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignRightWithPanel="True"
-                    Margin="40,-10,40,10">
+                    Margin="20,0,20,10">
 
                     <TextBlock
                         Name="FeaturedMessage"
@@ -75,7 +74,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         Name="FeaturedRefresh" 
                         RelativePanel.LeftOf="FeaturedMore"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Margin="0,-50,0,0"
                         Style="{StaticResource IconButtonStyle}"
                         Content="&#xE72C;"
                         ToolTipService.ToolTip="Refresh"
@@ -85,7 +83,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         Name="FeaturedMore"
                         RelativePanel.AlignRightWithPanel="True"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Margin="0,-50,0,0"
                         Style="{StaticResource TextButtonStyle}"
                         Content="More"
                         ToolTipService.ToolTip="Load More"
@@ -150,7 +147,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     RelativePanel.AlignTopWithPanel="True"
                     RelativePanel.AlignLeftWithPanel="True"
                     RelativePanel.AlignRightWithPanel="True"
-                    Margin="40,-10,40,10">
+                    Margin="20,0,20,10">
 
                     <TextBlock
                         Name="NewReleasesMessage"
@@ -165,7 +162,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         Name="NewReleasesRefresh" 
                         RelativePanel.LeftOf="NewReleasesMore"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Margin="0,-50,0,0"
                         Style="{StaticResource IconButtonStyle}"
                         Content="&#xE72C;"
                         ToolTipService.ToolTip="Refresh"
@@ -175,7 +171,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         Name="NewReleasesMore"
                         RelativePanel.AlignRightWithPanel="True"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
-                        Margin="0,-50,0,0"
                         Style="{StaticResource TextButtonStyle}"
                         Content="More"
                         ToolTipService.ToolTip="Load More"

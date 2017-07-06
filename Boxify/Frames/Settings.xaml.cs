@@ -440,6 +440,20 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Show announcement for new releases feature
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewReleases_Click(object sender, RoutedEventArgs e)
+        {
+            List<UserControl> announcements = new List<UserControl>
+            {
+                new NewReleases()
+            };
+            App.mainPage.ShowAnnouncements(announcements, this);
+        }
+
+        /// <summary>
         /// User selects to view privacy policy in browser
         /// </summary>
         /// <param name="sender"></param>

@@ -103,10 +103,6 @@ namespace Boxify
                 titleBar.ButtonInactiveForegroundColor = ((SolidColorBrush)Resources["AppTitleBarForeground"]).Color;
             }
 
-            // System color overrides
-            App.Current.Resources["SystemControlHighlightListAccentLowBrush"] = new SolidColorBrush(Colors.Transparent);
-            App.Current.Resources["SystemControlHighlightListAccentMediumBrush"] = new SolidColorBrush(Colors.Transparent);
-
             // settings
             LoadSettings();
 
@@ -234,6 +230,10 @@ namespace Boxify
                     if (VersionGreaterThan(previousVersion, "1.1.0.0"))
                     {
                         MainPage.announcementItems.Add(new Shuffle(Settings.shuffleEnabled));
+                    }
+                    if (VersionGreaterThan(previousVersion, "1.2.0.0"))
+                    {
+                        MainPage.announcementItems.Add(new NewReleases());
                     }
                 }
             }
