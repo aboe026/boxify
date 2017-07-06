@@ -197,8 +197,24 @@ namespace Boxify.Controls
             Progress.Maximum = App.playbackService.Player.PlaybackSession.NaturalDuration.TotalSeconds;
             Progress.Value = App.playbackService.Player.PlaybackSession.Position.TotalSeconds;
 
-            CurrentTime.Text = App.playbackService.Player.PlaybackSession.Position.ToString(@"mm\:ss");
-            Duration.Text = (App.playbackService.Player.PlaybackSession.NaturalDuration - App.playbackService.Player.PlaybackSession.Position).ToString(@"mm\:ss");
+            TimeSpan valueTime = TimeSpan.FromSeconds(Progress.Value);
+            if (valueTime.TotalHours < 1)
+            {
+                CurrentTime.Text = (valueTime).ToString(@"mm\:ss");
+            }
+            else
+            {
+                CurrentTime.Text = Math.Floor(valueTime.TotalHours).ToString() + ":" + (valueTime).ToString(@"mm\:ss");
+            }
+            TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum - App.playbackService.Player.PlaybackSession.Position.TotalSeconds);
+            if (maxTime.TotalHours < 1)
+            {
+                Duration.Text = maxTime.ToString(@"mm\:ss");
+            }
+            else
+            {
+                Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+            }
         }
 
         /// <summary>
@@ -237,8 +253,16 @@ namespace Boxify.Controls
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
-                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
-                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+                    CurrentTime.Text = (TimeSpan.FromSeconds(0)).ToString(@"h\:mm\:ss");
+                    TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum);
+                    if (maxTime.TotalHours < 1)
+                    {
+                        Duration.Text = maxTime.ToString(@"mm\:ss");
+                    }
+                    else
+                    {
+                        Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+                    }
                 });
             }
         }
@@ -262,8 +286,17 @@ namespace Boxify.Controls
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
-                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
-                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+
+                    CurrentTime.Text = (TimeSpan.FromSeconds(0)).ToString(@"h\:mm\:ss");
+                    TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum);
+                    if (maxTime.TotalHours < 1)
+                    {
+                        Duration.Text = maxTime.ToString(@"mm\:ss");
+                    }
+                    else
+                    {
+                        Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+                    }
                 });
             }
         }

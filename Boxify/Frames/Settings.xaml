@@ -349,7 +349,6 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
                         <Button
                             Name="WelcomeConfigure"
-                            Margin="0,0,0,10"
                             Style="{StaticResource TextButtonStyle}"
                             Content="v1.0 - Welcome and Configuration"
                             Click="WelcomeConfigure_Click"/>
@@ -358,8 +357,17 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                             Name="Shuffle"
                             RelativePanel.Below="WelcomeConfigure"
                             Style="{StaticResource TextButtonStyle}"
+                            Margin="0,10,0,0"
                             Content="v1.1 - Shuffle"
                             Click="Shuffle_Click"/>
+
+                        <Button
+                            Name="NewReleases"
+                            RelativePanel.Below="Shuffle"
+                            Margin="0,10,0,0"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="v1.2 - New Releases"
+                            Click="NewReleases_Click"/>
 
                     </RelativePanel>
 

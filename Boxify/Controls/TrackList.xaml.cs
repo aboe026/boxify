@@ -59,7 +59,15 @@ namespace Boxify.Controls
             DisplayName.Text = track.name;
             Artist.Text = track.GetMainArtistName();
             Album.Text = track.album.GetMainArtistName();
-            Duration.Text = (TimeSpan.FromSeconds(Convert.ToDouble(track.duration) / 1000)).ToString(@"mm\:ss");
+            TimeSpan duration = TimeSpan.FromSeconds(Convert.ToDouble(track.duration) / 1000);
+            if (duration.TotalHours < 1)
+            {
+                Duration.Text = (duration).ToString(@"mm\:ss");
+            }
+            else
+            {
+                Duration.Text = (Math.Floor(duration.TotalHours)).ToString() + ":" + (duration).ToString(@"mm\:ss");
+            }
         }
 
         /// <summary>

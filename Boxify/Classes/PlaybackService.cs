@@ -78,6 +78,7 @@ namespace Boxify.Classes
             currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, Settings.shuffleEnabled, href, totalTracks);
             queue.Items.Clear();
             Player.Source = queue;
+            queue.AutoRepeatEnabled = Settings.repeatEnabled;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
             App.mainPage.SetPlaybackMenu(false);
         }

@@ -85,7 +85,7 @@ namespace Boxify.Frames
             {
                 searchSave = SearchBox.Text;
                 searchTypeSave = SearchType.SelectedIndex;
-                MainPanel.SetValue(MarginProperty, new Thickness(0,10,0,0));
+                MainPanel.SetValue(MarginProperty, new Thickness(0,20,0,0));
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 ComboBoxItem selected = SearchType.SelectedValue as ComboBoxItem;
                 String selectedString = selected.Content.ToString().ToLower();

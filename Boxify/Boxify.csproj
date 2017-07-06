@@ -124,6 +124,9 @@
     <Compile Include="Controls\AlbumList.xaml.cs">
       <DependentUpon>AlbumList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Announcements\NewReleases.xaml.cs">
+      <DependentUpon>NewReleases.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Announcements\PlaybackMode.xaml.cs">
       <DependentUpon>PlaybackMode.xaml</DependentUpon>
     </Compile>
@@ -247,6 +250,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AlbumList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Announcements\NewReleases.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

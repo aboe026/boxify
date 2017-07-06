@@ -324,11 +324,17 @@ namespace Boxify.Frames
             ProfileItemHighlight.Visibility = Visibility.Collapsed;
             SearchItemHighlight.Visibility = Visibility.Collapsed;
             SettingsItemHighlight.Visibility = Visibility.Collapsed;
+            BrowseItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            YourMusicItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            ProfileItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            SearchItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            SettingsItemExpandedHighlight.Visibility = Visibility.Collapsed;
 
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
                 SettingsItemHighlight.Visibility = Visibility.Visible;
+                SettingsItemExpandedHighlight.Visibility = Visibility.Visible;
                 if (setFocus)
                 {
                     SettingsItem.Focus(FocusState.Programmatic);
@@ -347,18 +353,22 @@ namespace Boxify.Frames
                     if (item.Name == "BrowseItem")
                     {
                         BrowseItemHighlight.Visibility = Visibility.Visible;
+                        BrowseItemExpandedHighlight.Visibility = Visibility.Visible;
                     }
                     else if (item.Name == "YourMusicItem")
                     {
                         YourMusicItemHighlight.Visibility = Visibility.Visible;
+                        YourMusicItemExpandedHighlight.Visibility = Visibility.Visible;
                     }
                     else if (item.Name == "ProfileItem")
                     {
                         ProfileItemHighlight.Visibility = Visibility.Visible;
+                        ProfileItemExpandedHighlight.Visibility = Visibility.Visible;
                     }
                     else if (item.Name == "SearchItem")
                     {
                         SearchItemHighlight.Visibility = Visibility.Visible;
+                        SearchItemExpandedHighlight.Visibility = Visibility.Visible;
                     }
                     if (setFocus)
                     {
@@ -402,27 +412,36 @@ namespace Boxify.Frames
                 ProfileItemHighlight.Visibility = Visibility.Collapsed;
                 SearchItemHighlight.Visibility = Visibility.Collapsed;
                 SettingsItemHighlight.Visibility = Visibility.Collapsed;
+                BrowseItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                YourMusicItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                ProfileItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                SearchItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                SettingsItemExpandedHighlight.Visibility = Visibility.Collapsed;
                 if (BrowseItem.IsSelected)
                 {
                     BrowseItemHighlight.Visibility = Visibility.Visible;
+                    BrowseItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Browse));
                     Title.Text = "Browse";
                 }
                 else if (YourMusicItem.IsSelected)
                 {
                     YourMusicItemHighlight.Visibility = Visibility.Visible;
+                    YourMusicItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(YourMusic));
                     Title.Text = "Your Music";
                 }
                 else if (ProfileItem.IsSelected)
                 {
                     ProfileItemHighlight.Visibility = Visibility.Visible;
+                    ProfileItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Profile));
                     Title.Text = "Profile";
                 }
                 else if (SearchItem.IsSelected)
                 {
                     SearchItemHighlight.Visibility = Visibility.Visible;
+                    SearchItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Search));
                     Title.Text = "Search";
                 }
@@ -800,6 +819,14 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Hide announcements without destroying them
+        /// </summary>
+        public void HideAnnouncements()
+        {
+            AnnouncementsContainer.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
         /// User wishes to close Announcements
         /// </summary>
         /// <param name="sender"></param>
@@ -889,40 +916,47 @@ namespace Boxify.Frames
                     welcome.UserControl_Unloaded(null, null);
                     welcome.Unloaded -= welcome.UserControl_Unloaded;
                 }
-                if (announcement is PlaybackMode)
+                else if (announcement is PlaybackMode)
                 {
                     PlaybackMode playbackMode = announcement as PlaybackMode;
                     announcementItems.Remove(playbackMode);
                     playbackMode.UserControl_Unloaded(null, null);
                     playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
                 }
-                if (announcement is ThemeMode)
+                else if (announcement is ThemeMode)
                 {
                     ThemeMode themeMode = announcement as ThemeMode;
                     announcementItems.Remove(themeMode);
                     themeMode.UserControl_Unloaded(null, null);
                     themeMode.Unloaded -= themeMode.UserControl_Unloaded;
                 }
-                if (announcement is TvMode)
+                else if (announcement is TvMode)
                 {
                     TvMode tvMode = announcement as TvMode;
                     announcementItems.Remove(tvMode);
                     tvMode.UserControl_Unloaded(null, null);
                     tvMode.Unloaded -= tvMode.UserControl_Unloaded;
                 }
-                if (announcement is PlaybackOptions)
+                else if (announcement is PlaybackOptions)
                 {
                     PlaybackOptions playbackOptions = announcement as PlaybackOptions;
                     announcementItems.Remove(playbackOptions);
                     playbackOptions.UserControl_Unloaded(null, null);
                     playbackOptions.Unloaded -= playbackOptions.UserControl_Unloaded;
                 }
-                if (announcement is Shuffle)
+                else if (announcement is Shuffle)
                 {
                     Shuffle shuffle = announcement as Shuffle;
                     announcementItems.Remove(shuffle);
                     shuffle.UserControl_Unloaded(null, null);
                     shuffle.Unloaded -= shuffle.UserControl_Unloaded;
+                }
+                else if (announcement is NewReleases)
+                {
+                    NewReleases newReleases = announcement as NewReleases;
+                    announcementItems.Remove(newReleases);
+                    newReleases.UserControl_Unloaded(null, null);
+                    newReleases.Unloaded -= newReleases.UserControl_Unloaded;
                 }
             }
         }
@@ -938,7 +972,6 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    Bindings.StopTracking();
                     this.KeyDown -= Page_KeyUp;
                     currentNavSelection = null;
                     loadingLocks.Clear();

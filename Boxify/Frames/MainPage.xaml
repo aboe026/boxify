@@ -263,36 +263,42 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     <ListViewItem Name="BrowseItem" Style="{StaticResource NavListViewItemStyle}">
                         <RelativePanel>
                             <Canvas Name="BrowseItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="BrowseItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}" Width="50"/>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
                                 <TextBlock Name="BrowseItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE93C;"/>
-                                <TextBlock Style="{StaticResource NavItemTextBlockStyle}">Browse</TextBlock>
+                                <RelativePanel>
+                                    <TextBlock Name="BrowseItemText" Style="{StaticResource NavItemTextBlockStyle}">Browse</TextBlock>
+                                </RelativePanel>
                             </StackPanel>
                         </RelativePanel>
                     </ListViewItem>
                     <ListViewItem Name="YourMusicItem" Style="{StaticResource NavListViewItemStyle}">
                         <RelativePanel>
                             <Canvas Name="YourMusicItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="YourMusicItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="76"/>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
                                 <TextBlock Name="YourMusicItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE8F1;"/>
-                                <TextBlock Style="{StaticResource NavItemTextBlockStyle}">Your Music</TextBlock>
+                                <TextBlock Name="YourMusicItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="27,0,0,0">Your Music</TextBlock>
                             </StackPanel>
                         </RelativePanel>
                     </ListViewItem>
                     <ListViewItem Name="ProfileItem" Style="{StaticResource NavListViewItemStyle}">
                         <RelativePanel>
                             <Canvas Name="ProfileItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="ProfileItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="44"/>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
                                 <TextBlock Name="ProfileItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE748;" Margin="4,0,0,0"/>
-                                <TextBlock Style="{StaticResource NavItemTextBlockStyle}">Profile</TextBlock>
+                                <TextBlock Name="ProfileItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="23,0,0,0">Profile</TextBlock>
                             </StackPanel>
                         </RelativePanel>
                     </ListViewItem>
                     <ListViewItem Name="SearchItem" Style="{StaticResource NavListViewItemStyle}">
                         <RelativePanel>
                             <Canvas Name="SearchItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="SearchItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="47"/>
                             <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
                                 <TextBlock Name="SearchItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE721;" Margin="-1,0,0,0"/>
-                                <TextBlock Style="{StaticResource NavItemTextBlockStyle}">Search</TextBlock>
+                                <TextBlock Name="SearchItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="29,0,0,0">Search</TextBlock>
                             </StackPanel>
                         </RelativePanel>
                     </ListViewItem>
@@ -300,9 +306,10 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                         <Button Name="SettingsItem" Width="171" Height="48" Background="Transparent" Click="SettingsItem_Click" BorderThickness="0" Padding="0,0,0,0">
                             <RelativePanel Margin="-8,0,0,0">
                                 <Canvas Name="SettingsItemHighlight" Margin="0,0,0,0" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                                <Canvas Name="SettingsItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}" Margin="59,36,0,0"  Width="56"/>
                                 <StackPanel Orientation="Horizontal" Height="48" RelativePanel.AlignVerticalCenterWithPanel="True" Width="163">
                                     <TextBlock Name="SettignsItemIcon" Margin="14,14,0,0" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE713;"/>
-                                    <TextBlock Margin="24,14,0,0" Style="{StaticResource NavItemTextBlockStyle}">Settings</TextBlock>
+                                    <TextBlock Name="SettingsItemText" Margin="26,14,0,0" Style="{StaticResource NavItemTextBlockStyle}">Settings</TextBlock>
                                 </StackPanel>
                             </RelativePanel>
                         </Button>

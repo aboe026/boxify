@@ -306,6 +306,18 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Show New Releases Tab
+        /// </summary>
+        public async void GoToNewReleases()
+        {
+            while ((MainPivot.SelectedItem as PivotItem).Name != "NewReleases")
+            {
+                await Task.Delay(1);
+                MainPivot.SelectedIndex = 1;
+            }
+        }
+
+        /// <summary>
         /// Free up memory
         /// </summary>
         /// <param name="sender"></param>
