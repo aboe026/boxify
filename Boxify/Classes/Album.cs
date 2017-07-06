@@ -40,7 +40,7 @@ namespace Boxify
         public List<Artist> artists = new List<Artist>();
         public BitmapImage image = new BitmapImage();
         public string imageUrl = "";
-        public string href;
+        public string href = "";
         private const string TRACKS_HREF = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
@@ -80,15 +80,15 @@ namespace Boxify
             {
                 return;
             }
-            if (albumJson.TryGetValue("id", out IJsonValue idJson))
+            if (albumJson.TryGetValue("id", out IJsonValue idJson) && idJson.ValueType == JsonValueType.String)
             {
                 id = idJson.GetString();
             }
-            if (albumJson.TryGetValue("name", out IJsonValue nameJson))
+            if (albumJson.TryGetValue("name", out IJsonValue nameJson) && nameJson.ValueType == JsonValueType.String)
             {
                 name = nameJson.GetString();
             }
-            if (albumJson.TryGetValue("href", out IJsonValue hrefJson))
+            if (albumJson.TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
             {
                 href = hrefJson.GetString();
 
@@ -110,7 +110,7 @@ namespace Boxify
                     releaseDate = releaseJson.GetString();
                 }
             }
-            if (albumJson.TryGetValue("artists", out IJsonValue artistsJson)) {
+            if (albumJson.TryGetValue("artists", out IJsonValue artistsJson) && artistsJson.ValueType == JsonValueType.Array) {
                 JsonArray artistsArray = artistsJson.GetArray();
                 foreach (JsonValue artistObject in artistsArray)
                 {
@@ -119,7 +119,7 @@ namespace Boxify
                     artists.Add(artist);
                 }
             }
-            if (albumJson.TryGetValue("images", out IJsonValue imagesJson)) {
+            if (albumJson.TryGetValue("images", out IJsonValue imagesJson) && imagesJson.ValueType == JsonValueType.Array) {
                 JsonArray imagesArray = imagesJson.GetArray();
                 if (imagesArray.Count > 0)
                 {
@@ -150,7 +150,7 @@ namespace Boxify
                 return;
             }
 
-            if (tracksJson.TryGetValue("total", out IJsonValue totalJson))
+            if (tracksJson.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
             {
                 tracksCount = Convert.ToInt32(totalJson.GetNumber());
             }
@@ -173,7 +173,7 @@ namespace Boxify
             {
                 return tracks;
             }
-            if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+            if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
             {
                 JsonArray itemsArray = itemsJson.GetArray();
                 foreach (JsonValue trackJson in itemsArray)
