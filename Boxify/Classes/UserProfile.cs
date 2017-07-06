@@ -51,14 +51,11 @@ namespace Boxify.Classes
             {
                 return;
             }
-            if (userJson.TryGetValue("display_name", out IJsonValue displayNameJson))
+            if (userJson.TryGetValue("display_name", out IJsonValue displayNameJson) && displayNameJson.ValueType == JsonValueType.String)
             {
-                if (displayNameJson.ValueType == JsonValueType.String)
-                {
-                    displayName = displayNameJson.GetString();
-                }
+                displayName = displayNameJson.GetString();
             }
-            if (userJson.TryGetValue("id", out IJsonValue userIdJson))
+            if (userJson.TryGetValue("id", out IJsonValue userIdJson) && userIdJson.ValueType == JsonValueType.String)
             {
                 userId = userIdJson.GetString();
                 if (displayName == "")
@@ -68,7 +65,7 @@ namespace Boxify.Classes
             }
 
             // picture
-            if (userJson.TryGetValue("images", out IJsonValue imagesJson))
+            if (userJson.TryGetValue("images", out IJsonValue imagesJson) && imagesJson.ValueType == JsonValueType.Array)
             {
                 JsonArray imageArray = imagesJson.GetArray();
                 if (imageArray.Count > 0)

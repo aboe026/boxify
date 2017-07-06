@@ -118,23 +118,23 @@ namespace Boxify.Frames
             {
                 return;
             }
-            if (featuredPlaylistsJson.TryGetValue("message", out IJsonValue messageJson))
+            if (featuredPlaylistsJson.TryGetValue("message", out IJsonValue messageJson) && messageJson.ValueType == JsonValueType.String)
             {
                 FeaturedMessage.Text = messageJson.GetString();
             }
-            if (featuredPlaylistsJson.TryGetValue("playlists", out IJsonValue playlistsJson))
+            if (featuredPlaylistsJson.TryGetValue("playlists", out IJsonValue playlistsJson) && playlistsJson.ValueType == JsonValueType.Object)
             {
                 JsonObject playlists = playlistsJson.GetObject();
-                if (playlists.TryGetValue("total", out IJsonValue totalJson))
+                if (playlists.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
                 {
                     featuredMax = Convert.ToInt32(totalJson.GetNumber());
                 }
-                if (playlists.TryGetValue("items", out IJsonValue itemsJson))
+                if (playlists.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                 {
                     JsonArray playlistsArray = itemsJson.GetArray();
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
-                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref) && fullHref.ValueType == JsonValueType.String)
                         {
                             string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
@@ -227,19 +227,19 @@ namespace Boxify.Frames
             {
                 return;
             }
-            if (newReleasesPlaylistsJson.TryGetValue("albums", out IJsonValue albums))
+            if (newReleasesPlaylistsJson.TryGetValue("albums", out IJsonValue albums) && albums.ValueType == JsonValueType.Object)
             {
                 JsonObject alubms = albums.GetObject();
-                if (alubms.TryGetValue("total", out IJsonValue totalJson))
+                if (alubms.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
                 {
                     newReleasesMax = Convert.ToInt32(totalJson.GetNumber());
                 }
-                if (alubms.TryGetValue("items", out IJsonValue itemsJson))
+                if (alubms.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                 {
                     JsonArray albumsArray = itemsJson.GetArray();
                     foreach (JsonValue albumJson in albumsArray)
                     {
-                        if (albumJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                        if (albumJson.GetObject().TryGetValue("href", out IJsonValue fullHref) && fullHref.ValueType == JsonValueType.String)
                         {
                             string fullAlbumString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Album alubm = new Album();

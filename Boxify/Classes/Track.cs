@@ -78,7 +78,7 @@ namespace Boxify
             {
                 return;
             }
-            if (trackJson.TryGetValue("track", out IJsonValue trackObject))
+            if (trackJson.TryGetValue("track", out IJsonValue trackObject) && trackObject.ValueType == JsonValueType.Object)
             {
                 JsonObject trackObjectJson = trackObject.GetObject();
                 await SetInfoDirect(trackObjectJson.Stringify());
@@ -101,34 +101,31 @@ namespace Boxify
             {
                 return;
             }
-            if (trackObjectJson.TryGetValue("id", out IJsonValue trackId))
+            if (trackObjectJson.TryGetValue("id", out IJsonValue trackId) && trackId.ValueType == JsonValueType.String)
             {
                 id = trackId.GetString();
             }
-            if (trackObjectJson.TryGetValue("href", out IJsonValue trackHref))
+            if (trackObjectJson.TryGetValue("href", out IJsonValue trackHref) && trackHref.ValueType == JsonValueType.String)
             {
                 href = trackHref.GetString();
             }
-            if (trackObjectJson.TryGetValue("name", out IJsonValue trackName))
+            if (trackObjectJson.TryGetValue("name", out IJsonValue trackName) && trackName.ValueType == JsonValueType.String)
             {
                 name = trackName.GetString();
             }
-            if (trackObjectJson.TryGetValue("preview_url", out IJsonValue trackPreview))
+            if (trackObjectJson.TryGetValue("preview_url", out IJsonValue trackPreview) && trackPreview.ValueType == JsonValueType.String)
             {
-                if (trackPreview.ValueType == JsonValueType.String)
-                {
-                    previewUrl = trackPreview.GetString();
-                }
+                previewUrl = trackPreview.GetString();
             }
-            if (trackObjectJson.TryGetValue("duration_ms", out IJsonValue trackDuration))
+            if (trackObjectJson.TryGetValue("duration_ms", out IJsonValue trackDuration) && trackDuration.ValueType == JsonValueType.Number)
             {
                 duration = Convert.ToInt32(trackDuration.GetNumber());
             }
-            if (trackObjectJson.TryGetValue("album", out IJsonValue trackAlbum))
+            if (trackObjectJson.TryGetValue("album", out IJsonValue trackAlbum) && trackAlbum.ValueType == JsonValueType.Object)
             {
                 await album.SetInfo(trackAlbum.Stringify());
             }
-            if (trackObjectJson.TryGetValue("artists", out IJsonValue trackArtists))
+            if (trackObjectJson.TryGetValue("artists", out IJsonValue trackArtists) && trackArtists.ValueType == JsonValueType.Array)
             {
                 JsonArray artistsArray = trackArtists.GetArray();
                 foreach (JsonValue artistObject in artistsArray)

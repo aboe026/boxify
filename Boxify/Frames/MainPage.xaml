@@ -320,35 +320,55 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             </SplitView.Pane>
             <SplitView.Content>
 
-                <RelativePanel HorizontalAlignment="Stretch">
+                <RelativePanel
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
 
-                    <Grid  Name="ErrorMessageGrid"
-                           RelativePanel.AlignTopWithPanel="True"
-                           RelativePanel.AlignLeftWithPanel="True"
-                           RelativePanel.AlignRightWithPanel="True"
-                           Background="{ThemeResource SystemChromeLowColor}">
+                    <RelativePanel
+                        Name="Errors"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Background="{ThemeResource SystemChromeLowColor}">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                        <RelativePanel
+                            Name="ErrorMessages"
+                            RelativePanel.AlignTopWithPanel="True"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True">
+                            
+                            <TextBlock
+                                Name="ErrorMessage"
+                                RelativePanel.AlignTopWithPanel="True"
+                                RelativePanel.AlignBottomWithPanel="True"
+                                RelativePanel.AlignLeftWithPanel="True"
+                                RelativePanel.AlignRightWithPanel="True"
+                                Margin="10,0,40,0"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                Text="Generic Error Message"/>
 
-                        <TextBlock Name="ErrorMessage"
-                                   Grid.Row="0"
-                                   Margin="10,0,10,0"
-                                   Text="Generic Error Message"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"
-                                   TextWrapping="Wrap"
-                                   TextAlignment="Center"/>
+                            <Button
+                                Name="ErrorMessageClose"
+                                RelativePanel.AlignRightWithPanel="True"
+                                RelativePanel.AlignVerticalCenterWith="ErrorMessage"
+                                Style="{StaticResource IconButtonStyle}"
+                                Content="&#xE894;" Click="ErrorMessageClose_Click"/>
 
-                        <controls:CancelDialog x:Name="CancelDialog"
-                                               Grid.Row="1"
-                                               Margin="10,0,10,0"/>
+                        </RelativePanel>
 
-                    </Grid>
+                        <controls:CancelDialog
+                            x:Name="CancelDialog"
+                            RelativePanel.Below="ErrorMessages"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True"
+                            Margin="10,0,10,0"/>
+
+                    </RelativePanel>
 
                     <Frame Name="MainContentFrame"
-                           RelativePanel.Below="ErrorMessageGrid"
+                           RelativePanel.Below="Errors"
                            RelativePanel.AlignLeftWithPanel="True"
                            RelativePanel.AlignRightWithPanel="True"
                            RelativePanel.Above="PlaybackMenu"

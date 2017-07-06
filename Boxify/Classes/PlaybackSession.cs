@@ -724,7 +724,7 @@ namespace Boxify.Classes
             }
             else
             {
-                if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+                if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                 {
                     JsonArray tracksArray = itemsJson.GetArray();
                     if (tracksArray.Count > 0)
@@ -734,7 +734,7 @@ namespace Boxify.Classes
                             Track track = new Track();
                             if (type == PlaybackType.Album)
                             {
-                                if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
+                                if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
                                 {
                                     string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
                                     await track.SetInfoDirect(fullTrackString);
@@ -798,7 +798,7 @@ namespace Boxify.Classes
                 }
                 else
                 {
-                    if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+                    if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                     {
                         JsonArray tracksArray = itemsJson.GetArray();
                         if (tracksArray.Count > 0)
@@ -808,7 +808,7 @@ namespace Boxify.Classes
                                 Track track = new Track();
                                 if (type == PlaybackType.Album)
                                 {
-                                    if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
+                                    if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
                                     {
                                         string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
                                         await track.SetInfoDirect(fullTrackString);

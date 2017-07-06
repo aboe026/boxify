@@ -165,11 +165,11 @@ namespace Boxify.Frames
             {
                 return;
             }
-            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson))
+            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
             {
                 playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
             }
-            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
+            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 if (playlistsArray.Count == 0)
@@ -183,7 +183,7 @@ namespace Boxify.Frames
                     PlaylistsHeader.Visibility = Visibility.Visible;
                     foreach (JsonValue playlistJson in playlistsArray)
                     {
-                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                        if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref) && fullHref.ValueType == JsonValueType.String)
                         {
                             string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                             Playlist playlist = new Playlist();
@@ -237,17 +237,17 @@ namespace Boxify.Frames
             {
                 return;
             }
-            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson))
+            if (playlistsJson.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
             {
                 playlistsTotal = Convert.ToInt32(totalJson.GetNumber());
             }
-            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson))
+            if (playlistsJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
             {
                 JsonArray playlistsArray = itemsJson.GetArray();
                 playlistsCount = playlistsArray.Count;
                 foreach (JsonValue playlistJson in playlistsArray)
                 {
-                    if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref))
+                    if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref) && fullHref.ValueType == JsonValueType.String)
                     {
                         string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
                         Playlist playlist = new Playlist();

@@ -37,6 +37,7 @@ namespace Boxify.Controls
     public sealed partial class Playback : UserControl
     {
         private DispatcherTimer uiUpdateTimer;
+        private static bool loading = false;
 
         /// <summary>
         /// Main constructor
@@ -91,9 +92,13 @@ namespace Boxify.Controls
                 UpdateProgressUI();
                 LoadingTrack.IsActive = false;
             }
-            else
+            else if (loading)
             {
                 SetLoadingActive(true);
+            }
+            else
+            {
+                LoadingTrack.IsActive = false;
             }
         }
 
@@ -525,6 +530,7 @@ namespace Boxify.Controls
         /// <param name="visible"></param>
         public void SetLoadingActive(bool active)
         {
+            loading = active;
             LoadingTrack.IsActive = active;
             if (active)
             {

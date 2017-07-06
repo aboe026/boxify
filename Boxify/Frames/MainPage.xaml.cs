@@ -105,12 +105,13 @@ namespace Boxify.Frames
             CancelDialog.Visibility = Visibility.Collapsed;
             if (errorMessage != "")
             {
+                Errors.Visibility = Visibility.Visible;
                 ErrorMessage.Visibility = Visibility.Visible;
                 ErrorMessage.Text = errorMessage;
             }
             else
             {
-                ErrorMessage.Visibility = Visibility.Collapsed;
+                ErrorMessages.Visibility = Visibility.Collapsed;
             }
 
             SpotifyLogo.Visibility = Visibility.Collapsed;
@@ -658,8 +659,10 @@ namespace Boxify.Frames
         /// <param name="message">The error message to be displayed to the user</param>
         public void SetErrorMessage(string message)
         {
+            ErrorMessages.Visibility = Visibility.Visible;
             ErrorMessage.Visibility = Visibility.Visible;
             ErrorMessage.Text = message;
+            errorMessage = message;
         }
 
         /// <summary>
@@ -675,11 +678,25 @@ namespace Boxify.Frames
                 {
                     if (ErrorMessage != null)
                     {
+                        ErrorMessages.Visibility = Visibility.Visible;
                         ErrorMessage.Visibility = Visibility.Visible;
                         ErrorMessage.Text = message;
+                        errorMessage = message;
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// User decides to close errors
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ErrorMessageClose_Click(object sender, RoutedEventArgs e)
+        {
+            ErrorMessages.Visibility = Visibility.Collapsed;
+            ErrorMessage.Text = "";
+            errorMessage = "";
         }
 
         /// <summary>
