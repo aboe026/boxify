@@ -38,76 +38,178 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Margin="20,0,20,0">
+    <RelativePanel>
 
-        <RelativePanel>
+        <TextBlock
+            Name="Warning"
+            RelativePanel.AlignHorizontalCenterWithPanel="True"
+            RelativePanel.AlignVerticalCenterWithPanel="True"
+            Margin="0,0,0,0"
+            Style="{StaticResource SubtitleTextBlockStyle}"
+            Text="You must be logged in to view Your Music"/>
 
-            <TextBlock Name="Warning"
-                       RelativePanel.AlignHorizontalCenterWithPanel="True"
-                       RelativePanel.AlignVerticalCenterWithPanel="True"
-                       Margin="0,0,0,0"
-                       Text="You must be logged in to view Your Music"
-                       Style="{StaticResource TitleTextBlockStyle}"/>
+        <Button
+            Name="LogIn"
+            Content="Manage Proflie"
+            RelativePanel.Below="Warning"
+            RelativePanel.AlignHorizontalCenterWithPanel="True"
+            Margin="0,10,0,0"
+            Style="{StaticResource TextButtonStyle}"
+            Click="LogIn_Click" />
 
-            <Button Name="LogIn"
-                    Content="Manage Proflie"
-                    RelativePanel.Below="Warning"
-                    RelativePanel.AlignHorizontalCenterWithPanel="True"
-                    Margin="0,10,0,0"
-                    Style="{StaticResource ButtonStyle}"
-                    Click="LogIn_Click" />
-            
-            <TextBlock Name="PlaylistsLabel"
-                       Text="Your Playlists"
-                       RelativePanel.AlignLeftWithPanel="True"
-                       RelativePanel.AlignTopWithPanel="True"
-                       Margin="0,0,0,20"
-                       Style="{StaticResource SubheaderTextBlockStyle}"/>
+        <Pivot
+            Name="MainPivot"
+            SelectionChanged="MainPivot_SelectionChanged">
 
-            <Button Name="Refresh" 
-                    RelativePanel.RightOf="PlaylistsLabel"
-                    RelativePanel.AlignVerticalCenterWith="PlaylistsLabel"
-                    Margin="20,-15,0,0"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="24" 
-                    Content="&#xE72C;"
-                    Background="Transparent"
-                    Click="Refresh_Click"
-                    XYFocusRight="{x:Bind More}"/>
+            <PivotItem 
+                Name="Playlists"
+                Margin="0,0,0,0">
 
-            <Button Name="More"
-                    RelativePanel.RightOf="Refresh"
-                    RelativePanel.AlignVerticalCenterWith="PlaylistsLabel"
-                    Margin="20,-15,0,0"
-                    Content="More..."
-                    Style="{StaticResource ButtonStyle}"
-                    Click="More_Click"/>
+                <PivotItem.Header>
+                    <TextBlock
+                        Margin="10,0,0,0"
+                        Style="{StaticResource TitleTextBlockStyle}"
+                        Text="Playlists"/>
+                </PivotItem.Header>
 
-            <ListView Name="Playlists"
-                      RelativePanel.AlignLeftWithPanel="True"
-                      RelativePanel.AlignRightWithPanel="True"
-                      RelativePanel.Below="PlaylistsLabel"
-                      IsItemClickEnabled="True"
-                      ItemClick="Playlists_ItemClick"
-                      XYFocusUp="{x:Bind Refresh}">
+                <RelativePanel>
 
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
+                    <RelativePanel
+                        Name="PlaylistsControls"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Margin="40,0,40,10">
 
-            </ListView>
+                        <Button
+                            Name="PlaylistsRefresh" 
+                            RelativePanel.LeftOf="PlaylistsMore"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            Margin="0,-42,0,0"
+                            Style="{StaticResource IconButtonStyle}"
+                            Content="&#xE72C;"
+                            ToolTipService.ToolTip="Refresh"
+                            Click="PlaylistsRefresh_Click"
+                            XYFocusRight="{x:Bind PlaylistsMore}"/>
 
-        </RelativePanel>
+                        <Button
+                            Name="PlaylistsMore"
+                            RelativePanel.AlignRightWithPanel="True"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            Margin="0,-42,0,0"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="More"
+                            ToolTipService.ToolTip="Load More"
+                            Click="PlaylistsMore_Click"/>
 
-    </Grid>
+                    </RelativePanel>
+
+                    <Grid
+                        Name="PlaylistsHeader"
+                        RelativePanel.Below="PlaylistsControls"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Margin="0,-8,0,4">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="12"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="3"
+                            Style="{StaticResource TableHeaderTextBlockStyle}"
+                            Text="Name"/>
+
+                        <TextBlock
+                            Grid.Column="5"
+                            Style="{StaticResource TableHeaderTextBlockStyle}"
+                            Text="Description"/>
+
+                        <TextBlock
+                            Grid.Column="7"
+                            Style="{StaticResource TableHeaderTextBlockStyle}"
+                            Text="Owner"/>
+
+                        <TextBlock
+                            Grid.Column="9"
+                            Style="{StaticResource TableHeaderTextBlockStyle}"
+                            HorizontalAlignment="Right"
+                            Text="Tracks"/>
+
+                    </Grid>
+
+                    <Grid
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignBottomWithPanel="True">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Name="EmptyMessage"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="0,0,0,0"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            TextWrapping="WrapWholeWords"
+                            Text="You do not have any playlists yet. Please create some with Spotify. Although you can't create any through Boxify currently, we're hoping to add that as a feature in the (hopefully) not too distant future."/>
+
+                    </Grid>
+
+                    <ListView
+                        Name="PlaylistsView"
+                        RelativePanel.Below="PlaylistsHeader"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.AlignBottomWithPanel="True"
+                        IsItemClickEnabled="True"
+                        ItemClick="PlaylistsView_ItemClick">
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <ContentPresenter />
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+                    </ListView>
+
+                </RelativePanel>
+
+            </PivotItem>
+
+        </Pivot>
+
+    </RelativePanel>
+
 </Page>

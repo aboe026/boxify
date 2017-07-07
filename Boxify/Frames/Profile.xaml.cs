@@ -146,6 +146,10 @@ namespace Boxify.Frames
                 Status.Text = loggedOutText;
                 Login.Content = "Log In";
                 RequestHandler.ClearTokens();
+                if (MainPage.yourMusicPage != null)
+                {
+                    MainPage.yourMusicPage.ClearPlaylists();
+                }
             }
             if (App.mainPage != null)
             {
@@ -164,21 +168,8 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (WebBrowser != null)
-                    {
-                        WebBrowser.NavigationStarting -= WebView_NavigationStarting;
-                        WebBrowser = null;
-                    }
-                    if (Login != null)
-                    {
-                        Login.Click -= Login_Click;
-                        Login = null;
-                    }
-
-                    UserPic = null;
-                    UserPicContainer = null;
-                    BlankUser = null;
-                    Status = null;
+                    WebBrowser.NavigationStarting -= WebView_NavigationStarting;
+                    Login.Click -= Login_Click;
                 });
             }
         }

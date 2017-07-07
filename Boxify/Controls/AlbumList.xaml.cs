@@ -60,6 +60,16 @@ namespace Boxify.Controls
             Image.Source = album.image;
             DisplayName.Text = album.name;
             Artist.Text = album.GetMainArtistName();
+            ReleaseDate.Text = album.releaseDate;
+            Tracks.Text = album.tracksCount.ToString();
+        }
+
+        /// <summary>
+        /// Sets light background for odd/even row distinguishability
+        /// </summary>
+        public void TurnOffOpaqueBackground()
+        {
+            Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
         /// <summary>
@@ -70,13 +80,8 @@ namespace Boxify.Controls
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 album.Dispose();
-                album = null;
 
-                Image.Source = null;
-                Image = null;
-                DisplayName = null;
-                ArtistLabel = null;
-                Artist = null;
+                Image.ClearValue(Image.SourceProperty);
             });
         }
     }

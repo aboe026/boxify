@@ -26,7 +26,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="806"
-    d:DesignHeight="515"
+    d:DesignHeight="1000"
     NavigationCacheMode="Required"
     Unloaded="Page_Unloaded">
 
@@ -38,445 +38,479 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         </ResourceDictionary>
     </Page.Resources>
 
-    <RelativePanel>
-
-        <Image Name="BoxifyLogo"
-               RelativePanel.AlignRightWithPanel="True"
-               RelativePanel.AlignTopWithPanel="True"
-               Style="{ThemeResource BoxifyLogoSource}"
-               Height="40"
-               Width="40"
-               Margin="0,0,100,0"/>
-
-        <Grid RelativePanel.AlignLeftWithPanel="True"
-              RelativePanel.AlignRightWithPanel="True"
-              RelativePanel.AlignTopWithPanel="True"
-              RelativePanel.AlignBottomWithPanel="True"
-              Margin="8,0,8,0">
-
-            <Pivot>
-                <PivotItem Margin="0,0,0,0">
-                    <PivotItem.Header>
-                        <TextBlock Text="General"
-                                   Style="{StaticResource SubheaderTextBlockStyle}"/>
-                    </PivotItem.Header>
-
-                    <ScrollViewer>
-
-                        <Grid Margin="20">
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="20"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="20"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="20"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="20"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="30"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Name="TvSafeAreaLabel"
-                                       Grid.Row="1"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="TV Safe Area"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <ToggleSwitch Name="TvSafeArea"
-                                          Grid.Row="1"
-                                          Grid.Column="2"
-                                          VerticalAlignment="Center"
-                                          Style="{StaticResource ToggleButtonStyle}"
-                                          Toggled="TvSafe_Toggled"/>
-
-                            <TextBlock Name="TvSafeAreaDesc"
-                                       Grid.Row="1"
-                                       Grid.Column="2"
-                                       VerticalAlignment="Center"
-                                       Margin="100,0,10,0"
-                                       Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."
-                                       Style="{StaticResource BodyTextBlockStyle}"
-                                       TextWrapping="Wrap"/>
-
-                            <TextBlock Name="ThemeLabel"
-                                       Grid.Row="3"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Theme Mode"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <RelativePanel Grid.Row="3"
-                                           Grid.Column="2">
-
-                                <RadioButton Name="System"
-                                             RelativePanel.AlignLeftWithPanel="True"
-                                             Content="System"
-                                             Template="{StaticResource RadioButtonControlTemplate}"
-                                             Style="{StaticResource RadioButtonStyle}"
-                                             GroupName="ThemeColor"
-                                             Click="ThemeColor_Click"/>
-
-                                <RadioButton Name="Light"
-                                             RelativePanel.RightOf="System"
-                                             Content="Light"
-                                             Template="{StaticResource RadioButtonControlTemplate}"
-                                             Style="{StaticResource RadioButtonStyle}"
-                                             GroupName="ThemeColor"
-                                             Click="ThemeColor_Click"/>
-
-                                <RadioButton Name="Dark"
-                                             RelativePanel.RightOf="Light"
-                                             Content="Dark"
-                                             Template="{StaticResource RadioButtonControlTemplate}"
-                                             Style="{StaticResource RadioButtonStyle}"
-                                             GroupName="ThemeColor"
-                                             Click="ThemeColor_Click"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="PlaybackSourceLabel"
-                                       Grid.Row="5"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Playback Source"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <RelativePanel Grid.Row="5"
-                                           Grid.Column="2">
-
-                                <RadioButton Name="Spotify"
-                                             RelativePanel.AlignLeftWithPanel="True"
-                                             Width="150"
-                                             Height="50"
-                                             Content=""
-                                             Template="{StaticResource RadioButtonControlTemplate}"
-                                             Style="{StaticResource RadioButtonStyle}"
-                                             GroupName="PlaybackSource"
-                                             Click="Playbacksource_Click">
-
-                                    <RadioButton.Background>
-                                        <ImageBrush ImageSource="{ThemeResource SpotifyLogo}"
-                                                    Stretch="Uniform">
-
-                                            <ImageBrush.Transform>
-                                                <ScaleTransform ScaleX="0.6"
-                                                                ScaleY="0.6"
-                                                                CenterX="80"
-                                                                CenterY="20"/>
-                                            </ImageBrush.Transform>
-
-                                        </ImageBrush>
-                                    </RadioButton.Background>
-
-                                </RadioButton>
-
-                                <TextBlock Name="SpotifyLabel"
-                                           RelativePanel.RightOf="Spotify"
-                                           RelativePanel.AlignVerticalCenterWith="Spotify"
-                                           Text="Only 30 second previews but songs load faster."
-                                           Style="{StaticResource BodyTextBlockStyle}"/>
-
-                                <RadioButton Name="YouTube"
-                                             RelativePanel.Below="Spotify"
-                                             Width="150"
-                                             Height="50"
-                                             Content=""
-                                             Template="{StaticResource RadioButtonControlTemplate}"
-                                             Style="{StaticResource RadioButtonStyle}"
-                                             GroupName="PlaybackSource"
-                                             Click="Playbacksource_Click">
-
-                                    <RadioButton.Background>
-                                        <ImageBrush ImageSource="{ThemeResource YouTubeLogo}"
-                                                Stretch="UniformToFill">
-
-                                            <ImageBrush.Transform>
-                                                <ScaleTransform ScaleX="0.6"
-                                                                ScaleY="0.6"
-                                                                CenterX="80"
-                                                                CenterY="20"/>
-                                            </ImageBrush.Transform>
-
-                                        </ImageBrush>
-                                    </RadioButton.Background>
-
-                                </RadioButton>
-
-                                <TextBlock Name="YoutubeLabel"
-                                           RelativePanel.RightOf="YouTube"
-                                           RelativePanel.AlignVerticalCenterWith="YouTube"
-                                           Text="Full song playback but takes longer to load. Might not find song."
-                                           Style="{StaticResource BodyTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="RepeatLabel"
-                                       Grid.Row="7"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Repeat"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <ToggleSwitch Name="RepeatToggle"
-                                          Grid.Row="7"
-                                          Grid.Column="2"
-                                          VerticalAlignment="Center"
-                                          Style="{StaticResource ToggleButtonStyle}"
-                                          Toggled="RepeatToggle_Toggled"/>
-
-                            <TextBlock Name="RepeatDesc"
-                                       Grid.Row="7"
-                                       Grid.Column="2"
-                                       VerticalAlignment="Center"
-                                       Margin="100,0,10,0"
-                                       Text="Turn on to keep playing from the beginning after the last track is played in the selected playlist, album or track. Turn off to stop playing after the last track is played."
-                                       Style="{StaticResource BodyTextBlockStyle}"
-                                       TextWrapping="Wrap"/>
-
-                            <TextBlock Name="ShuffleLabel"
-                                       Grid.Row="9"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Shuffle"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <ToggleSwitch Name="ShuffleToggle"
-                                          Grid.Row="9"
-                                          Grid.Column="2"
-                                          VerticalAlignment="Center"
-                                          Style="{StaticResource ToggleButtonStyle}"
-                                          Toggled="ShuffleToggle_Toggled"/>
-
-                            <TextBlock Name="ShuffleDesc"
-                                       Grid.Row="9"
-                                       Grid.Column="2"
-                                       VerticalAlignment="Center"
-                                       Margin="100,0,10,0"
-                                       Text="Turn on for playlist/album tracks to play in a random order. Turn off to play tracks in their correct order."
-                                       Style="{StaticResource BodyTextBlockStyle}"
-                                       TextWrapping="Wrap"/>
-
-                        </Grid>
-
-                    </ScrollViewer>
-
-                </PivotItem>
-
-                <PivotItem>
-
-                    <PivotItem.Header>
-                        <TextBlock Text="About"
-                                   Style="{StaticResource SubheaderTextBlockStyle}"/>
-                    </PivotItem.Header>
-
-                    <ScrollViewer>
-
-                        <Grid Margin="20">
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="30"/>
-                                <ColumnDefinition Width="2.5*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Name="VersionLabel"
-                                       Grid.Row="1"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Version"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <TextBlock Name="Version"
-                                       Grid.Row="1"
-                                       Grid.Column="2"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       Text="x.y.z.w"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <TextBlock Name="AnnouncementsLabel"
-                                       Grid.Row="3"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Announcements"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <RelativePanel Grid.Row="3"
-                                           Grid.Column="2">
-
-                                <Button Name="WelcomeConfigure"
-                                        Margin="0,0,0,10"
-                                        Content="Welcome and Configuration"
-                                        Style="{StaticResource ButtonStyle}"
-                                        Click="WelcomeConfigure_Click"/>
-
-                                <Button Name="Shuffle"
-                                        RelativePanel.Below="WelcomeConfigure"
-                                        Content="Shuffle"
-                                        Style="{StaticResource ButtonStyle}" Click="Shuffle_Click"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="RateLabel"
-                                       Grid.Row="5"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Rate"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <RelativePanel Grid.Row="5"
-                                           Grid.Column="2">
-
-                                <TextBlock Name="RateMessage"
-                                           RelativePanel.AlignLeftWithPanel="True"
-                                           RelativePanel.AlignHorizontalCenterWithPanel="True"
-                                           Text="Don't forget to rate Boxify in the store!"
-                                           Style="{StaticResource TitleTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords"
-                                           Margin="0,0,0,10"/>
-
-                                <Button Name="RateButton"
-                                        RelativePanel.Below="RateMessage"
-                                        RelativePanel.AlignLeftWithPanel="True"
-                                        Content="Got to Store"
-                                        Style="{StaticResource ButtonStyle}"
-                                        Click="Rate_Click"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="ContactLabel"
-                                       Grid.Row="7"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Contact / Contribute"
-                                       Style="{StaticResource TitleTextBlockStyle}"
-                                       TextWrapping="WrapWholeWords"/>
-
-                            <RelativePanel Grid.Row="7"
-                                           Grid.Column="2">
-
-                                <TextBlock Name="ContactMessage"
-                                           RelativePanel.AlignTopWithPanel="True"
-                                           RelativePanel.AlignLeftWithPanel="True"
-                                           RelativePanel.AlignRightWithPanel="True"
-                                           Margin="0,0,0,10"
-                                           HorizontalAlignment="Left"
-                                           Text="Comments? Feedback? Suggestions? Complaints? Your voice matters! Please feel free to create an issue on the Boxify GitHub repository or email aboe026-boxify@outlook.com.&#x0d;&#x0a;Developement savvy? This project is open source, please help improve the app by submitting software contributions via GitHub."
-                                           Style="{StaticResource SubtitleTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords"/>
-
-                                <Button Name="Repo"
-                                        RelativePanel.AlignLeftWithPanel="True"
-                                        RelativePanel.Below="ContactMessage"
-                                        Content="Boxify GitHub"
-                                        Style="{StaticResource ButtonStyle}"
-                                        Click="Repo_Click"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="SpotifyExplanationLabel"
-                                       Grid.Row="9"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Why Only 30 Second Previews From Spotify?"
-                                       Style="{StaticResource TitleTextBlockStyle}"
-                                       TextWrapping="WrapWholeWords"/>
-
-                            <RelativePanel Grid.Row="9"
-                                           Grid.Column="2">
-
-                                <TextBlock Name="SpotifyExplanationMessage"
-                                           RelativePanel.AlignTopWithPanel="True"
-                                           RelativePanel.AlignLeftWithPanel="True"
-                                           RelativePanel.AlignRightWithPanel="True"
-                                           Margin="0,0,0,10"
-                                           HorizontalAlignment="Left"
-                                           Text="Unfortunately, Spotify doesn't have a C# API for writing UWP apps, so Boxify uses their Web API. Currently, even though their Android and iOS APIs support full song playback, their Web API doesn't. If you want official full song playbabck from Spotify, let your voice be heard on their GitHub issue."
-                                           Style="{StaticResource SubtitleTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords"/>
-
-                                <Button Name="SpotifyGitHub"
-                                        RelativePanel.AlignLeftWithPanel="True"
-                                        RelativePanel.Below="SpotifyExplanationMessage"
-                                        Content="Spotify GitHub Issue"
-                                        Style="{StaticResource ButtonStyle}"
-                                        Click="SpotifyGitHub_Click"/>
-
-                            </RelativePanel>
-
-                            <TextBlock Name="PrivacyLabel"
-                                       Grid.Row="11"
-                                       Grid.Column="0"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Center"
-                                       Text="Privacy Policy"
-                                       Style="{StaticResource TitleTextBlockStyle}"/>
-
-                            <RelativePanel Grid.Row="11"
-                                           Grid.Column="2">
-
-                                <TextBlock Name="PrivacyMessage"
-                                           RelativePanel.AlignLeftWithPanel="True"
-                                           RelativePanel.AlignHorizontalCenterWithPanel="True"
-                                           Text="For our full privacy policy, please visit the following: https://github.com/aboe026/boxify/tree/master/PRIVACY.md"
-                                           Style="{StaticResource TitleTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords"
-                                           Margin="0,0,0,10"/>
-
-                                <Button Name="PrivacyButton"
-                                        RelativePanel.Below="PrivacyMessage"
-                                        RelativePanel.AlignLeftWithPanel="True"
-                                        Content="View in Browser"
-                                        Style="{StaticResource ButtonStyle}" Click="PrivacyButton_Click"/>
-
-                            </RelativePanel>
-
-                        </Grid>
-
-                    </ScrollViewer>
-
-                </PivotItem>
-            </Pivot>
-
-        </Grid>
-
-    </RelativePanel>
+    <Pivot>
+        <PivotItem Margin="0,0,0,0">
+            <PivotItem.Header>
+                <TextBlock
+                    Text="General"
+                    Style="{StaticResource TitleTextBlockStyle}"/>
+            </PivotItem.Header>
+
+            <ScrollViewer>
+
+                <Grid Margin="20">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Name="TvSafeAreaLabel"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="TV Safe Area"/>
+
+                    <ToggleSwitch
+                        Name="TvSafeArea"
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ToggleButtonStyle}"
+                        Toggled="TvSafe_Toggled"/>
+
+                    <TextBlock
+                        Name="TvSafeAreaDesc"
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Margin="100,0,10,0"
+                        Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                        Text="Turn on to include margins which ensure UI elements are within the TV safe boundaries. Turn off to have UI elements extend to edge of screen."/>
+
+                    <TextBlock
+                        Name="ThemeLabel"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Theme Mode"/>
+
+                    <RelativePanel
+                        Grid.Row="3"
+                        Grid.Column="2">
+
+                        <RadioButton
+                            Name="System"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            Content="System"
+                            Template="{StaticResource RadioButtonControlTemplate}"
+                            Style="{StaticResource RadioButtonStyle}"
+                            GroupName="ThemeColor"
+                            Click="ThemeColor_Click"/>
+
+                        <RadioButton
+                            Name="Light"
+                            RelativePanel.RightOf="System"
+                            Content="Light"
+                            Template="{StaticResource RadioButtonControlTemplate}"
+                            Style="{StaticResource RadioButtonStyle}"
+                            GroupName="ThemeColor"
+                            Click="ThemeColor_Click"/>
+
+                        <RadioButton
+                            Name="Dark"
+                            RelativePanel.RightOf="Light"
+                            Content="Dark"
+                            Template="{StaticResource RadioButtonControlTemplate}"
+                            Style="{StaticResource RadioButtonStyle}"
+                            GroupName="ThemeColor"
+                            Click="ThemeColor_Click"/>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="PlaybackSourceLabel"
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Playback Source"/>
+
+                    <RelativePanel
+                        Grid.Row="5"
+                        Grid.Column="2">
+
+                        <RadioButton
+                            Name="Spotify"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            Width="150"
+                            Height="50"
+                            Content=""
+                            Template="{StaticResource RadioButtonControlTemplate}"
+                            Style="{StaticResource RadioButtonStyle}"
+                            GroupName="PlaybackSource"
+                            Click="Playbacksource_Click">
+
+                            <RadioButton.Background>
+                                <ImageBrush
+                                    ImageSource="{ThemeResource SpotifyLogo}"
+                                    Stretch="Uniform">
+
+                                    <ImageBrush.Transform>
+                                        <ScaleTransform
+                                            ScaleX="0.6"
+                                            ScaleY="0.6"
+                                            CenterX="80"
+                                            CenterY="20"/>
+                                    </ImageBrush.Transform>
+
+                                </ImageBrush>
+                            </RadioButton.Background>
+
+                        </RadioButton>
+
+                        <TextBlock
+                            Name="SpotifyDesc"
+                            RelativePanel.RightOf="Spotify"
+                            RelativePanel.AlignVerticalCenterWith="Spotify"
+                            Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                            Text="Only 30 second previews but songs load faster."/>
+
+                        <RadioButton
+                            Name="YouTube"
+                            RelativePanel.Below="Spotify"
+                            Width="150"
+                            Height="50"
+                            Content=""
+                            Template="{StaticResource RadioButtonControlTemplate}"
+                            Style="{StaticResource RadioButtonStyle}"
+                            GroupName="PlaybackSource"
+                            Click="Playbacksource_Click">
+
+                            <RadioButton.Background>
+                                <ImageBrush
+                                    ImageSource="{ThemeResource YouTubeLogo}"
+                                    Stretch="UniformToFill">
+
+                                    <ImageBrush.Transform>
+                                        <ScaleTransform
+                                            ScaleX="0.6"
+                                            ScaleY="0.6"
+                                            CenterX="80"
+                                            CenterY="20"/>
+                                    </ImageBrush.Transform>
+
+                                </ImageBrush>
+                            </RadioButton.Background>
+
+                        </RadioButton>
+
+                        <TextBlock
+                            Name="YoutubeDesc"
+                            RelativePanel.RightOf="YouTube"
+                            RelativePanel.AlignVerticalCenterWith="YouTube"
+                            Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                            Text="Full song playback but takes longer to load. Might not find song."/>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="RepeatLabel"
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Repeat"/>
+
+                    <ToggleSwitch
+                        Name="RepeatToggle"
+                        Grid.Row="7"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ToggleButtonStyle}"
+                        Toggled="RepeatToggle_Toggled"/>
+
+                    <TextBlock
+                        Name="RepeatDesc"
+                        Grid.Row="7"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Margin="100,0,10,0"
+                        Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                        Text="Turn on to keep playing from the beginning after the last track is played in the selected playlist, album or track. Turn off to stop playing after the last track is played."/>
+
+                    <TextBlock
+                        Name="ShuffleLabel"
+                        Grid.Row="9"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Shuffle"/>
+
+                    <ToggleSwitch
+                        Name="ShuffleToggle"
+                        Grid.Row="9"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ToggleButtonStyle}"
+                        Toggled="ShuffleToggle_Toggled"/>
+
+                    <TextBlock
+                        Name="ShuffleDesc"
+                        Grid.Row="9"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Margin="100,0,10,0"
+                        Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                        Text="Turn on for playlist/album tracks to play in a random order. Turn off to play tracks in their correct order."/>
+
+                </Grid>
+
+            </ScrollViewer>
+
+        </PivotItem>
+
+        <PivotItem>
+
+            <PivotItem.Header>
+                <TextBlock
+                    Text="About"
+                    Style="{StaticResource TitleTextBlockStyle}"/>
+            </PivotItem.Header>
+
+            <ScrollViewer>
+
+                <Grid Margin="20">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Name="VersionLabel"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Version"/>
+
+                    <RelativePanel
+                        Grid.Row="1"
+                        Grid.Column="2">
+
+                        <TextBlock
+                            Name="Version"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            Style="{StaticResource TitleTextBlockStyle}"
+                            Text="x.y.z.w"/>
+
+                        <Image
+                            Name="BoxifyLogo"
+                            RelativePanel.RightOf="Version"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"                                
+                            Margin="10,0,0,0"
+                            Style="{ThemeResource BoxifyLogoSource}"
+                            Height="40"
+                            Width="40"/>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="AnnouncementsLabel"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Announcements"/>
+
+                    <RelativePanel
+                        Grid.Row="3"
+                        Grid.Column="2">
+
+                        <Button
+                            Name="WelcomeConfigure"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="v1.0 - Welcome and Configuration"
+                            Click="WelcomeConfigure_Click"/>
+
+                        <Button
+                            Name="Shuffle"
+                            RelativePanel.Below="WelcomeConfigure"
+                            Style="{StaticResource TextButtonStyle}"
+                            Margin="0,10,0,0"
+                            Content="v1.1 - Shuffle"
+                            Click="Shuffle_Click"/>
+
+                        <Button
+                            Name="NewReleases"
+                            RelativePanel.Below="Shuffle"
+                            Margin="0,10,0,0"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="v1.2 - New Releases"
+                            Click="NewReleases_Click"/>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="RateLabel"
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Rate"/>
+
+                    <RelativePanel
+                        Grid.Row="5"
+                        Grid.Column="2">
+
+                        <Button
+                            Name="RateButton"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="Got to Store"
+                            Click="Rate_Click"
+                            XYFocusDown="{x:Bind Repo}"/>
+
+                        <TextBlock
+                            Name="RateMessage"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            RelativePanel.RightOf="RateButton"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                            Text="Don't forget to rate Boxify in the store!"/>
+
+                    </RelativePanel>
+
+                    <RelativePanel
+                        Grid.Row="7"
+                        Grid.Column="0">
+
+                        <RelativePanel
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True">
+
+                            <TextBlock
+                                Name="ContactLabel"
+                                RelativePanel.AlignRightWithPanel="True"
+                                Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                                Text="Contact / Contribute"/>
+
+                            <Button
+                                Name="Repo"
+                                RelativePanel.AlignRightWithPanel="True"
+                                RelativePanel.Below="ContactLabel"
+                                Margin="0,10,0,0"
+                                Style="{StaticResource TextButtonStyle}"                                    
+                                Content="Boxify GitHub"
+                                Click="Repo_Click"
+                                XYFocusUp="{x:Bind RateButton}"/>
+
+                        </RelativePanel>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="ContactMessage"
+                        Grid.Row="7"
+                        Grid.Column="2"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                        Text="Comments? Feedback? Suggestions? Complaints? Your voice matters! Please feel free to create an issue on the Boxify GitHub repository or email aboe026-boxify@outlook.com.&#x0d;&#x0a;Developement savvy? This project is open source, please help improve the app by submitting software contributions via GitHub."/>
+
+                    <RelativePanel
+                        Grid.Row="9"
+                        Grid.Column="0">
+
+                        <RelativePanel
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True">
+
+                            <TextBlock
+                                Name="SpotifyExplanationLabel"
+                                RelativePanel.AlignRightWithPanel="True"
+                                Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                                Text="Spotify 30 Second Limit"/>
+
+                            <Button
+                                Name="SpotifyGitHub"
+                                RelativePanel.AlignRightWithPanel="True"
+                                RelativePanel.Below="SpotifyExplanationLabel"
+                                Margin="0,10,0,0"
+                                Style="{StaticResource TextButtonStyle}"
+                                Content="Spotify GitHub Issue"
+                                Click="SpotifyGitHub_Click"/>
+
+                        </RelativePanel>
+
+                    </RelativePanel>
+
+                    <TextBlock
+                        Name="SpotifyExplanationMessage"
+                        Grid.Row="9"
+                        Grid.Column="2"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                        Text="Unfortunately, Spotify doesn't have a C# API for writing UWP apps, so Boxify uses their Web API. Currently, even though their Android and iOS APIs support full song playback, their Web API doesn't. If you want official full song playbabck from Spotify, let your voice be heard on their GitHub issue."/>
+
+                    <TextBlock
+                        Name="PrivacyLabel"
+                        Grid.Row="11"
+                        Grid.Column="0"
+                        Style="{StaticResource SettingsGeneralLabelTextStyle}"
+                        Text="Privacy Policy"/>
+
+                    <RelativePanel
+                        Grid.Row="11"
+                        Grid.Column="2">
+
+                        <Button
+                            Name="PrivacyButton"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="View in Browser"
+                            Click="PrivacyButton_Click"
+                            XYFocusUp="{x:Bind SpotifyGitHub}"/>
+
+                        <TextBlock
+                            Name="PrivacyMessage"
+                            RelativePanel.RightOf="PrivacyButton"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource SettingsGeneralDescriptionTextStyle}"
+                            Text="For our full privacy policy, please visit the following: https://github.com/aboe026/boxify/tree/master/PRIVACY.md"/>
+
+                    </RelativePanel>
+
+                </Grid>
+
+            </ScrollViewer>
+
+        </PivotItem>
+
+    </Pivot>
 
 </Page>

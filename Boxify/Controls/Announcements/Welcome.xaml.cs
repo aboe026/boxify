@@ -65,25 +65,12 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
+            if (MainPage.closedAnnouncements || (App.isInBackgroundMode && MainPage.closedAnnouncements))
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (Close != null)
-                    {
-                        Close.Click -= Close_Click;
-                        Close = null;
-                    }
-                    if (Settings != null)
-                    {
-                        Settings.Click -= Settings_Click;
-                        Settings = null;
-                    }
-
-                    Header = null;
-                    Message = null;
-
-                    CenteredPanel = null;
+                    Close.Click -= Close_Click;
+                    Settings.Click -= Settings_Click;
                 });
             }
         }

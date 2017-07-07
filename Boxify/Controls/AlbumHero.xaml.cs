@@ -18,18 +18,18 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
 
 using Windows.UI.Xaml.Controls;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Boxify.Controls
 {
-    public sealed partial class PlaylistHero : UserControl
+    public sealed partial class AlbumHero : UserControl
     {
-        public Playlist playlist;
+        public Album album;
 
         /// <summary>
         /// The main constructor
         /// </summary>
-        public PlaylistHero()
+        public AlbumHero()
         {
             this.InitializeComponent();
         }
@@ -40,9 +40,9 @@ namespace Boxify.Controls
         /// </summary>
         /// <param name="playlist">The Playlist whose information will be displayed</param>
         /// <param name="mainPage">The MainPage containing the Playlist</param>
-        public PlaylistHero(Playlist playlist) : this()
+        public AlbumHero(Album album) : this()
         {
-            this.playlist = playlist;
+            this.album = album;
             PopulateData();
         }
 
@@ -51,10 +51,10 @@ namespace Boxify.Controls
         /// </summary>
         public void PopulateData()
         {
-            Image.Source = playlist.image;
-            DisplayName.Text = playlist.name;
-            Description.Text = playlist.description;
-            Tracks.Text = playlist.tracksCount.ToString();
+            Image.Source = album.image;
+            DisplayName.Text = album.name;
+            ArtistName.Text = album.GetMainArtistName();
+            Tracks.Text = album.tracksCount.ToString();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Boxify.Controls
         /// </summary>
         public void Unload()
         {
-            playlist.Dispose();
+            album.Dispose();
 
             Image.ClearValue(Image.SourceProperty);
         }

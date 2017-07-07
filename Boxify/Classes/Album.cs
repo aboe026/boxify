@@ -35,10 +35,12 @@ namespace Boxify
         private bool disposed = false;
         public string id = "";
         public string name = "";
+        public string releaseDate = "";
         public int tracksCount = 1;
         public List<Artist> artists = new List<Artist>();
         public BitmapImage image = new BitmapImage();
         public string imageUrl = "";
+        public string href = "";
         private const string TRACKS_HREF = "https://api.spotify.com/v1/albums/{0}/tracks";
 
         /// <summary>
@@ -78,15 +80,37 @@ namespace Boxify
             {
                 return;
             }
-            if (albumJson.TryGetValue("id", out IJsonValue idJson))
+            if (albumJson.TryGetValue("id", out IJsonValue idJson) && idJson.ValueType == JsonValueType.String)
             {
                 id = idJson.GetString();
             }
-            if (albumJson.TryGetValue("name", out IJsonValue nameJson))
+            if (albumJson.TryGetValue("name", out IJsonValue nameJson) && nameJson.ValueType == JsonValueType.String)
             {
                 name = nameJson.GetString();
             }
-            if (albumJson.TryGetValue("artists", out IJsonValue artistsJson)) {
+            if (albumJson.TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
+            {
+                href = hrefJson.GetString();
+
+                // extra request to get release date
+                UriBuilder fullUriBuilder = new UriBuilder(href);
+                string fullString = await RequestHandler.SendCliGetRequest(fullUriBuilder.Uri.ToString());
+                JsonObject fullJson = new JsonObject();
+                try
+                {
+                    fullJson = JsonObject.Parse(fullString);
+                }
+                catch (COMException)
+                {
+                    return;
+                }
+
+                if (fullJson.TryGetValue("release_date", out IJsonValue releaseJson) && releaseJson.ValueType == JsonValueType.String)
+                {
+                    releaseDate = releaseJson.GetString();
+                }
+            }
+            if (albumJson.TryGetValue("artists", out IJsonValue artistsJson) && artistsJson.ValueType == JsonValueType.Array) {
                 JsonArray artistsArray = artistsJson.GetArray();
                 foreach (JsonValue artistObject in artistsArray)
                 {
@@ -95,7 +119,7 @@ namespace Boxify
                     artists.Add(artist);
                 }
             }
-            if (albumJson.TryGetValue("images", out IJsonValue imagesJson)) {
+            if (albumJson.TryGetValue("images", out IJsonValue imagesJson) && imagesJson.ValueType == JsonValueType.Array) {
                 JsonArray imagesArray = imagesJson.GetArray();
                 if (imagesArray.Count > 0)
                 {
@@ -126,7 +150,7 @@ namespace Boxify
                 return;
             }
 
-            if (tracksJson.TryGetValue("total", out IJsonValue totalJson))
+            if (tracksJson.TryGetValue("total", out IJsonValue totalJson) && totalJson.ValueType == JsonValueType.Number)
             {
                 tracksCount = Convert.ToInt32(totalJson.GetNumber());
             }
@@ -149,7 +173,7 @@ namespace Boxify
             {
                 return tracks;
             }
-            if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+            if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
             {
                 JsonArray itemsArray = itemsJson.GetArray();
                 foreach (JsonValue trackJson in itemsArray)
@@ -186,20 +210,15 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-                id = null;
-                name = null;
                 while (artists.Count > 0)
                 {
                     Artist artist = artists.ElementAt(0);
                     artists.Remove(artist);
                     artist.Dispose();
-                    artist = null;
                 }
                 artists.Clear();
-                artists = null;
-                image.UriSource = null;
-                image = null;
-                imageUrl = null;
+
+                image.ClearValue(BitmapImage.UriSourceProperty);
             }
         }
     }

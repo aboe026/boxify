@@ -36,6 +36,7 @@ namespace Boxify
         public string id = "";
         public string href = "";
         public string name = "";
+        public string owner = "";
         public string description = "";
         public string tracksHref = "";
         private const int maxTracksPerRequest = 100;
@@ -66,36 +67,43 @@ namespace Boxify
             {
                 return;
             }
-            if (playlistJson.TryGetValue("id", out IJsonValue idJson))
+            if (playlistJson.TryGetValue("id", out IJsonValue idJson) && idJson.ValueType == JsonValueType.String)
             {
                 id = idJson.GetString();
             }
-            if (playlistJson.TryGetValue("href", out IJsonValue hrefJson))
+            if (playlistJson.TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
             {
                 href = hrefJson.GetString();
             }
-            if (playlistJson.TryGetValue("name", out IJsonValue nameJson))
+            if (playlistJson.TryGetValue("name", out IJsonValue nameJson) && nameJson.ValueType == JsonValueType.String)
             {
                 name = nameJson.GetString();
             }
-            if (playlistJson.TryGetValue("description", out IJsonValue descriptionJson))
+            if (playlistJson.TryGetValue("owner", out IJsonValue ownerJson) && ownerJson.ValueType == JsonValueType.Object)
+            {
+                if (ownerJson.GetObject().TryGetValue("id", out IJsonValue ownerIdJson) && ownerIdJson.ValueType == JsonValueType.String)
+                {
+                    owner = ownerIdJson.GetString();
+                }
+            }
+            if (playlistJson.TryGetValue("description", out IJsonValue descriptionJson) && descriptionJson.ValueType == JsonValueType.String)
             {
                 description = Regex.Replace(descriptionJson.GetString(), "<.+?>", string.Empty);
             }
 
-            if (playlistJson.TryGetValue("tracks", out IJsonValue tracksJson))
+            if (playlistJson.TryGetValue("tracks", out IJsonValue tracksJson) && tracksJson.ValueType == JsonValueType.Object)
             {
                 JsonObject trackJson = tracksJson.GetObject();
-                if (trackJson.TryGetValue("href", out IJsonValue trackHrefJson))
+                if (trackJson.TryGetValue("href", out IJsonValue trackHrefJson) && trackHrefJson.ValueType == JsonValueType.String)
                 {
                     tracksHref = trackHrefJson.GetString();
                 }
-                if (trackJson.TryGetValue("total", out IJsonValue trackNumberJson))
+                if (trackJson.TryGetValue("total", out IJsonValue trackNumberJson) && trackNumberJson.ValueType == JsonValueType.Number)
                 {
                     tracksCount = Convert.ToInt32(trackNumberJson.GetNumber());
                 }
             }
-            if (playlistJson.TryGetValue("images", out IJsonValue imagesJson))
+            if (playlistJson.TryGetValue("images", out IJsonValue imagesJson) && imagesJson.ValueType == JsonValueType.Array)
             {
                 JsonArray imagesArray = imagesJson.GetArray();
                 if (imagesArray.Count > 0)
@@ -131,13 +139,7 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-                id = null;
-                href = null;
-                name = null;
-                description = null;
-                tracksHref = null;
-                image.UriSource = null;
-                image = null;
+                image.ClearValue(BitmapImage.UriSourceProperty);
             }
         }
     }

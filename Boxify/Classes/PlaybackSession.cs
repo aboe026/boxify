@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
+using Boxify.Frames;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,7 +47,7 @@ namespace Boxify.Classes
         private static Random rng = new Random();
 
         public long localLock;
-        private Playbacksource source = Playbacksource.Spotify;
+        private PlaybackSource source = PlaybackSource.Spotify;
         public PlaybackType type;
         private bool shuffling;
         public string tracksHref;
@@ -74,7 +75,7 @@ namespace Boxify.Classes
         /// <param name="shuffle">Whether or not shuffling is enabled for session playback</param>
         /// <param name="tracksHref">The reference to the download location for tracks</param>
         /// <param name="totalTracks">The total number of tracks in the playback session</param>
-        public PlaybackSession(long currentLock, Playbacksource source, PlaybackType type, bool shuffle, string tracksHref, int totalTracks)
+        public PlaybackSession(long currentLock, PlaybackSource source, PlaybackType type, bool shuffle, string tracksHref, int totalTracks)
         {
             localLock = currentLock;
             this.source = source;
@@ -85,7 +86,10 @@ namespace Boxify.Classes
             prevRemoteAttempts.Add(0);
             if (App.mainPage != null)
             {
-                App.mainPage.SetLoadersMessage("", localLock);
+                long loadingKey = DateTime.Now.Ticks;
+                MainPage.AddLoadingLock(loadingKey);
+                App.mainPage.SetLoadersMessage("", localLock, loadingKey);
+                MainPage.RemoveLoadingLock(loadingKey);
             }
         }
 
@@ -93,10 +97,10 @@ namespace Boxify.Classes
         /// Update the UI with the current number of tracks that have failed
         /// </summary>
         /// <param name="increment"></param>
-        private void UpdateFailuresCount(int increment)
+        private void UpdateFailuresCount(int increment, long loadingKey)
         {
             failuresCount += increment;
-            App.mainPage.SetLoadersMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock);
+            App.mainPage.SetLoadersMessage(failuresCount + " track" + (failuresCount == 1 ? "" : "s") + " failed to match", localLock, loadingKey);
         }
 
         /// <summary>
@@ -119,6 +123,8 @@ namespace Boxify.Classes
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
         public async Task<bool> LoadTracks(int start, int end, bool lockOverride)
         {
+            long loadingKey = DateTime.Now.Ticks;
+            MainPage.AddLoadingLock(loadingKey);
             if (loadLock && !lockOverride)
             {
                 return false;
@@ -161,17 +167,7 @@ namespace Boxify.Classes
                 limit = end - start + 1;
             }
 
-            if (source == Playbacksource.Spotify)
-            {
-                App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
-                App.mainPage.SetSpotifyLoadingValue(0, localLock);
-                App.mainPage.BringUpSpotify(localLock);
-            }
-            else if (source == Playbacksource.YouTube)
-            {
-                App.mainPage.SetYouTubeValues(0, limit, localLock);
-                App.mainPage.BringUpYouTube(localLock);
-            }
+            App.mainPage.SetLoadingProgress(source, 0, limit, localLock, loadingKey);
 
             if (localLock != App.playbackService.GlobalLock) { return false; }
 
@@ -189,24 +185,17 @@ namespace Boxify.Classes
             if (tracks.Count == totalTracks)
             {
                 limit = totalTracks;
-                if (source == Playbacksource.Spotify)
-                {
-                    App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
-                }
-                else if (source == Playbacksource.YouTube)
-                {
-                    App.mainPage.SetYouTubeValues(0, limit, localLock);
-                }
+                App.mainPage.SetLoadingProgress(source, 0, limit, localLock, loadingKey);
             }
 
             if (tracks.Count != limit)
             {
-                UpdateFailuresCount(limit - tracks.Count);
+                UpdateFailuresCount(limit - tracks.Count, loadingKey);
             }
 
             List<KeyValuePair<MediaSource, Track>> sources = new List<KeyValuePair<MediaSource, Track>>();
 
-            if (source == Playbacksource.Spotify)
+            if (source == PlaybackSource.Spotify)
             {
                 for (int i = 0; i < tracks.Count; i++)
                 {
@@ -219,13 +208,13 @@ namespace Boxify.Classes
                         }
                         else
                         {
-                            UpdateFailuresCount(1);
+                            UpdateFailuresCount(1, loadingKey);
                         }
                     }
-                    App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                    App.mainPage.SetLoadingProgress(source, i + 1 + limit - tracks.Count, limit, localLock, loadingKey);
                 }
             }
-            else if (source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
+            else if (source == PlaybackSource.YouTube && localLock == App.playbackService.GlobalLock)
             {
                 for (int i = 0; i < tracks.Count; i++)
                 {
@@ -241,7 +230,7 @@ namespace Boxify.Classes
                     {
                         if (videoId == "")
                         {
-                            UpdateFailuresCount(1);
+                            UpdateFailuresCount(1, loadingKey);
                         }
                         else
                         {
@@ -251,11 +240,11 @@ namespace Boxify.Classes
                             }
                             catch (Exception)
                             {
-                                UpdateFailuresCount(1);
+                                UpdateFailuresCount(1, loadingKey);
                             }
                         }
                     }
-                    App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
+                    App.mainPage.SetLoadingProgress(PlaybackSource.YouTube, i + 1 + limit - tracks.Count, limit, localLock, loadingKey);
                 }
             }
 
@@ -300,6 +289,8 @@ namespace Boxify.Classes
                 App.playbackService.PlayFromBeginning(localLock);
             }
 
+            MainPage.RemoveLoadingLock(loadingKey);
+
             if (shuffling)
             {
                 if (successes != limit && shufflePositionsAvailable.Count > 0)
@@ -339,6 +330,8 @@ namespace Boxify.Classes
         /// <returns>True a total of end - start tracks are downloaded, false otherwise</returns>
         public async Task<bool> LoadTracksReverse(int start, int end, bool lockOverride)
         {
+            long loadingKey = DateTime.Now.Ticks;
+            MainPage.AddLoadingLock(loadingKey);
             if (loadLock && !lockOverride)
             {
                 return false;
@@ -355,30 +348,20 @@ namespace Boxify.Classes
 
             int limit = end - start + 1;
 
-            if (this.source == Playbacksource.Spotify)
-            {
-                App.mainPage.SetSpotifyLoadingMaximum(limit, localLock);
-                App.mainPage.SetSpotifyLoadingValue(0, localLock);
-                App.mainPage.BringUpSpotify(localLock);
-            }
-            else if (this.source == Playbacksource.YouTube)
-            {
-                App.mainPage.SetYouTubeValues(0, limit, localLock);
-                App.mainPage.BringUpYouTube(localLock);
-            }
+            App.mainPage.SetLoadingProgress(source, 0, limit, localLock, loadingKey);
 
             if (localLock != App.playbackService.GlobalLock) { return false; }
 
             List<Track> tracks = await GetTracksInRange(start, limit);
             if (tracks.Count != limit)
             {
-                UpdateFailuresCount(limit - tracks.Count);
+                UpdateFailuresCount(limit - tracks.Count, loadingKey);
             }
             else
             {
                 List<KeyValuePair<MediaSource, Track>> sources = new List<KeyValuePair<MediaSource, Track>>();
 
-                if (this.source == Playbacksource.Spotify)
+                if (this.source == PlaybackSource.Spotify)
                 {
                     for (int i = 0; i < tracks.Count; i++)
                     {
@@ -391,13 +374,13 @@ namespace Boxify.Classes
                             }
                             else
                             {
-                                UpdateFailuresCount(1);
+                                UpdateFailuresCount(1, loadingKey);
                             }
                         }
-                        App.mainPage.SetSpotifyLoadingValue(i + 1 + limit - tracks.Count, localLock);
+                        App.mainPage.SetLoadingProgress(source, i + 1 + limit - tracks.Count, limit, localLock, loadingKey);
                     }
                 }
-                else if (this.source == Playbacksource.YouTube && localLock == App.playbackService.GlobalLock)
+                else if (this.source == PlaybackSource.YouTube && localLock == App.playbackService.GlobalLock)
                 {
                     for (int i = 0; i < tracks.Count; i++)
                     {
@@ -413,7 +396,7 @@ namespace Boxify.Classes
                         {
                             if (videoId == "")
                             {
-                                UpdateFailuresCount(1);
+                                UpdateFailuresCount(1, loadingKey);
                             }
                             else
                             {
@@ -423,11 +406,11 @@ namespace Boxify.Classes
                                 }
                                 catch (Exception)
                                 {
-                                    UpdateFailuresCount(1);
+                                    UpdateFailuresCount(1, loadingKey);
                                 }
                             }
                         }
-                        App.mainPage.SetYouTubeValues(i + 1 + limit - tracks.Count, limit, localLock);
+                        App.mainPage.SetLoadingProgress(PlaybackSource.YouTube, i + 1 + limit - tracks.Count, limit, localLock, loadingKey);
                     }
                 }
 
@@ -459,6 +442,8 @@ namespace Boxify.Classes
                     }
                 }
             }
+
+            MainPage.RemoveLoadingLock(loadingKey);
 
             if (successes != limit && start > 0)
             {
@@ -665,7 +650,10 @@ namespace Boxify.Classes
         {
             App.playbackService.RemoveFromQueue(GetMediaItemId(item), localLock);
             playlistMediaIds.RemoveAt(playlistMediaIds.IndexOf(GetMediaItemId(item)));
-            UpdateFailuresCount(1);
+            long loadingKey = DateTime.Now.Ticks;
+            MainPage.AddLoadingLock(loadingKey);
+            UpdateFailuresCount(1, loadingKey);
+            MainPage.RemoveLoadingLock(loadingKey);
         }
 
         /// <summary>
@@ -736,7 +724,7 @@ namespace Boxify.Classes
             }
             else
             {
-                if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+                if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                 {
                     JsonArray tracksArray = itemsJson.GetArray();
                     if (tracksArray.Count > 0)
@@ -746,7 +734,7 @@ namespace Boxify.Classes
                             Track track = new Track();
                             if (type == PlaybackType.Album)
                             {
-                                if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
+                                if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
                                 {
                                     string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
                                     await track.SetInfoDirect(fullTrackString);
@@ -810,7 +798,7 @@ namespace Boxify.Classes
                 }
                 else
                 {
-                    if (tracksJson.TryGetValue("items", out IJsonValue itemsJson))
+                    if (tracksJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                     {
                         JsonArray tracksArray = itemsJson.GetArray();
                         if (tracksArray.Count > 0)
@@ -820,7 +808,7 @@ namespace Boxify.Classes
                                 Track track = new Track();
                                 if (type == PlaybackType.Album)
                                 {
-                                    if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson))
+                                    if (trackJson.GetObject().TryGetValue("href", out IJsonValue hrefJson) && hrefJson.ValueType == JsonValueType.String)
                                     {
                                         string fullTrackString = await RequestHandler.SendCliGetRequest(hrefJson.GetString());
                                         await track.SetInfoDirect(fullTrackString);
@@ -989,13 +977,10 @@ namespace Boxify.Classes
             if (!disposing)
             {
                 playlistMediaIds.Clear();
-                playlistMediaIds = null;
 
                 prevRemoteAttempts.Clear();
-                prevRemoteAttempts = null;
 
                 nextRemoteAttempts.Clear();
-                nextRemoteAttempts = null;
             }
         }
     }

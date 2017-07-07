@@ -45,7 +45,7 @@ namespace Boxify
             {
                 return;
             }
-            if (trackJson.TryGetValue("name", out IJsonValue nameJson))
+            if (trackJson.TryGetValue("name", out IJsonValue nameJson) && nameJson.ValueType == JsonValueType.String)
             {
                 name = nameJson.GetString();
             }
@@ -65,7 +65,7 @@ namespace Boxify
             disposed = true;
             if (disposing)
             {
-               name = null;
+               
             }
         }
     }

@@ -27,6 +27,7 @@ using Windows.Data.Json;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using static Boxify.Frames.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -46,6 +47,7 @@ namespace Boxify.Frames
             this.InitializeComponent();
             MainPage.searchPage = this;
             Feedback.Text = "";
+            ResultsHeaderContainer.Visibility = Visibility.Collapsed;
 
             if (searchSave != null)
             {
@@ -71,6 +73,10 @@ namespace Boxify.Frames
             }
             Feedback.Text = "";
             feedbackMessage = "";
+            PlaylistHeader.Visibility = Visibility.Collapsed;
+            TracklistHeader.Visibility = Visibility.Collapsed;
+            AlbumlistHeader.Visibility = Visibility.Collapsed;
+            ResultsHeaderContainer.Visibility = Visibility.Collapsed;
             if (SearchBox.Text == "")
             {
                 feedbackMessage = "Please enter text to search for (I can't read your mind...yet)";
@@ -79,6 +85,7 @@ namespace Boxify.Frames
             {
                 searchSave = SearchBox.Text;
                 searchTypeSave = SearchType.SelectedIndex;
+                MainPanel.SetValue(MarginProperty, new Thickness(0,20,0,0));
                 RelativePanel.SetAlignTopWithPanel(SearchBox, true);
                 ComboBoxItem selected = SearchType.SelectedValue as ComboBoxItem;
                 String selectedString = selected.Content.ToString().ToLower();
@@ -108,10 +115,10 @@ namespace Boxify.Frames
                 // playlists
                 if (selectedString == "playlist")
                 {
-                    if (searchResultJson.TryGetValue("playlists", out IJsonValue playlistsJson))
+                    if (searchResultJson.TryGetValue("playlists", out IJsonValue playlistsJson) && playlistsJson.ValueType == JsonValueType.Object)
                     {
                         JsonObject playlists = playlistsJson.GetObject();
-                        if (playlists.TryGetValue("items", out IJsonValue itemsJson))
+                        if (playlists.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                         {
                             JsonArray playlistsArray = itemsJson.GetArray();
                             if (playlistsArray.Count == 0)
@@ -120,25 +127,35 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(playlistsArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                PlaylistHeader.Visibility = Visibility.Visible;
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, playlistsArray.Count, loadingKey);
                                 foreach (JsonValue playlistJson in playlistsArray)
                                 {
-
-                                    Playlist playlist = new Playlist();
-                                    await playlist.SetInfo(playlistJson.Stringify());
-                                    PlaylistList playlistList = new PlaylistList(playlist);
-                                    try
+                                    if (playlistJson.GetObject().TryGetValue("href", out IJsonValue fullHref) && fullHref.ValueType == JsonValueType.String)
                                     {
-                                        if (!App.isInBackgroundMode)
+                                        string fullPlaylistString = await RequestHandler.SendCliGetRequest(fullHref.GetString());
+                                        Playlist playlist = new Playlist();
+                                        await playlist.SetInfo(fullPlaylistString);
+                                        PlaylistList playlistList = new PlaylistList(playlist);
+                                        try
                                         {
-                                            Results.Items.Add(playlistList);
+                                            if (!App.isInBackgroundMode)
+                                            {
+                                                Results.Items.Add(playlistList);
+                                                if (Results.Items.IndexOf(playlistList) % 2 == 1)
+                                                {
+                                                    playlistList.TurnOffOpaqueBackground();
+                                                }
+                                            }
                                         }
+                                        catch (COMException) { }
+                                        App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, playlistsArray.Count, loadingKey);
                                     }
-                                    catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }
@@ -147,10 +164,10 @@ namespace Boxify.Frames
                 // track
                 else if (selectedString == "track")
                 {
-                    if (searchResultJson.TryGetValue("tracks", out IJsonValue tracksJson))
+                    if (searchResultJson.TryGetValue("tracks", out IJsonValue tracksJson) && tracksJson.ValueType == JsonValueType.Object)
                     {
                         JsonObject tracks = tracksJson.GetObject();
-                        if (tracks.TryGetValue("items", out IJsonValue itemsJson))
+                        if (tracks.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                         {
                             JsonArray tracksArray = itemsJson.GetArray();
                             if (tracksArray.Count == 0)
@@ -159,9 +176,11 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(tracksArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                TracklistHeader.Visibility = Visibility.Visible;
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, tracksArray.Count, loadingKey);
                                 foreach (JsonValue trackJson in tracksArray)
                                 {
                                     Track track = new Track();
@@ -172,11 +191,16 @@ namespace Boxify.Frames
                                         if (!App.isInBackgroundMode)
                                         {
                                             Results.Items.Add(trackList);
+                                            if (Results.Items.IndexOf(trackList) % 2 == 1)
+                                            {
+                                                trackList.TurnOffOpaqueBackground();
+                                            }
                                         }
                                     }
                                     catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
+                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, tracksArray.Count, loadingKey);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }
@@ -185,10 +209,10 @@ namespace Boxify.Frames
                 // album
                 else if (selectedString == "album")
                 {
-                    if (searchResultJson.TryGetValue("albums", out IJsonValue albumsJson))
+                    if (searchResultJson.TryGetValue("albums", out IJsonValue albumsJson) && albumsJson.ValueType == JsonValueType.Object)
                     {
                         JsonObject albums = albumsJson.GetObject();
-                        if (albums.TryGetValue("items", out IJsonValue itemsJson))
+                        if (albums.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
                         {
                             JsonArray albumsArray = itemsJson.GetArray();
                             if (albumsArray.Count == 0)
@@ -197,9 +221,11 @@ namespace Boxify.Frames
                             }
                             else
                             {
-                                App.mainPage.SetSpotifyLoadingMaximum(albumsArray.Count);
-                                App.mainPage.SetSpotifyLoadingValue(0);
-                                App.mainPage.BringUpSpotify();
+                                ResultsHeaderContainer.Visibility = Visibility.Visible;
+                                AlbumlistHeader.Visibility = Visibility.Visible;
+                                long loadingKey = DateTime.Now.Ticks;
+                                MainPage.AddLoadingLock(loadingKey);
+                                App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, 0, albumsArray.Count, loadingKey);
                                 foreach (JsonValue albumJson in albumsArray)
                                 {
                                     Album album = new Album();
@@ -210,11 +236,16 @@ namespace Boxify.Frames
                                         if (!App.isInBackgroundMode)
                                         {
                                             Results.Items.Add(albumList);
+                                            if (Results.Items.IndexOf(albumList) % 2 == 1)
+                                            {
+                                                albumList.TurnOffOpaqueBackground();
+                                            }
                                         }
                                     }
                                     catch (COMException) { }
-                                    App.mainPage.SetSpotifyLoadingValue(Results.Items.Count);
+                                    App.mainPage.SetLoadingProgress(PlaybackSource.Spotify, Results.Items.Count, albumsArray.Count, loadingKey);
                                 }
+                                MainPage.RemoveLoadingLock(loadingKey);
                             }
                         }
                     }
@@ -253,6 +284,19 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// user hits enter to search
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                SearchButton_Click(null, null);
+            }
+        }
+
+        /// <summary>
         /// Clears the search results objects to purge them from memory
         /// </summary>
         private void ClearResults()
@@ -265,35 +309,19 @@ namespace Boxify.Frames
                     PlaylistList playlistList = listItem as PlaylistList;
                     playlistList.Unload();
                     Results.Items.Remove(playlistList);
-                    playlistList = null;
                 }
                 else if (listItem is TrackList)
                 {
                     TrackList trackList = listItem as TrackList;
                     trackList.Unload();
                     Results.Items.Remove(trackList);
-                    trackList = null;
                 }
                 else if (listItem is AlbumList)
                 {
                     AlbumList albumList = listItem as AlbumList;
                     albumList.Unload();
                     Results.Items.Remove(albumList);
-                    albumList = null;
                 }
-            }
-        }
-
-        /// <summary>
-        /// user hits enter to search
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SearchBox_KeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                SearchButton_Click(null, null);
             }
         }
 
@@ -308,25 +336,11 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (Results != null)
-                    {
-                        Results.ItemClick -= Results_ItemClick;
-                        ClearResults();
-                        Results = null;
-                    }
-                    if (SearchType != null)
-                    {
-                        SearchType.SelectionChanged -= SearchButton_Click;
-                        SearchType = null;
-                    }
-                    if (SearchButton != null)
-                    {
-                        SearchButton.Click -= SearchButton_Click;
-                        SearchButton = null;
-                    }
+                    Results.ItemClick -= Results_ItemClick;
+                    ClearResults();
 
-                    SearchBox = null;
-                    Feedback = null;
+                    SearchType.SelectionChanged -= SearchButton_Click;
+                    SearchButton.Click -= SearchButton_Click;
                 });
             }
         }

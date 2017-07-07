@@ -37,6 +37,7 @@ namespace Boxify.Controls
     public sealed partial class Playback : UserControl
     {
         private DispatcherTimer uiUpdateTimer;
+        private static bool loading = false;
 
         /// <summary>
         /// Main constructor
@@ -44,6 +45,7 @@ namespace Boxify.Controls
         public Playback()
         {
             this.InitializeComponent();
+            TvSafeBottomBorder.Height = MainPage.TV_SAFE_VERTICAL_MARGINS;
             uiUpdateTimer = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromMilliseconds(100)
@@ -90,9 +92,13 @@ namespace Boxify.Controls
                 UpdateProgressUI();
                 LoadingTrack.IsActive = false;
             }
-            else
+            else if (loading)
             {
                 SetLoadingActive(true);
+            }
+            else
+            {
+                LoadingTrack.IsActive = false;
             }
         }
 
@@ -164,8 +170,7 @@ namespace Boxify.Controls
         /// </summary>
         public void SafeAreaOff()
         {
-            MainPanel.Margin = new Thickness(0, 0, 0, 0);
-            MainGrid.Height = 100;
+            TvSafeBottomBorder.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -173,8 +178,7 @@ namespace Boxify.Controls
         /// </summary>
         public void SafeAreaOn()
         {
-            MainPanel.Margin = new Thickness(0, 0, 0, 48);
-            MainGrid.Height = 148;
+            TvSafeBottomBorder.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -198,8 +202,24 @@ namespace Boxify.Controls
             Progress.Maximum = App.playbackService.Player.PlaybackSession.NaturalDuration.TotalSeconds;
             Progress.Value = App.playbackService.Player.PlaybackSession.Position.TotalSeconds;
 
-            CurrentTime.Text = App.playbackService.Player.PlaybackSession.Position.ToString(@"mm\:ss");
-            Duration.Text = (App.playbackService.Player.PlaybackSession.NaturalDuration - App.playbackService.Player.PlaybackSession.Position).ToString(@"mm\:ss");
+            TimeSpan valueTime = TimeSpan.FromSeconds(Progress.Value);
+            if (valueTime.TotalHours < 1)
+            {
+                CurrentTime.Text = (valueTime).ToString(@"mm\:ss");
+            }
+            else
+            {
+                CurrentTime.Text = Math.Floor(valueTime.TotalHours).ToString() + ":" + (valueTime).ToString(@"mm\:ss");
+            }
+            TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum - App.playbackService.Player.PlaybackSession.Position.TotalSeconds);
+            if (maxTime.TotalHours < 1)
+            {
+                Duration.Text = maxTime.ToString(@"mm\:ss");
+            }
+            else
+            {
+                Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+            }
         }
 
         /// <summary>
@@ -238,8 +258,16 @@ namespace Boxify.Controls
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
-                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
-                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+                    CurrentTime.Text = (TimeSpan.FromSeconds(0)).ToString(@"h\:mm\:ss");
+                    TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum);
+                    if (maxTime.TotalHours < 1)
+                    {
+                        Duration.Text = maxTime.ToString(@"mm\:ss");
+                    }
+                    else
+                    {
+                        Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+                    }
                 });
             }
         }
@@ -263,8 +291,17 @@ namespace Boxify.Controls
                     }
                     Progress.Maximum = newTrack.Source.Duration.Value.TotalSeconds;
                     Progress.Value = 0;
-                    CurrentTime.Text = (TimeSpan.FromSeconds(Progress.Value)).ToString(@"mm\:ss");
-                    Duration.Text = (TimeSpan.FromSeconds(Progress.Maximum)).ToString(@"mm\:ss");
+
+                    CurrentTime.Text = (TimeSpan.FromSeconds(0)).ToString(@"h\:mm\:ss");
+                    TimeSpan maxTime = TimeSpan.FromSeconds(Progress.Maximum);
+                    if (maxTime.TotalHours < 1)
+                    {
+                        Duration.Text = maxTime.ToString(@"mm\:ss");
+                    }
+                    else
+                    {
+                        Duration.Text = (Math.Floor(maxTime.TotalHours)).ToString() + ":" + (maxTime).ToString(@"mm\:ss");
+                    }
                 });
             }
         }
@@ -493,6 +530,7 @@ namespace Boxify.Controls
         /// <param name="visible"></param>
         public void SetLoadingActive(bool active)
         {
+            loading = active;
             LoadingTrack.IsActive = active;
             if (active)
             {
@@ -533,65 +571,16 @@ namespace Boxify.Controls
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (uiUpdateTimer != null)
-                    {
-                        uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
-                        uiUpdateTimer = null;
-                    }
-
-                    if (Repeat != null)
-                    {
-                        Repeat.Click -= Repeat_Click;
-                        Repeat = null;
-                    }
-                    if (RepeatEnabled != null)
-                    {
-                        RepeatEnabled.Click -= Repeat_Click;
-                        RepeatEnabled = null;
-                    }
-                    if (Volume != null)
-                    {
-                        Volume.Click -= Volume_Click;
-                        Volume = null;
-                    }
-                    if (VolumeSlider != null)
-                    {
-                        VolumeSlider.LostFocus -= VolumeSlider_LostFocus;
-                        VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
-                        VolumeSlider = null;
-                    }
-                    if (Play != null)
-                    {
-                        Play.Click -= PlayPause_Click;
-                        Play = null;
-                    }
-                    if (Pause != null)
-                    {
-                        Pause.Click -= PlayPause_Click;
-                        Pause = null;
-                    }
-                    if (Previous != null)
-                    {
-                        Previous.Click -= Previous_Click;
-                        Previous = null;
-                    }
-                    if (Next != null)
-                    {
-                        Next.Click -= Next_Click;
-                        Next = null;
-                    }
-
-                    LoadingTrack = null;
-                    AlbumArt.Source = null;
-                    AlbumArt = null;
-                    TrackName = null;
-                    TrackArtist = null;
-                    CurrentTime = null;
-                    Progress = null;
-                    Duration = null;
-
-                    MainPanel = null;
-                    MainGrid = null;
+                    uiUpdateTimer.Tick -= UiUpdateTimer_Tick;
+                    Repeat.Click -= Repeat_Click;
+                    RepeatEnabled.Click -= Repeat_Click;
+                    Volume.Click -= Volume_Click;
+                    VolumeSlider.LostFocus -= VolumeSlider_LostFocus;
+                    VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
+                    Play.Click -= PlayPause_Click;
+                    Pause.Click -= PlayPause_Click;
+                    Previous.Click -= Previous_Click;
+                    Next.Click -= Next_Click;
                 });
             }
         }

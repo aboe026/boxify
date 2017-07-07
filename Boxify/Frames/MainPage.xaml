@@ -59,7 +59,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <Border Name="AnnouncementsBackground"
                     RelativePanel.AlignHorizontalCenterWithPanel="True"
                     RelativePanel.AlignVerticalCenterWithPanel="True"
-                    Background="{ThemeResource NavBarBackground}"
+                    Background="{ThemeResource SystemChromeLowColor}"
                     Width="580"
                     Height="320"
                     Padding="40,10,40,10">
@@ -102,69 +102,77 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                     Background="Transparent"
                     Click="CloseAnnouncements_Click"/>
 
-
         </RelativePanel>
 
         <RelativePanel Name="Header"
                        Grid.Row="0"
-                       Margin="48,27,48,0"
+                       Margin="48,27,48,0" 
+                       Background="Transparent"
                        Canvas.ZIndex="1">
+
+            <Canvas Height="8"
+                    Width="48"
+                    Background="{ThemeResource SystemChromeLowColor}"/>
+
+            <Canvas RelativePanel.AlignBottomWithPanel="True"
+                    Height="8"
+                    Width="48"
+                    Background="{ThemeResource SystemChromeLowColor}"/>
 
             <Button Name="Hamburger"
                     RelativePanel.AlignLeftWithPanel="True"
-                    Height="67"
+                    RelativePanel.AlignVerticalCenterWithPanel="True"
+                    Style="{StaticResource NavButtonHeaderStyle}"
+                    BorderBrush="{ThemeResource SystemChromeLowColor}"
+                    BorderThickness="4"
                     Content="&#xE700;"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="46"
-                    BorderBrush="{ThemeResource AppButtonBorder}"
                     Click="Hamburger_Click"
                     XYFocusDown="{x:Bind BrowseItem}"/>
 
             <Button Name="Back"
                     RelativePanel.RightOf="Hamburger"
-                    RelativePanel.AlignVerticalCenterWith="Hamburger"
-                    Margin="10,0,0,0"
-                    FontFamily="Segoe MDl2 Assets" 
-                    FontSize="36"
+                    RelativePanel.AlignVerticalCenterWithPanel="True"
+                    Style="{StaticResource NavButtonHeaderStyle}"
                     Content="&#xE0C4;"
-                    Background="Transparent"
                     Click="Back_Click"/>
 
             <TextBlock Name="Title"
                        RelativePanel.RightOf="Back"
-                       Margin="10,0,0,0"
-                       Text="Title"
-                       Style="{StaticResource HeaderTextBlockStyle}"/>
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Margin="10,-6,0,0"
+                       Style="{StaticResource SubheaderTextBlockStyle}"
+                       Text="Title"/>
 
             <Image Name="SpotifyLogo"
                    RelativePanel.AlignTopWithPanel="True"
                    RelativePanel.AlignHorizontalCenterWithPanel="True"
                    Width="95"
-                   Margin="14"
+                   Margin="0,4,0,0"
                    Source="{ThemeResource SpotifyLogo}"/>
 
             <ProgressBar Name="SpotifyLoading"
                          RelativePanel.AlignHorizontalCenterWithPanel="True"
-                         RelativePanel.Below="SpotifyLogo"
+                         RelativePanel.AlignBottomWithPanel="True"
                          Height="8"
                          Width="150"
-                         Foreground="#FF1DB954"
-                         Background="#FF191414"/>
+                         Foreground="{StaticResource SpotifyGreen}"
+                         Background="{ThemeResource SystemBaseLowColor}"/>
 
             <Image Name="YouTubeLogo"
                    RelativePanel.AlignTopWithPanel="True"
                    RelativePanel.AlignHorizontalCenterWithPanel="True"
                    Height="55"
+                   Margin="0,-8,0,0"
                    Source="{ThemeResource YouTubeLogo}"
                    Canvas.ZIndex="0"/>
 
             <ProgressBar Name="YouTubeLoading"
                          RelativePanel.AlignHorizontalCenterWithPanel="True"
-                         RelativePanel.Below="YouTubeLogo"
+                         RelativePanel.AlignBottomWithPanel="True"
                          Height="8"
                          Width="150"
-                         Foreground="#e52d27"
-                         Background="#000000"/>
+                         Foreground="{StaticResource YouTubeRed}"
+                         Background="{ThemeResource SystemBaseLowColor}"/>
 
             <TextBlock Name="LoadersMessage"
                        RelativePanel.Above="YouTubeLoading"
@@ -176,15 +184,16 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <TextBlock Name="UserName"
                        RelativePanel.LeftOf="UserPicContainer"
                        RelativePanel.RightOf="SpotifyLoading"
-                       Margin="0,25,10,0"
-                       Text="User Name"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       Margin="0,-4,10,0"
                        Style="{StaticResource TitleTextBlockStyle}"
                        TextAlignment="Right"
+                       Text="User Name"
                        PointerReleased="UserElement_PointerReleased"/>
 
             <Ellipse Name="UserPicContainer"
                      RelativePanel.AlignRightWithPanel="True"
-                     Margin="0,17,17,0"
+                     Margin="0,4,4,0"
                      Height="50"
                      Width="50"
                      Stroke="{ThemeResource AppButtonBorder}"
@@ -200,7 +209,7 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             <TextBlock Name="BlankUser"
                        RelativePanel.AlignHorizontalCenterWith="UserPicContainer"
                        RelativePanel.AlignVerticalCenterWith="UserPicContainer"
-                       Margin="0,17,17,0"
+                       Margin="0,4,4,0"
                        FontFamily="Segoe MDl2 Assets" 
                        FontSize="24"
                        Text="&#xE77B;"
@@ -212,16 +221,27 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 Grid.Column="0"
-                Width="114"
+                Width="48"
                 HorizontalAlignment="Left"
-                Background="{ThemeResource NavBarBackground}"/>
+                Canvas.ZIndex="1"
+                Background="{ThemeResource SystemChromeLowColor}"/>
+
+        <Canvas Name="NavLeftBorderHamburgerExtension"
+                Grid.Row="0"
+                Grid.Column="0"
+                Height="27"
+                Width="96"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Canvas.ZIndex="1"
+                Background="{ThemeResource SystemChromeLowColor}"/>
 
         <Canvas Name="RightMainBackground"
                 Grid.Row="0"
                 Grid.RowSpan="3"
-                Grid.Column="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
                 HorizontalAlignment="Stretch"
-                Margin="114,0,0,0"
                 Background="{ThemeResource MainBackground}"/>
 
         <SplitView Name="MainSplitView"
@@ -229,47 +249,69 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
                    Grid.RowSpan="2"
                    Margin="48,0,48,0"
                    DisplayMode="CompactOverlay" 
-                   OpenPaneLength="250"
+                   OpenPaneLength="172"
                    Canvas.ZIndex="2"
-                   CompactPaneLength="66">
+                   CompactPaneLength="48">
 
             <SplitView.Pane>
                 <ListView Name="HamburgerOptions"
-                          Margin="0,0,0,48"
+                          Margin="0,0,0,27"
                           SelectionMode="Multiple"
                           IsMultiSelectCheckBoxEnabled="False"
                           SelectionChanged="HamburgerOptions_SelectionChanged">
 
-                    <ListViewItem Name="BrowseItem" Style="{StaticResource NavOptionListViewItemStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE93C;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
-                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Browse</TextBlock>
-                        </StackPanel>
+                    <ListViewItem Name="BrowseItem" Style="{StaticResource NavListViewItemStyle}">
+                        <RelativePanel>
+                            <Canvas Name="BrowseItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="BrowseItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}" Width="50"/>
+                            <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <TextBlock Name="BrowseItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE93C;"/>
+                                <RelativePanel>
+                                    <TextBlock Name="BrowseItemText" Style="{StaticResource NavItemTextBlockStyle}">Browse</TextBlock>
+                                </RelativePanel>
+                            </StackPanel>
+                        </RelativePanel>
                     </ListViewItem>
-                    <ListViewItem Name="YourMusicItem" Style="{StaticResource NavOptionListViewItemStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE8F1;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
-                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Your Music</TextBlock>
-                        </StackPanel>
+                    <ListViewItem Name="YourMusicItem" Style="{StaticResource NavListViewItemStyle}">
+                        <RelativePanel>
+                            <Canvas Name="YourMusicItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="YourMusicItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="76"/>
+                            <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <TextBlock Name="YourMusicItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE8F1;"/>
+                                <TextBlock Name="YourMusicItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="27,0,0,0">Your Music</TextBlock>
+                            </StackPanel>
+                        </RelativePanel>
                     </ListViewItem>
-                    <ListViewItem Name="ProfileItem" Style="{StaticResource NavOptionListViewItemStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE748;" Margin="5,0,0,0" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
-                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Profile</TextBlock>
-                        </StackPanel>
+                    <ListViewItem Name="ProfileItem" Style="{StaticResource NavListViewItemStyle}">
+                        <RelativePanel>
+                            <Canvas Name="ProfileItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="ProfileItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="44"/>
+                            <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <TextBlock Name="ProfileItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE748;" Margin="4,0,0,0"/>
+                                <TextBlock Name="ProfileItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="23,0,0,0">Profile</TextBlock>
+                            </StackPanel>
+                        </RelativePanel>
                     </ListViewItem>
-                    <ListViewItem Name="SearchItem" Style="{StaticResource NavOptionListViewItemStyle}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#xE721;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets" Margin="-2,0,0,0"/>
-                            <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Search</TextBlock>
-                        </StackPanel>
+                    <ListViewItem Name="SearchItem" Style="{StaticResource NavListViewItemStyle}">
+                        <RelativePanel>
+                            <Canvas Name="SearchItemHighlight" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                            <Canvas Name="SearchItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}"  Width="47"/>
+                            <StackPanel Orientation="Horizontal" RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <TextBlock Name="SearchItemIcon" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE721;" Margin="-1,0,0,0"/>
+                                <TextBlock Name="SearchItemText" Style="{StaticResource NavItemTextBlockStyle}" Margin="29,0,0,0">Search</TextBlock>
+                            </StackPanel>
+                        </RelativePanel>
                     </ListViewItem>
                     <ListView.Footer>
-                        <Button Name="SettingsItem" Width="250" Height="67" Background="Transparent" Click="SettingsItem_Click">
-                            <StackPanel Orientation="Horizontal" Width="250">
-                                <TextBlock Text="&#xE713;" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe MDL2 Assets"/>
-                                <TextBlock Style="{StaticResource NavOptionTextBlockStyle}">Settings</TextBlock>
-                            </StackPanel>
+                        <Button Name="SettingsItem" Width="171" Height="48" Background="Transparent" Click="SettingsItem_Click" BorderThickness="0" Padding="0,0,0,0">
+                            <RelativePanel Margin="-8,0,0,0">
+                                <Canvas Name="SettingsItemHighlight" Margin="0,0,0,0" Style="{StaticResource NavItemHighlightCanvasStyle}"/>
+                                <Canvas Name="SettingsItemExpandedHighlight" Style="{StaticResource NavItemExpandedHighlightCanvasStyle}" Margin="59,36,0,0"  Width="56"/>
+                                <StackPanel Orientation="Horizontal" Height="48" RelativePanel.AlignVerticalCenterWithPanel="True" Width="163">
+                                    <TextBlock Name="SettignsItemIcon" Margin="14,14,0,0" Style="{StaticResource NavItemIconTextBlockStyle}" Text="&#xE713;"/>
+                                    <TextBlock Name="SettingsItemText" Margin="26,14,0,0" Style="{StaticResource NavItemTextBlockStyle}">Settings</TextBlock>
+                                </StackPanel>
+                            </RelativePanel>
                         </Button>
                     </ListView.Footer>
 
@@ -278,39 +320,58 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
             </SplitView.Pane>
             <SplitView.Content>
 
-                <RelativePanel HorizontalAlignment="Stretch">
-                    <Grid  Name="ErrorMessageGrid"
-                           RelativePanel.AlignTopWithPanel="True"
-                           RelativePanel.AlignLeftWithPanel="True"
-                           RelativePanel.AlignRightWithPanel="True"
-                           Background="{ThemeResource NavBarBackground}">
+                <RelativePanel
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                    <RelativePanel
+                        Name="Errors"
+                        RelativePanel.AlignTopWithPanel="True"
+                        RelativePanel.AlignLeftWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True"
+                        Background="{ThemeResource SystemChromeLowColor}">
 
-                        <TextBlock Name="ErrorMessage"
-                                   Grid.Row="0"
-                                   Margin="10,0,10,0"
-                                   Text="Generic Error Message"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"
-                                   TextWrapping="Wrap"
-                                   TextAlignment="Center"/>
+                        <RelativePanel
+                            Name="ErrorMessages"
+                            RelativePanel.AlignTopWithPanel="True"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True">
+                            
+                            <TextBlock
+                                Name="ErrorMessage"
+                                RelativePanel.AlignTopWithPanel="True"
+                                RelativePanel.AlignBottomWithPanel="True"
+                                RelativePanel.AlignLeftWithPanel="True"
+                                RelativePanel.AlignRightWithPanel="True"
+                                Margin="10,0,40,0"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                TextWrapping="Wrap"
+                                TextAlignment="Center"
+                                Text="Generic Error Message"/>
 
-                        <controls:CancelDialog x:Name="CancelDialog"
-                                               Grid.Row="1"
-                                               Margin="10,0,10,0"/>
+                            <Button
+                                Name="ErrorMessageClose"
+                                RelativePanel.AlignRightWithPanel="True"
+                                RelativePanel.AlignVerticalCenterWith="ErrorMessage"
+                                Style="{StaticResource IconButtonStyle}"
+                                Content="&#xE894;" Click="ErrorMessageClose_Click"/>
 
-                    </Grid>
+                        </RelativePanel>
+
+                        <controls:CancelDialog
+                            x:Name="CancelDialog"
+                            RelativePanel.Below="ErrorMessages"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True"
+                            Margin="10,0,10,0"/>
+
+                    </RelativePanel>
 
                     <Frame Name="MainContentFrame"
-                           RelativePanel.Below="ErrorMessageGrid"
-                           RelativePanel.AlignBottomWith="PlaybackMenu"
+                           RelativePanel.Below="Errors"
                            RelativePanel.AlignLeftWithPanel="True"
                            RelativePanel.AlignRightWithPanel="True"
                            RelativePanel.Above="PlaybackMenu"
-                           Margin="0,0,0,148"
                            XYFocusDown="{x:Bind PlaybackMenu}"/>
 
                     <controls:Playback x:Name="PlaybackMenu"

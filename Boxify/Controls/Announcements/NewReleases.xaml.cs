@@ -16,67 +16,35 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see<http://www.gnu.org/licenses/>.
 *******************************************************************/
 
-using System;
 using Boxify.Frames;
+using System;
 using Windows.ApplicationModel.Core;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Boxify.Controls.Announcements
 {
-    public sealed partial class Shuffle : UserControl
+    public sealed partial class NewReleases : UserControl
     {
-        public Shuffle()
+        public NewReleases()
         {
             this.InitializeComponent();
         }
 
-        /// <summary>
-        /// Construct the object with a pre-defined source
-        /// </summary>
-        /// <param name="enabled">Whether or not shuffle is currently enabled</param>
-        public Shuffle(bool enabled) : this()
+        private void ToPage_Click(object sender, RoutedEventArgs e)
         {
-            if (enabled)
+            if (App.mainPage != null)
             {
-                ShuffleIcon.Foreground = new SolidColorBrush(Colors.Green);
-            }
-            else
-            {
-                ShuffleIcon.Foreground = (SolidColorBrush)Resources["PlaybackButtonForeground"];
-            }
-            ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
-            ShuffleSwitch.IsOn = enabled;
-            ShuffleSwitch.Toggled += ShuffleSwitch_Toggled;
-        }
-
-        /// <summary>
-        /// User wishes to switch shuffle on or off
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShuffleSwitch_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (ShuffleSwitch.IsOn)
-            {
-                ShuffleIcon.Foreground = new SolidColorBrush(Colors.Green);
-            }
-            else
-            {
-                ShuffleIcon.Foreground = (SolidColorBrush)Resources["PlaybackButtonForeground"];
-            }
-            if (MainPage.settingsPage != null)
-            {
-                MainPage.settingsPage.ToggleShuffle();
-            }
-            else
-            {
-                Settings.SetShuffle(!Settings.shuffleEnabled);
+                App.mainPage.HideAnnouncements();
+                App.mainPage.SelectHamburgerOption("BrowseItem", true);
+                if (MainPage.browsePage != null)
+                {
+                    MainPage.browsePage.GoToNewReleases();
+                }
+                App.mainPage.CloseAnnouncements_Click(null, null);
             }
         }
 
@@ -91,7 +59,7 @@ namespace Boxify.Controls.Announcements
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    ShuffleSwitch.Toggled -= ShuffleSwitch_Toggled;
+                    ToPage.Click -= ToPage_Click;
                 });
             }
         }

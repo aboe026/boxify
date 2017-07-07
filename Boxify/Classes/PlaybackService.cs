@@ -51,6 +51,7 @@ namespace Boxify.Classes
             queue.CurrentItemChanged += CurrentItemChanged;
             queue.ItemFailed += ItemFailed;
             Player.PlaybackSession.PlaybackStateChanged += PlayStateChanges;
+            Player.AudioCategory = MediaPlayerAudioCategory.Media;
         }
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace Boxify.Classes
             currentSession = new PlaybackSession(currentLock, Settings.playbackSource, type, Settings.shuffleEnabled, href, totalTracks);
             queue.Items.Clear();
             Player.Source = queue;
+            queue.AutoRepeatEnabled = Settings.repeatEnabled;
             await currentSession.LoadTracks(0, PlaybackSession.INITIAL_TRACKS_REQUEST);
             App.mainPage.SetPlaybackMenu(false);
         }
@@ -118,7 +120,6 @@ namespace Boxify.Classes
             {
                 MediaPlaybackItem item = queue.Items.First(kvp => kvp.Source.CustomProperties["mediaItemId"].ToString() == mediaId);
                 queue.Items.Remove(item);
-                item = null;
             }
         }
 

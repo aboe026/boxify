@@ -25,6 +25,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -154,11 +155,11 @@ namespace Boxify
                 // playback source
                 if (composite["PlaybackSource"] != null && composite["PlaybackSource"].ToString() == "YouTube")
                 {
-                    Settings.playbackSource = Settings.Playbacksource.YouTube;
+                    Settings.playbackSource = Settings.PlaybackSource.YouTube;
                 }
                 else
                 {
-                    Settings.playbackSource = Settings.Playbacksource.Spotify;
+                    Settings.playbackSource = Settings.PlaybackSource.Spotify;
                 }
 
                 // repeat
@@ -199,7 +200,7 @@ namespace Boxify
                 // Defaults
                 Settings.tvSafeArea = true;
                 Settings.theme = Settings.Theme.System;
-                Settings.playbackSource = Settings.Playbacksource.Spotify;
+                Settings.playbackSource = Settings.PlaybackSource.Spotify;
                 Settings.repeatEnabled = false;
                 Settings.shuffleEnabled = false;
                 Settings.volume = 100;
@@ -229,6 +230,10 @@ namespace Boxify
                     if (VersionGreaterThan(previousVersion, "1.1.0.0"))
                     {
                         MainPage.announcementItems.Add(new Shuffle(Settings.shuffleEnabled));
+                    }
+                    if (VersionGreaterThan(previousVersion, "1.2.0.0"))
+                    {
+                        MainPage.announcementItems.Add(new NewReleases());
                     }
                 }
             }

@@ -38,74 +38,186 @@ along with this program.If not, see<http://www.gnu.org/licenses/>.
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Margin="20,0,20,0" >
+    <Pivot
+        Name="MainPivot"
+        SelectionChanged="MainPivot_SelectionChanged">
 
-        <RelativePanel>
+        <PivotItem 
+            Name="Featured"
+            Margin="0,0,0,0">
 
-            <TextBlock Name="FeaturedPlaylistLabel"
-                       Text="Featured Playlists"
-                       Margin="0,0,0,0"
-                       Style="{StaticResource SubheaderTextBlockStyle}"/>
+            <PivotItem.Header>
+                <TextBlock
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="Featured"/>
+            </PivotItem.Header>
 
-            <Button Name="Refresh" 
-                    RelativePanel.RightOf="FeaturedPlaylistLabel"
-                    RelativePanel.AlignVerticalCenterWith="FeaturedPlaylistLabel"
-                    Margin="20,5,0,-6"
-                    Height="40"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="24" 
-                    Content="&#xE72C;"
-                    Background="Transparent"
-                    Click="Refresh_Click"
-                    XYFocusRight="{x:Bind More}"/>
+            <RelativePanel>
 
-            <Button Name="More"
-                    RelativePanel.RightOf="Refresh"
-                    RelativePanel.AlignVerticalCenterWith="FeaturedPlaylistLabel"
-                    Margin="20,5,0,-6"
-                    Content="More..."
-                    Style="{StaticResource ButtonStyle}"
-                    Click="More_Click"/>
+                <RelativePanel
+                    Name="FeaturedControls"
+                    RelativePanel.AlignTopWithPanel="True"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    Margin="20,0,20,10">
 
-            <TextBlock Name="FeaturedPlaylistMessage"
-                       Text="What others are listending to now..."
-                       RelativePanel.Below="FeaturedPlaylistLabel"
-                       Margin="0,0,0,20"
-                       Style="{StaticResource TitleTextBlockStyle}"/>
+                    <TextBlock
+                        Name="FeaturedMessage"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        TextAlignment="Center"
+                        TextTrimming="CharacterEllipsis"
+                        Text="What others are listending to now..."/>
 
-            <GridView Name="FeaturedPlaylists"
-                      RelativePanel.Below="FeaturedPlaylistMessage"
-                      RelativePanel.AlignLeftWithPanel="True"
-                      RelativePanel.AlignRightWithPanel="True"
-                      IsItemClickEnabled="True"
-                      ItemClick="FeaturedPlaylists_ItemClick"
-                      XYFocusUp="{x:Bind Refresh}">
+                    <Button
+                        Name="FeaturedRefresh" 
+                        RelativePanel.LeftOf="FeaturedMore"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Style="{StaticResource IconButtonStyle}"
+                        Content="&#xE72C;"
+                        ToolTipService.ToolTip="Refresh"
+                        Click="FeaturedRefresh_Click"/>
 
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapGrid Orientation="Horizontal" HorizontalChildrenAlignment="Left" VerticalChildrenAlignment="Stretch">
-                        </WrapGrid>
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
+                    <Button
+                        Name="FeaturedMore"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Style="{StaticResource TextButtonStyle}"
+                        Content="More"
+                        ToolTipService.ToolTip="Load More"
+                        Click="FeaturedMore_Click"/>
 
-                <GridView.ItemContainerStyle>
+                </RelativePanel>
 
-                    <Style TargetType="GridViewItem">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="GridViewItem">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
+                <GridView
+                    Name="FeaturedPlaylists"
+                    RelativePanel.Below="FeaturedControls"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    IsItemClickEnabled="True"
+                    ItemClick="FeaturedPlaylist_ItemClick">
 
-                </GridView.ItemContainerStyle>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid
+                                Orientation="Horizontal"
+                                HorizontalChildrenAlignment="Left"
+                                VerticalChildrenAlignment="Stretch">
+                            </WrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
 
-            </GridView>
+                    <GridView.ItemContainerStyle>
 
-        </RelativePanel>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GridViewItem">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
 
-    </Grid>
+                    </GridView.ItemContainerStyle>
+
+                </GridView>
+
+            </RelativePanel>
+
+        </PivotItem>
+
+        <PivotItem 
+            Name="NewReleases"
+            Margin="0,0,0,0">
+
+            <PivotItem.Header>
+                <TextBlock
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="New Releases"/>
+            </PivotItem.Header>
+
+            <RelativePanel>
+
+                <RelativePanel
+                    Name="NewReleasesControls"
+                    RelativePanel.AlignTopWithPanel="True"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    Margin="20,0,20,10">
+
+                    <TextBlock
+                        Name="NewReleasesMessage"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignHorizontalCenterWithPanel="True"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        TextAlignment="Center"
+                        TextTrimming="WordEllipsis"
+                        Text="New Albums and Singles"/>
+
+                    <Button
+                        Name="NewReleasesRefresh" 
+                        RelativePanel.LeftOf="NewReleasesMore"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Style="{StaticResource IconButtonStyle}"
+                        Content="&#xE72C;"
+                        ToolTipService.ToolTip="Refresh"
+                        Click="NewReleasesRefresh_Click"/>
+
+                    <Button
+                        Name="NewReleasesMore"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        Style="{StaticResource TextButtonStyle}"
+                        Content="More"
+                        ToolTipService.ToolTip="Load More"
+                        Click="NewReleasesMore_Click"/>
+
+                </RelativePanel>
+
+                <GridView
+                    Name="NewReleasesAlbums"
+                    RelativePanel.Below="NewReleasesControls"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    IsItemClickEnabled="True"
+                    ItemClick="NewReleasesAlbums_ItemClick">
+
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid
+                                Orientation="Horizontal"
+                                HorizontalChildrenAlignment="Left"
+                                VerticalChildrenAlignment="Stretch">
+                            </WrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+
+                    <GridView.ItemContainerStyle>
+
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="GridViewItem">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </GridView.ItemContainerStyle>
+
+                </GridView>
+
+            </RelativePanel>
+
+        </PivotItem>
+
+    </Pivot>
+
 </Page>

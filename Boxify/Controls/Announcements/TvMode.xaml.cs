@@ -81,20 +81,11 @@ namespace Boxify.Controls.Announcements
         /// <param name="e"></param>
         public async void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            if (MainPage.closedAnnouncements || App.isInBackgroundMode)
+            if (MainPage.closedAnnouncements || (App.isInBackgroundMode && MainPage.closedAnnouncements))
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (TvModeSwitch != null)
-                    {
-                        TvModeSwitch.Toggled -= TvModeSwitch_Toggled;
-                        TvModeSwitch = null;
-                    }
-
-                    Header = null;
-                    Message = null;
-
-                    CenteredPanel = null;
+                    TvModeSwitch.Toggled -= TvModeSwitch_Toggled;
                 });
             }
         }

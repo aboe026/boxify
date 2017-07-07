@@ -73,13 +73,7 @@ namespace Boxify.Controls
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (Cancel != null)
-                {
-                    Cancel.Click -= Cancel_Click;
-                    Cancel = null;
-                }
-
-                CancelText = null;
+                Cancel.Click -= Cancel_Click;
             });
         }
     }

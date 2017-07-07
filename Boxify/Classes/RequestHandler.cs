@@ -141,26 +141,26 @@ namespace Boxify.Classes
             {
 
             }
-            if (credentialsJson.TryGetValue("Spotify", out IJsonValue spotifyJson))
+            if (credentialsJson.TryGetValue("Spotify", out IJsonValue spotifyJson) && spotifyJson.ValueType == JsonValueType.Object)
             {
                 JsonObject spotifyObject = spotifyJson.GetObject();
-                if (spotifyObject.TryGetValue("clientId", out IJsonValue clientIdJson))
+                if (spotifyObject.TryGetValue("clientId", out IJsonValue clientIdJson) && clientIdJson.ValueType == JsonValueType.String)
                 {
                     clientId = clientIdJson.GetString();
                 }
-                if (spotifyObject.TryGetValue("clientSecret", out IJsonValue clientSecretJson))
+                if (spotifyObject.TryGetValue("clientSecret", out IJsonValue clientSecretJson) && clientSecretJson.ValueType == JsonValueType.String)
                 {
                     clientSecret = clientSecretJson.GetString();
                 }
             }
-            if (credentialsJson.TryGetValue("YouTube", out IJsonValue youtubeJson))
+            if (credentialsJson.TryGetValue("YouTube", out IJsonValue youtubeJson) && youtubeJson.ValueType == JsonValueType.Object)
             {
                 JsonObject youtubeObject = youtubeJson.GetObject();
-                if (youtubeObject.TryGetValue("applicationName", out IJsonValue applicationNameJson))
+                if (youtubeObject.TryGetValue("applicationName", out IJsonValue applicationNameJson) && applicationNameJson.ValueType == JsonValueType.String)
                 {
                     youtubeApplicationName = applicationNameJson.GetString();
                 }
-                if (youtubeObject.TryGetValue("apiKey", out IJsonValue apiKeyJson))
+                if (youtubeObject.TryGetValue("apiKey", out IJsonValue apiKeyJson) && apiKeyJson.ValueType == JsonValueType.String)
                 {
                     youtubeApiKey = apiKeyJson.GetString();
                 }
@@ -326,7 +326,7 @@ namespace Boxify.Classes
             }
             catch (COMException) { }
 
-            if (tokensJson.TryGetValue("access_token", out IJsonValue accessTokenJson))
+            if (tokensJson.TryGetValue("access_token", out IJsonValue accessTokenJson) && accessTokenJson.ValueType == JsonValueType.String)
             {
                 if (securityFlow == SecurityFlow.AuthorizationCode)
                 {
@@ -337,7 +337,7 @@ namespace Boxify.Classes
                     ccAccessToken = accessTokenJson.GetString();
                 }
             }
-            if (tokensJson.TryGetValue("expires_in", out IJsonValue expiresInJson))
+            if (tokensJson.TryGetValue("expires_in", out IJsonValue expiresInJson) && expiresInJson.ValueType == JsonValueType.Number)
             {
                 double expiresIn = expiresInJson.GetNumber();
                 DateTime currentTime = DateTime.Now;
@@ -350,19 +350,19 @@ namespace Boxify.Classes
                     ccExpireTime = currentTime.AddSeconds(expiresIn);
                 }
             }
-            if (tokensJson.TryGetValue("refresh_token", out IJsonValue refreshTokenJson))
+            if (tokensJson.TryGetValue("refresh_token", out IJsonValue refreshTokenJson) && refreshTokenJson.ValueType == JsonValueType.String)
             {
                 refreshToken = refreshTokenJson.GetString();
             }
-            if (tokensJson.TryGetValue("expire_time", out IJsonValue expireTimeJson))
+            if (tokensJson.TryGetValue("expire_time", out IJsonValue expireTimeJson) && expireTimeJson.ValueType == JsonValueType.String)
             {
                 expireTime = new DateTime(Convert.ToInt64(expireTimeJson.GetString()));
             }
-            if (tokensJson.TryGetValue("ccAccess_token", out IJsonValue ccAccessTokenJson))
+            if (tokensJson.TryGetValue("ccAccess_token", out IJsonValue ccAccessTokenJson) && ccAccessTokenJson.ValueType == JsonValueType.String)
             {
                 ccAccessToken = ccAccessTokenJson.GetString();
             }
-            if (tokensJson.TryGetValue("ccExpire_time", out IJsonValue ccExpireTimeJson))
+            if (tokensJson.TryGetValue("ccExpire_time", out IJsonValue ccExpireTimeJson) && ccExpireTimeJson.ValueType == JsonValueType.String)
             {
                 ccExpireTime = new DateTime(Convert.ToInt64(ccExpireTimeJson.GetString()));
             }
@@ -602,9 +602,9 @@ namespace Boxify.Classes
                     try
                     {
                         errorJson = JsonObject.Parse(httpResponse.Content.ToString());
-                        if (errorJson.TryGetValue("error", out IJsonValue errorValue))
+                        if (errorJson.TryGetValue("error", out IJsonValue errorValue) && errorValue.ValueType == JsonValueType.Object)
                         {
-                            if (errorValue.GetObject().TryGetValue("message", out IJsonValue errorMessageValue))
+                            if (errorValue.GetObject().TryGetValue("message", out IJsonValue errorMessageValue) && errorMessageValue.ValueType == JsonValueType.String)
                             {
                                 extraInfo = errorMessageValue.GetString();
                             }
@@ -634,11 +634,11 @@ namespace Boxify.Classes
                 return "";
             }
 
-            if (searchJson.TryGetValue("items", out IJsonValue itemsJson))
+            if (searchJson.TryGetValue("items", out IJsonValue itemsJson) && itemsJson.ValueType == JsonValueType.Array)
             {
-                if (itemsJson.GetArray().Count > 0 && itemsJson.GetArray().GetObjectAt(0).TryGetValue("id", out IJsonValue idJson))
+                if (itemsJson.GetArray().Count > 0 && itemsJson.GetArray().GetObjectAt(0).TryGetValue("id", out IJsonValue idJson) && idJson.ValueType == JsonValueType.Object)
                 {
-                    if (idJson.GetObject().TryGetValue("videoId", out IJsonValue videoIdJson))
+                    if (idJson.GetObject().TryGetValue("videoId", out IJsonValue videoIdJson) && videoIdJson.ValueType == JsonValueType.String)
                     {
                         return videoIdJson.GetString();
                     }

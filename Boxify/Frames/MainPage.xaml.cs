@@ -26,15 +26,14 @@ using Windows.ApplicationModel.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.System;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Boxify.Classes;
 using System.Threading.Tasks;
+using static Boxify.Frames.Settings;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -45,8 +44,12 @@ namespace Boxify.Frames
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public const double TV_SAFE_HORIZONTAL_MARGINS = 48;
+        public const double TV_SAFE_VERTICAL_MARGINS = 27;
+
         public static ListViewItem currentNavSelection = new ListViewItem();
         public static bool returningFromMemoryReduction = false;
+        public static List<long> loadingLocks = new List<long>();
         public static string errorMessage = "";
         public static List<UserControl> announcementItems = new List<UserControl>();
         public static bool closedAnnouncements = false;
@@ -102,12 +105,13 @@ namespace Boxify.Frames
             CancelDialog.Visibility = Visibility.Collapsed;
             if (errorMessage != "")
             {
+                Errors.Visibility = Visibility.Visible;
                 ErrorMessage.Visibility = Visibility.Visible;
                 ErrorMessage.Text = errorMessage;
             }
             else
             {
-                ErrorMessage.Visibility = Visibility.Collapsed;
+                ErrorMessages.Visibility = Visibility.Collapsed;
             }
 
             SpotifyLogo.Visibility = Visibility.Collapsed;
@@ -125,7 +129,6 @@ namespace Boxify.Frames
             
             if (App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
                 PlaybackMenu.Visibility = Visibility.Visible;
                 if (returningFromMemoryReduction)
                 {
@@ -135,7 +138,6 @@ namespace Boxify.Frames
             }
             else
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
                 PlaybackMenu.Visibility = Visibility.Collapsed;
             }
 
@@ -206,7 +208,7 @@ namespace Boxify.Frames
                 YourMusic.preEmptiveLoadPlaylists.Clear();
                 if (yourMusicPage != null)
                 {
-                    yourMusicPage.clearPlaylists();
+                    yourMusicPage.ClearPlaylists();
                 }
                 YourMusic.refreshing = true;
                 await YourMusic.SetPlaylists();
@@ -221,15 +223,7 @@ namespace Boxify.Frames
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (Settings.tvSafeArea)
-                {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
-                }
-                else
-                {
-                    MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
-                }
-
+                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
                 PlaybackMenu.SetRepeat(Settings.repeatEnabled);
                 PlaybackMenu.SetShuffle(Settings.shuffleEnabled);
                 PlaybackMenu.SetVolume(Settings.volume);
@@ -326,20 +320,28 @@ namespace Boxify.Frames
         /// <param name="option"></param>
         public void SelectHamburgerOption(string option, Boolean setFocus)
         {
+            BrowseItemHighlight.Visibility = Visibility.Collapsed;
+            YourMusicItemHighlight.Visibility = Visibility.Collapsed;
+            ProfileItemHighlight.Visibility = Visibility.Collapsed;
+            SearchItemHighlight.Visibility = Visibility.Collapsed;
+            SettingsItemHighlight.Visibility = Visibility.Collapsed;
+            BrowseItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            YourMusicItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            ProfileItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            SearchItemExpandedHighlight.Visibility = Visibility.Collapsed;
+            SettingsItemExpandedHighlight.Visibility = Visibility.Collapsed;
+
             HamburgerOptions.SelectedIndex = -1;
             if (option == "SettingsItem")
             {
-                SettingsItem.Background = (SolidColorBrush)Resources["SystemControlHighlightListAccentLowBrush"];
+                SettingsItemHighlight.Visibility = Visibility.Visible;
+                SettingsItemExpandedHighlight.Visibility = Visibility.Visible;
                 if (setFocus)
                 {
                     SettingsItem.Focus(FocusState.Programmatic);
                 }
                 HamburgerOptions.SelectedItem = null;
                 currentNavSelection = null;
-            }
-            else
-            {
-                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
             }
             for (int i = 0; i < HamburgerOptions.Items.Count; i++)
             {
@@ -348,6 +350,27 @@ namespace Boxify.Frames
                 {
                     item.IsSelected = true;
                     HamburgerOptions.SelectedItem = item;
+                    currentNavSelection = item;
+                    if (item.Name == "BrowseItem")
+                    {
+                        BrowseItemHighlight.Visibility = Visibility.Visible;
+                        BrowseItemExpandedHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "YourMusicItem")
+                    {
+                        YourMusicItemHighlight.Visibility = Visibility.Visible;
+                        YourMusicItemExpandedHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "ProfileItem")
+                    {
+                        ProfileItemHighlight.Visibility = Visibility.Visible;
+                        ProfileItemExpandedHighlight.Visibility = Visibility.Visible;
+                    }
+                    else if (item.Name == "SearchItem")
+                    {
+                        SearchItemHighlight.Visibility = Visibility.Visible;
+                        SearchItemExpandedHighlight.Visibility = Visibility.Visible;
+                    }
                     if (setFocus)
                     {
                         item.Focus(FocusState.Programmatic);
@@ -376,7 +399,6 @@ namespace Boxify.Frames
                 {
                     return;
                 }
-                SettingsItem.Background = new SolidColorBrush(Colors.Transparent);
                 currentNavSelection = selectedItem;
                 currentNavSelection.Focus(FocusState.Programmatic);
                 foreach (ListViewItem item in HamburgerOptions.Items)
@@ -386,25 +408,43 @@ namespace Boxify.Frames
                         item.IsSelected = false;
                     }
                 }
+                BrowseItemHighlight.Visibility = Visibility.Collapsed;
+                YourMusicItemHighlight.Visibility = Visibility.Collapsed;
+                ProfileItemHighlight.Visibility = Visibility.Collapsed;
+                SearchItemHighlight.Visibility = Visibility.Collapsed;
+                SettingsItemHighlight.Visibility = Visibility.Collapsed;
+                BrowseItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                YourMusicItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                ProfileItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                SearchItemExpandedHighlight.Visibility = Visibility.Collapsed;
+                SettingsItemExpandedHighlight.Visibility = Visibility.Collapsed;
                 if (BrowseItem.IsSelected)
                 {
+                    BrowseItemHighlight.Visibility = Visibility.Visible;
+                    BrowseItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Browse));
                     Title.Text = "Browse";
                 }
                 else if (YourMusicItem.IsSelected)
                 {
+                    YourMusicItemHighlight.Visibility = Visibility.Visible;
+                    YourMusicItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(YourMusic));
                     Title.Text = "Your Music";
                 }
-                else if (SearchItem.IsSelected)
-                {
-                    NavigateToPage(typeof(Search));
-                    Title.Text = "Search";
-                }
                 else if (ProfileItem.IsSelected)
                 {
+                    ProfileItemHighlight.Visibility = Visibility.Visible;
+                    ProfileItemExpandedHighlight.Visibility = Visibility.Visible;
                     NavigateToPage(typeof(Profile));
                     Title.Text = "Profile";
+                }
+                else if (SearchItem.IsSelected)
+                {
+                    SearchItemHighlight.Visibility = Visibility.Visible;
+                    SearchItemExpandedHighlight.Visibility = Visibility.Visible;
+                    NavigateToPage(typeof(Search));
+                    Title.Text = "Search";
                 }
             }
             else if (e.RemovedItems.Count > 0)
@@ -450,18 +490,11 @@ namespace Boxify.Frames
         public void SafeAreaOff()
         {
             NavLeftBorder.Visibility = Visibility.Collapsed;
+            NavLeftBorderHamburgerExtension.Visibility = Visibility.Collapsed;
             Header.Margin = new Thickness(0, 0, 0, 0);
             MainSplitView.Margin = new Thickness(0, 0, 0, 0);
             HamburgerOptions.Margin = new Thickness(0, 0, 0, 0);
-            RightMainBackground.Margin = new Thickness(66, 0, 0, 0);
-            if (App.playbackService.showing)
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 100);
-            }
-            else
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
-            }
+            MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
             PlaybackMenu.SafeAreaOff();
         }
 
@@ -471,17 +504,13 @@ namespace Boxify.Frames
         public void SafeAreaOn()
         {
             NavLeftBorder.Visibility = Visibility.Visible;
-            Header.Margin = new Thickness(48, 27, 48, 0);
-            MainSplitView.Margin = new Thickness(48, 0, 48, 0);
-            HamburgerOptions.Margin = new Thickness(0, 0, 0, 48);
-            RightMainBackground.Margin = new Thickness(114, 0, 0, 0);
-            if (App.playbackService.showing)
+            NavLeftBorderHamburgerExtension.Visibility = Visibility.Visible;
+            Header.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, TV_SAFE_VERTICAL_MARGINS, TV_SAFE_HORIZONTAL_MARGINS, 0);
+            MainSplitView.Margin = new Thickness(TV_SAFE_HORIZONTAL_MARGINS, 0, TV_SAFE_HORIZONTAL_MARGINS, 0);
+            HamburgerOptions.Margin = new Thickness(0, 0, 0, TV_SAFE_VERTICAL_MARGINS);
+            if (!App.playbackService.showing)
             {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 148);
-            }
-            else
-            {
-                MainContentFrame.Margin = new Thickness(0, 0, 0, 0);
+                MainContentFrame.Margin = new Thickness(0, 0, 0, TV_SAFE_VERTICAL_MARGINS);
             }
             PlaybackMenu.SafeAreaOn();
         }
@@ -597,6 +626,32 @@ namespace Boxify.Frames
             Title.Text = "Settings";
         }
 
+        /// <summary>
+        /// Grab control of loading to prevent stale UI changes
+        /// </summary>
+        /// <param name="newLock">The new lock that has sole permission to update loading UI</param>
+        public static void AddLoadingLock(long newLock)
+        {
+            loadingLocks.Add(newLock);
+        }
+
+        /// <summary>
+        /// Take out hold on loading UI
+        /// </summary>
+        /// <param name="expiredLock">The lock to remove UI update permissions for</param>
+        public static void RemoveLoadingLock(long expiredLock)
+        {
+            loadingLocks.Remove(expiredLock);
+        }
+
+        /// <summary>
+        /// Get current key able to update loading UI
+        /// </summary>
+        /// <returns>The current lock that has permissions to update the loading UI</returns>
+        public static long CurrentLock()
+        {
+            return loadingLocks.Count > 0 ? loadingLocks.Last() : 0;
+        }
 
         /// <summary>
         /// Set the error message displayed to the user
@@ -604,8 +659,10 @@ namespace Boxify.Frames
         /// <param name="message">The error message to be displayed to the user</param>
         public void SetErrorMessage(string message)
         {
+            ErrorMessages.Visibility = Visibility.Visible;
             ErrorMessage.Visibility = Visibility.Visible;
             ErrorMessage.Text = message;
+            errorMessage = message;
         }
 
         /// <summary>
@@ -621,11 +678,25 @@ namespace Boxify.Frames
                 {
                     if (ErrorMessage != null)
                     {
+                        ErrorMessages.Visibility = Visibility.Visible;
                         ErrorMessage.Visibility = Visibility.Visible;
                         ErrorMessage.Text = message;
+                        errorMessage = message;
                     }
                 });
             }
+        }
+
+        /// <summary>
+        /// User decides to close errors
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ErrorMessageClose_Click(object sender, RoutedEventArgs e)
+        {
+            ErrorMessages.Visibility = Visibility.Collapsed;
+            ErrorMessage.Text = "";
+            errorMessage = "";
         }
 
         /// <summary>
@@ -662,10 +733,9 @@ namespace Boxify.Frames
         }
 
         /// <summary>
-        /// Set whether or not the Spotify logo/loading are visible
+        /// Bring up the Spotify logo and loading bar
         /// </summary>
-        /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
-        public void BringUpSpotify()
+        private void BringUpSpotify()
         {
             YouTubeLogo.Visibility = Visibility.Collapsed;
             YouTubeLoading.Visibility = Visibility.Collapsed;
@@ -681,117 +751,81 @@ namespace Boxify.Frames
         }
 
         /// <summary>
-        /// Ensure playlist has permission to bring up Spotify info
+        /// Bring up the YouTube logo and loading bar
         /// </summary>
-        /// <param name="localLock"></param>
-        public void BringUpSpotify(long localLock)
+        private void BringUpYouTube()
         {
-            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
+            SpotifyLogo.Visibility = Visibility.Collapsed;
+            SpotifyLoading.Visibility = Visibility.Collapsed;
+            YouTubeLogo.Visibility = Visibility.Visible;
+            YouTubeLoading.Visibility = Visibility.Visible;
+            LoadersMessage.SetValue(RelativePanel.AboveProperty, YouTubeLoading);
+            if (LoadersMessage.Visibility == Visibility.Collapsed)
             {
-                BringUpSpotify();
+                LoadersMessage.Visibility = Visibility.Visible;
+                LoadersMessage.Text = "";
             }
+            UserName.SetValue(RelativePanel.RightOfProperty, YouTubeLoading);
         }
 
         /// <summary>
-        /// Set the current Spotify loading progress
+        /// Sets the loading bar progress
         /// </summary>
-        /// <param name="value">The amount of progress made</param>
-        public void SetSpotifyLoadingValue(double value)
+        /// <param name="source">Whether or not the loading is happening from Spotify or YouTube</param>
+        /// <param name="value">The current value of the loading</param>
+        /// <param name="max">The point when loading is done</param>
+        /// <param name="loadingKey">The key to prevent stale UI</param>
+        public void SetLoadingProgress(PlaybackSource source, double value, double max, long loadingKey)
         {
-            SpotifyLoading.Value = value;
-        }
-
-        /// <summary>
-        /// Ensure playlist has permission before setting the current Spotify loading progress
-        /// </summary>
-        /// <param name="value">The amount of progress made</param>
-        public void SetSpotifyLoadingValue(double value, long localLock)
-        {
-            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
+            if (!App.isInBackgroundMode && loadingKey == CurrentLock())
             {
-                SetSpotifyLoadingValue(value);
-            }
-        }
-
-        /// <summary>
-        /// Set the maximum Spotify loading value
-        /// </summary>
-        /// <param name="max">The limit of progress</param>
-        public void SetSpotifyLoadingMaximum(double max)
-        {
-            SpotifyLoading.Maximum = max;
-        }
-
-        /// <summary>
-        /// Ensure playlist has permission before setting the maximum Spotify loading value
-        /// </summary>
-        /// <param name="max">The limit of progress</param>
-        public void SetSpotifyLoadingMaximum(double max, long localLock)
-        {
-            if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
-            {
-                SetSpotifyLoadingMaximum(max);
-            }
-        }
-
-        /// <summary>
-        /// Set whether or not the YouTube log/loading are visible
-        /// </summary>
-        /// <param name="visibility">Visible to see them, Collapsed to hide them</param>
-        public void BringUpYouTube()
-        {
-            if (SpotifyLogo != null && SpotifyLoading != null && YouTubeLogo != null && YouTubeLoading != null && LoadersMessage != null)
-            {
-                SpotifyLogo.Visibility = Visibility.Collapsed;
-                SpotifyLoading.Visibility = Visibility.Collapsed;
-                YouTubeLogo.Visibility = Visibility.Visible;
-                YouTubeLoading.Visibility = Visibility.Visible;
-                LoadersMessage.SetValue(RelativePanel.AboveProperty, YouTubeLoading);
-                if (LoadersMessage.Visibility == Visibility.Collapsed)
+                if (source == PlaybackSource.Spotify)
                 {
-                    LoadersMessage.Visibility = Visibility.Visible;
-                    LoadersMessage.Text = "";
+                    SpotifyLoading.Maximum = max;
+                    SpotifyLoading.Value = value;
+                    if (SpotifyLogo.Visibility != Visibility.Visible || SpotifyLoading.Visibility == Visibility.Visible)
+                    {
+                        BringUpSpotify();
+                    }
                 }
-                UserName.SetValue(RelativePanel.RightOfProperty, YouTubeLoading);
-            }
+                else if (source == PlaybackSource.YouTube)
+                {
+                    YouTubeLoading.Maximum = max;
+                    YouTubeLoading.Value = value;
+                    if (YouTubeLogo.Visibility != Visibility.Visible || YouTubeLoading.Visibility == Visibility.Visible)
+                    {
+                        BringUpYouTube();
+                    }
+                }
+                
+            }            
         }
 
         /// <summary>
-        /// Ensure playlist has permission to bring up YouTube info
+        /// Sets the loading bar progress
         /// </summary>
-        /// <param name="localLock"></param>
-        public void BringUpYouTube(long localLock)
+        /// <param name="source">Whether or not the loading is happening from Spotify or YouTube</param>
+        /// <param name="value">The current value of the loading</param>
+        /// <param name="max">The point when loading is done</param>
+        /// /// <param name="localLock">The lock for the playback session</param>
+        /// <param name="loadingKey">The key to prevent stale UI</param>
+        public void SetLoadingProgress(PlaybackSource source, double value, double max, long localLock, long loadingKey)
         {
             if (!App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
             {
-                BringUpYouTube();
+                SetLoadingProgress(source, value, max, loadingKey);
             }
         }
 
         /// <summary>
-        /// Set the current YouTube loading progress
+        /// Set the message displayed above the source loading bar
         /// </summary>
-        /// <param name="loading">The amount of progress made</param>
-        public void SetYouTubeValues(double loading, double max, long localLock)
+        /// <param name="message">The message to be displayed</param>
+        /// <param name="localLock">The lock to ensure only the latest playback session is updating</param>
+        /// <param name="loadingKey">The key to prevent stale messages</param>
+        public async void SetLoadersMessage(String message, long localLock, long loadingKey)
         {
-            if (YouTubeLoading != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
-            {
-                if (YouTubeLoading.Visibility == Visibility.Collapsed)
-                {
-                    BringUpYouTube();
-                }
-                YouTubeLoading.Value = loading;
-                YouTubeLoading.Maximum = max;
-            }
-        }
-
-        /// <summary>
-        /// Set the message displayed under the YouTube logo
-        /// </summary>
-        /// <param name="message"></param>
-        public async void SetLoadersMessage(String message, long localLock)
-        {
-            if (LoadersMessage != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock)
+            if (LoadersMessage != null && !App.isInBackgroundMode && localLock == App.playbackService.GlobalLock && loadingKey == CurrentLock())
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
@@ -799,6 +833,14 @@ namespace Boxify.Frames
                     LoadersMessage.Visibility = Visibility.Visible;
                 });
             }
+        }
+
+        /// <summary>
+        /// Hide announcements without destroying them
+        /// </summary>
+        public void HideAnnouncements()
+        {
+            AnnouncementsContainer.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -890,47 +932,48 @@ namespace Boxify.Frames
                     announcementItems.Remove(welcome);
                     welcome.UserControl_Unloaded(null, null);
                     welcome.Unloaded -= welcome.UserControl_Unloaded;
-                    welcome = null;
                 }
-                if (announcement is PlaybackMode)
+                else if (announcement is PlaybackMode)
                 {
                     PlaybackMode playbackMode = announcement as PlaybackMode;
                     announcementItems.Remove(playbackMode);
                     playbackMode.UserControl_Unloaded(null, null);
                     playbackMode.Unloaded -= playbackMode.UserControl_Unloaded;
-                    playbackMode = null;
                 }
-                if (announcement is ThemeMode)
+                else if (announcement is ThemeMode)
                 {
                     ThemeMode themeMode = announcement as ThemeMode;
                     announcementItems.Remove(themeMode);
                     themeMode.UserControl_Unloaded(null, null);
                     themeMode.Unloaded -= themeMode.UserControl_Unloaded;
-                    themeMode = null;
                 }
-                if (announcement is TvMode)
+                else if (announcement is TvMode)
                 {
                     TvMode tvMode = announcement as TvMode;
                     announcementItems.Remove(tvMode);
                     tvMode.UserControl_Unloaded(null, null);
                     tvMode.Unloaded -= tvMode.UserControl_Unloaded;
-                    tvMode = null;
                 }
-                if (announcement is PlaybackOptions)
+                else if (announcement is PlaybackOptions)
                 {
                     PlaybackOptions playbackOptions = announcement as PlaybackOptions;
                     announcementItems.Remove(playbackOptions);
                     playbackOptions.UserControl_Unloaded(null, null);
                     playbackOptions.Unloaded -= playbackOptions.UserControl_Unloaded;
-                    playbackOptions = null;
                 }
-                if (announcement is Shuffle)
+                else if (announcement is Shuffle)
                 {
                     Shuffle shuffle = announcement as Shuffle;
                     announcementItems.Remove(shuffle);
                     shuffle.UserControl_Unloaded(null, null);
                     shuffle.Unloaded -= shuffle.UserControl_Unloaded;
-                    shuffle = null;
+                }
+                else if (announcement is NewReleases)
+                {
+                    NewReleases newReleases = announcement as NewReleases;
+                    announcementItems.Remove(newReleases);
+                    newReleases.UserControl_Unloaded(null, null);
+                    newReleases.Unloaded -= newReleases.UserControl_Unloaded;
                 }
             }
         }
@@ -946,184 +989,74 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    Bindings.StopTracking();
                     this.KeyDown -= Page_KeyUp;
                     currentNavSelection = null;
+                    loadingLocks.Clear();
 
                     // direct elements
-                    if (UserName != null)
-                    {
-                        UserName.PointerReleased -= UserElement_PointerReleased;
-                        UserName = null;
-                    }
-                    if (UserPicContainer != null)
-                    {
-                        UserPicContainer.PointerReleased -= UserElement_PointerReleased;
-                        UserPicContainer = null;
-                    }
-                    if (BlankUser != null)
-                    {
-                        BlankUser.PointerReleased -= UserElement_PointerReleased;
-                        BlankUser = null;
-                    }
-                    if (Hamburger != null)
-                    {
-                        Hamburger.Click -= Hamburger_Click;
-                        Hamburger = null;
-                    }
-                    if (Back != null)
-                    {
-                        Back.Click -= Back_Click;
-                        Back = null;
-                    }
-                    Title = null;
-                    SpotifyLogo = null;
-                    SpotifyLoading = null;
-                    YouTubeLogo = null;
-                    YouTubeLoading = null;
-                    LoadersMessage = null;
-                    Header = null;
-                    NavLeftBorder = null;
-                    RightMainBackground = null;
-                    UserPic = null;
+                    UserName.PointerReleased -= UserElement_PointerReleased;
+                    UserPicContainer.PointerReleased -= UserElement_PointerReleased;
+                    BlankUser.PointerReleased -= UserElement_PointerReleased;
+                    Hamburger.Click -= Hamburger_Click;
+                    Back.Click -= Back_Click;
+                    HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
+                    SettingsItem.Click -= SettingsItem_Click;
 
-                    if (HamburgerOptions != null)
-                    {
-                        HamburgerOptions.SelectionChanged -= HamburgerOptions_SelectionChanged;
-                        HamburgerOptions = null;
-                    }
-                    if (SettingsItem != null)
-                    {
-                        SettingsItem.Click -= SettingsItem_Click;
-                        SettingsItem = null;
-                    }
-
-                    BrowseItem = null;
-                    YourMusicItem = null;
-                    ProfileItem = null;
-                    SearchItem = null;
-
-                    if (CancelDialog != null)
-                    {
-                        CancelDialog.Unload();
-                        CancelDialog = null;
-                    }
-                    ErrorMessage = null;
-                    ErrorMessageGrid = null;
-
-                    MainContentFrame = null;
-                    MainSplitView = null;
-
-                    if (PlaybackMenu != null)
-                    {
-                        PlaybackMenu.UserControl_Unloaded(null, null);
-                        PlaybackMenu.Unloaded -= PlaybackMenu.UserControl_Unloaded;
-                        PlaybackMenu = null;
-                    }
+                    CancelDialog.Unload();
+                    PlaybackMenu.UserControl_Unloaded(null, null);
+                    PlaybackMenu.Unloaded -= PlaybackMenu.UserControl_Unloaded;
 
                     // dependant pages
-                    if (browsePage != null)
+                    await Task.Run(() =>
                     {
-                        await Task.Run(() =>
-                        {
-                            if (browsePage != null)
-                            {
-                                browsePage.Page_Unloaded(null, null);
-                            }
-                        });
                         if (browsePage != null)
                         {
-                            browsePage.Unloaded -= browsePage.Page_Unloaded;
-                            browsePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            browsePage = null;
+                            browsePage.Page_Unloaded(null, null);
                         }
+                        if (profilePage != null)
+                        {
+                            profilePage.Page_Unloaded(null, null);
+                        }
+                        if (yourMusicPage != null)
+                        {
+                            yourMusicPage.Page_Unloaded(null, null);
+                        }
+                        if (searchPage != null)
+                        {
+                            searchPage.Page_Unloaded(null, null);
+                        }
+                        if (settingsPage != null)
+                        {
+                            settingsPage.Page_Unloaded(null, null);
+                        }                        
+                    });
+                    if (browsePage != null)
+                    {
+                        browsePage.Unloaded -= browsePage.Page_Unloaded;
                     }
                     if (profilePage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (profilePage != null)
-                            {
-                                profilePage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (profilePage != null)
-                        {
-                            profilePage.Unloaded -= profilePage.Page_Unloaded;
-                            profilePage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            profilePage = null;
-                        }
+                        profilePage.Unloaded -= profilePage.Page_Unloaded;
                     }
                     if (yourMusicPage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (yourMusicPage != null)
-                            {
-                                yourMusicPage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (yourMusicPage != null)
-                        {
-                            yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
-                            yourMusicPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            yourMusicPage = null;
-                        }
+                        yourMusicPage.Unloaded -= yourMusicPage.Page_Unloaded;
                     }
                     if (searchPage != null)
                     {
-                        await Task.Run(() =>
-                        {
-                            if (searchPage != null)
-                            {
-                                searchPage.Page_Unloaded(null, null);
-                            }
-                        });
-                        if (searchPage != null)
-                        {
-                            searchPage.Unloaded -= searchPage.Page_Unloaded;
-                            searchPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            searchPage = null;
-                        }
+                        searchPage.Unloaded -= searchPage.Page_Unloaded;
                     }
                     if (settingsPage != null)
                     {
-                        await Task.Run(() => settingsPage.Page_Unloaded(null, null));
-                        if (settingsPage != null)
-                        {
-                            settingsPage.Unloaded -= settingsPage.Page_Unloaded;
-                            settingsPage.NavigationCacheMode = NavigationCacheMode.Disabled;
-                            settingsPage = null;
-                        }
+                        settingsPage.Unloaded -= settingsPage.Page_Unloaded;
                     }
 
                     // announcements
-                    UnloadAnnouncements();
-                    Announcements = null;
-                    AnnouncementsBackground = null;
-
-                    if (PreviousAnnouncement != null)
-                    {
-                        PreviousAnnouncement.Click -= PreviousAnnouncement_Click;
-                        PreviousAnnouncement = null;
-                    }
-                    if (NextAnnouncement != null)
-                    {
-                        NextAnnouncement.Click -= NextAnnouncement_Click;
-                        NextAnnouncement = null;
-                    }
-                    if (CloseAnnouncements != null)
-                    {
-                        CloseAnnouncements.Click -= CloseAnnouncements_Click;
-                        CloseAnnouncements = null;
-                    }
-                    if (AnnouncementsContainer != null)
-                    {
-                        AnnouncementsContainer.KeyUp -= AnnouncementsContainer_KeyUp;
-                        AnnouncementsContainer = null;
-                    }
-
-                    BackgroundGrid = null;
+                    Announcements.Content = null;
+                    PreviousAnnouncement.Click -= PreviousAnnouncement_Click;
+                    NextAnnouncement.Click -= NextAnnouncement_Click;
+                    CloseAnnouncements.Click -= CloseAnnouncements_Click;
+                    AnnouncementsContainer.KeyUp -= AnnouncementsContainer_KeyUp;
                 });
             }
         }

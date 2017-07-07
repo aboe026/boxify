@@ -37,11 +37,11 @@ namespace Boxify.Frames
     public sealed partial class Settings : Page
     {
         public enum Theme { System, Light, Dark }
-        public enum Playbacksource { Spotify, YouTube }
+        public enum PlaybackSource { Spotify, YouTube }
 
         public static bool tvSafeArea = true;
         public static Theme theme = Theme.System;
-        public static Playbacksource playbackSource = Playbacksource.Spotify;
+        public static PlaybackSource playbackSource = PlaybackSource.Spotify;
         public static bool repeatEnabled = false;
         public static bool shuffleEnabled = false;
         public static double volume = 100;
@@ -73,7 +73,7 @@ namespace Boxify.Frames
             }
 
             // playback source
-            if (playbackSource == Playbacksource.YouTube)
+            if (playbackSource == PlaybackSource.YouTube)
             {
                 YouTube.IsChecked = true;
             }
@@ -234,11 +234,11 @@ namespace Boxify.Frames
         {
             if (((RadioButton)sender).Name == "Spotify")
             {
-                playbackSource = Playbacksource.Spotify;
+                playbackSource = PlaybackSource.Spotify;
             }
             else if (((RadioButton)sender).Name == "YouTube")
             {
-                playbackSource = Playbacksource.YouTube;
+                playbackSource = PlaybackSource.YouTube;
             }
             SaveSettings();
         }
@@ -247,14 +247,14 @@ namespace Boxify.Frames
         /// Change the playback type and update the UI
         /// </summary>
         /// <param name="source">The source to get tracks from</param>
-        public void SetPlaybackSourceUI(Playbacksource source)
+        public void SetPlaybackSourceUI(PlaybackSource source)
         {
             SetPlaybackSource(source);
-            if (source == Playbacksource.Spotify)
+            if (source == PlaybackSource.Spotify)
             {
                 Spotify.IsChecked = true;
             }
-            else if (source == Playbacksource.YouTube)
+            else if (source == PlaybackSource.YouTube)
             {
                 YouTube.IsChecked = true;
             }
@@ -264,7 +264,7 @@ namespace Boxify.Frames
         /// Change the playback type
         /// </summary>
         /// <param name="source"></param>
-        public static void SetPlaybackSource(Playbacksource source)
+        public static void SetPlaybackSource(PlaybackSource source)
         {
             playbackSource = source;
             SaveSettings();
@@ -440,6 +440,20 @@ namespace Boxify.Frames
         }
 
         /// <summary>
+        /// Show announcement for new releases feature
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewReleases_Click(object sender, RoutedEventArgs e)
+        {
+            List<UserControl> announcements = new List<UserControl>
+            {
+                new NewReleases()
+            };
+            App.mainPage.ShowAnnouncements(announcements, this);
+        }
+
+        /// <summary>
         /// User selects to view privacy policy in browser
         /// </summary>
         /// <param name="sender"></param>
@@ -460,61 +474,17 @@ namespace Boxify.Frames
             {
                 await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    if (TvSafeArea != null)
-                    {
-                        TvSafeArea.Toggled -= TvSafe_Toggled;
-                        TvSafeArea = null;
-                    }
-                    if (System != null)
-                    {
-                        System.Click -= ThemeColor_Click;
-                        System = null;
-                    }
-                    if (Light != null)
-                    {
-                        Light.Click -= ThemeColor_Click;
-                        Light = null;
-                    }
-                    if (Dark != null)
-                    {
-                        Dark.Click -= ThemeColor_Click;
-                        Dark = null;
-                    }
-                    if (Spotify != null)
-                    {
-                        Spotify.Click -= Playbacksource_Click;
-                        Spotify = null;
-                    }
-                    if (YouTube != null)
-                    {
-                        YouTube.Click -= Playbacksource_Click;
-                        YouTube = null;
-                    }
-                    if (WelcomeConfigure != null)
-                    {
-                        WelcomeConfigure.Click -= WelcomeConfigure_Click;
-                        WelcomeConfigure = null;
-                    }
-                    if (Shuffle != null)
-                    {
-                        Shuffle.Click -= Shuffle_Click;
-                        Shuffle = null;
-                    }
-                    if (RateButton != null)
-                    {
-                        RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
-                        RateButton = null;
-                    }
-                    if (Repo != null)
-                    {
-                        Repo.Click -= Repo_Click;
-                        Repo = null;
-                    }
-                    if (PrivacyButton != null)
-                    {
-                        PrivacyButton.Click -= PrivacyButton_Click;
-                        PrivacyButton = null;
-                    }
+                    TvSafeArea.Toggled -= TvSafe_Toggled;
+                    System.Click -= ThemeColor_Click;
+                    Light.Click -= ThemeColor_Click;
+                    Dark.Click -= ThemeColor_Click;
+                    Spotify.Click -= Playbacksource_Click;
+                    YouTube.Click -= Playbacksource_Click;
+                    WelcomeConfigure.Click -= WelcomeConfigure_Click;
+                    Shuffle.Click -= Shuffle_Click;
+                    RateButton.Click -= Rate_Click; SpotifyGitHub.Click -= SpotifyGitHub_Click;
+                    Repo.Click -= Repo_Click;
+                    PrivacyButton.Click -= PrivacyButton_Click;
                 });
             }
         }
