@@ -873,7 +873,8 @@ namespace Boxify.Classes
             {
                 try
                 {
-                    return MediaSource.CreateFromUri(new Uri(videos.ElementAt(0).GetUri()));
+                    string url = await videos.ElementAt(0).GetUriAsync();
+                    return MediaSource.CreateFromUri(new Uri(url));
                 }
                 catch (Exception)
                 {
@@ -882,7 +883,8 @@ namespace Boxify.Classes
             }
             if (maxAudioVideo != null)
             {
-                return MediaSource.CreateFromUri(new Uri(maxAudioVideo.GetUri()));
+                string url = await maxAudioVideo.GetUriAsync();
+                return MediaSource.CreateFromUri(new Uri(url));
             }
             else if (maxNonAudioVideo != null)
             {
@@ -902,7 +904,8 @@ namespace Boxify.Classes
 
                 try
                 {
-                    Task<HttpResponseMessage> clientTask = client.GetAsync(new Uri(maxNonAudioVideo.GetUri()), HttpCompletionOption.ResponseContentRead, cancelToken.Token);
+                    string url = await maxNonAudioVideo.GetUriAsync();
+                    Task<HttpResponseMessage> clientTask = client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead, cancelToken.Token);
                     Task completedTask = await Task.WhenAny(clientTask, Task.Delay(5000));
                     if (completedTask != clientTask)
                     {
