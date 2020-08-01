@@ -4,6 +4,4 @@
 A Spotify client for the Xbox One featuring background music support. This project is GPL 3.0 licensed. Proudly featured in [Project Pegasus](https://github.com/wiired24/ProjectPegasus).
 
 ## Build
-You must pull down and build the [libvideo project](https://github.com/aboe026/libvideo) and add it as a reference in Visual Studio.
-
 **Important**: Replace values in `Boxify/Credentials.json` with valid clientId and clientSecret from the Spotify Developer registered application, as well as valid applicationName and apiKey from your Google Developer console's YouTube Data API v3 Credentials API key.
